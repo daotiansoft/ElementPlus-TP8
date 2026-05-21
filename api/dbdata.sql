@@ -4,14 +4,14 @@
  Source Server         : 127.0.0.1
  Source Server Type    : MySQL
  Source Server Version : 50726
- Source Host           : localhost:3306
- Source Schema         : dbdata
+ Source Host           : 127.0.0.1:3306
+ Source Schema         : credit_diagnosis_report
 
  Target Server Type    : MySQL
  Target Server Version : 50726
  File Encoding         : 65001
 
- Date: 29/04/2026 20:27:47
+ Date: 21/05/2026 12:27:39
 */
 
 SET NAMES utf8mb4;
@@ -82,7 +82,7 @@ CREATE TABLE `dt_editor`  (
 -- ----------------------------
 -- Records of dt_editor
 -- ----------------------------
-INSERT INTO `dt_editor` VALUES (1, 'notice', '系统通知内容', '<p>欢迎使用！</p>\n<p><img class=\"wscnph\" src=\"storage/topic/20260429/02d70216955419bec3f1a1e1f59ef665.png\" /></p>');
+INSERT INTO `dt_editor` VALUES (1, 'notice', '系统通知内容', '<p>欢迎使用！</p>');
 
 -- ----------------------------
 -- Table structure for dt_login_log
@@ -97,7 +97,7 @@ CREATE TABLE `dt_login_log`  (
   `desc` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL,
   `ip` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 44 CHARACTER SET = utf8 COLLATE = utf8_unicode_ci COMMENT = '登录记录' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 45 CHARACTER SET = utf8 COLLATE = utf8_unicode_ci COMMENT = '登录记录' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of dt_login_log
@@ -145,6 +145,7 @@ INSERT INTO `dt_login_log` VALUES (40, 1, '', 1776436153, 1, '', '127.0.0.1');
 INSERT INTO `dt_login_log` VALUES (41, 1, '', 1776493196, 1, '', '127.0.0.1');
 INSERT INTO `dt_login_log` VALUES (42, 1, '', 1777387617, 1, '', '127.0.0.1');
 INSERT INTO `dt_login_log` VALUES (43, 1, '', 1777464110, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (44, 1, '', 1779337555, 1, '', '127.0.0.1');
 
 -- ----------------------------
 -- Table structure for dt_perms
@@ -160,7 +161,7 @@ CREATE TABLE `dt_perms`  (
   `status` tinyint(1) NULL DEFAULT 1,
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `type`(`type`, `module`, `controller`, `action`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 23 CHARACTER SET = utf8 COLLATE = utf8_unicode_ci COMMENT = '权限' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 25 CHARACTER SET = utf8 COLLATE = utf8_unicode_ci COMMENT = '权限' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of dt_perms
@@ -187,6 +188,7 @@ INSERT INTO `dt_perms` VALUES (19, '权限管理', 'admin', 'super', 'perms', 'i
 INSERT INTO `dt_perms` VALUES (20, '权限管理', 'admin', 'super', 'perms', 'add', 1);
 INSERT INTO `dt_perms` VALUES (21, '权限管理', 'admin', 'super', 'perms', 'edit', 1);
 INSERT INTO `dt_perms` VALUES (22, '权限管理', 'admin', 'super', 'perms', 'types', 1);
+INSERT INTO `dt_perms` VALUES (24, '权限管理', 'admin', 'super', 'Perms', 'del', 1);
 
 -- ----------------------------
 -- Table structure for dt_roles
