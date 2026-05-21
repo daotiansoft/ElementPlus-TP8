@@ -58,10 +58,14 @@
           <el-input v-model="add_form.username" autocomplete="off" placeholder="请输入账号" />
         </el-form-item>
         <el-form-item label="APPID" label-width="80px">
-          <el-input v-model="add_form.appid" autocomplete="off" placeholder="32个字符以内" />
+          <el-input placeholder="32个字符以内" v-model="add_form.appid">
+            <el-button slot="append" @click="()=>{add_form.appid = generateRandomString()}">随机生成</el-button>
+          </el-input>
         </el-form-item>
         <el-form-item label="SECRET" label-width="80px">
-          <el-input v-model="add_form.secret" autocomplete="off" placeholder="32个字符以内" />
+          <el-input placeholder="32个字符以内" v-model="add_form.secret">
+            <el-button slot="append" @click="()=>{add_form.secret = generateRandomString()}">随机生成</el-button>
+          </el-input>
         </el-form-item>
         <el-form-item label="状态" label-width="80px">
           <el-select v-model="add_form.status" placeholder="请选择">
@@ -82,10 +86,14 @@
           <el-input v-model="edit_form.username" autocomplete="off" placeholder="请输入账号" />
         </el-form-item>
         <el-form-item label="APPID" label-width="80px">
-          <el-input v-model="edit_form.appid" autocomplete="off" placeholder="32个字符以内" />
+          <el-input placeholder="32个字符以内" v-model="edit_form.appid">
+            <el-button slot="append" @click="()=>{edit_form.appid = generateRandomString()}">随机生成</el-button>
+          </el-input>
         </el-form-item>
         <el-form-item label="SECRET" label-width="80px">
-          <el-input v-model="edit_form.secret" autocomplete="off" placeholder="32个字符以内" />
+          <el-input placeholder="32个字符以内" v-model="edit_form.secret">
+            <el-button slot="append" @click="()=>{edit_form.secret = generateRandomString()}">随机生成</el-button>
+          </el-input>
         </el-form-item>
         <el-form-item label="状态" label-width="80px">
           <el-select v-model="edit_form.status" placeholder="请选择">
@@ -242,6 +250,10 @@ export default {
             })
         })
         .catch(() => { })
+    },
+	generateRandomString(){
+      return Math.random().toString(36).substring(2, 15) + 
+         Math.random().toString(36).substring(2, 15);
     }
   }
 }
