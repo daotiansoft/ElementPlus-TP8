@@ -15,6 +15,7 @@ declare (strict_types = 1);
 
 namespace app\common\service;
 
+use app\common\exception\NotAuthException;
 use app\common\exception\RequestException;
 use app\common\model\ConfigModel;
 use app\common\model\LoginLogModel;
@@ -60,16 +61,16 @@ class LoginService
      */
     public static function checkAuthorization($jwt_str = ''){
         if(empty($jwt_str)){
-            throw new RequestException('登陆已失效，请重新登录！');
+            throw new NotAuthException('登陆已失效，请重新登录！');
         }
         if(intval(Cache::get('jwt_token_die_' . md5($jwt_str))) > 0){
-            throw new RequestException('登陆已失效，请重新登录！');
+            throw new NotAuthException('登陆已失效，请重新登录！');
         }
         try {
             $decoded = JWT::decode($jwt_str, new Key(self::getJwtKey(), 'HS256'));
             return $decoded->data; // 获取用户信息
         }catch (\Exception $e){
-            throw new RequestException('登陆已失效，请重新登录！');
+            throw new NotAuthException('登陆已失效，请重新登录！');
         }
     }
 
@@ -88,7 +89,7 @@ class LoginService
             throw new RequestException('账号不存在或已停用！');
         }
 
-        if(get_password($params['password'],$userItem['rand_code']) != $userItem['password']){
+        if(isset($params['password']) && get_password($params['password'],$userItem['rand_code']) != $userItem['password']){
             Cache::set($cacke_key,$loginFailCount + 1);
             $loginLogModel->log($userItem['id'],'',$loginLogModel::STATUS_FAIL,request()->ip());
             throw new RequestException('密码不正确，您还可以尝试['.($loginFailMax - $loginFailCount - 1).']次!');
@@ -116,6 +117,7 @@ class LoginService
         ];
         return self::buildAuthorization($data);
     }
+
 
     public static function logout($jwt_token){
         if(!empty($jwt_token)){
