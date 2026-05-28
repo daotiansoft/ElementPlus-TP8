@@ -47,17 +47,8 @@
         :page-size="search_form.pagesize" @current-change="current_change" />
     </div>
     <el-dialog v-loading="loading" title="添加" :visible.sync="addVisible">
-      <DynamicForm
-      ref="myForm"
-      v-model="formData"
-      :fields="formFields"
-      :label-width="'120px'"
-      :show-actions="true"
-      :actions="actionsConfig"
-      @submit="handleSubmit"
-      @change="handleChange"
-      @reset="handleReset"
-    />
+      <DynamicForm ref="myForm" v-model="formData" :fields="formFields" :label-width="'120px'" :show-actions="true"
+        :actions="actionsConfig" @submit="handleSubmit" @change="handleChange" @reset="handleReset" />
     </el-dialog>
 
     <el-dialog v-loading="loading" title="编辑" :visible.sync="editVisible">
@@ -89,9 +80,9 @@
           <el-col :span="6">
             <el-form-item label="类型" label-width="80px">
               <el-select v-model="field_template.stypetatus" placeholder="请选择">
-              <el-option label="文本型" value="text" />
-              <el-option label="下拉选项" value="select" />
-            </el-select>
+                <el-option label="文本型" value="text" />
+                <el-option label="下拉选项" value="select" />
+              </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="6">
@@ -156,11 +147,11 @@ export default {
       },
       multipleSelection: [], // 选中数据
       roles: {},
-      field_template:{
-        type:'text',
-        key:'',
-        name:'',
-        placeholder:''
+      field_template: {
+        type: 'text',
+        key: '',
+        name: '',
+        placeholder: ''
       },
 
 
@@ -188,7 +179,7 @@ export default {
             { required: true, message: '请输入用户名', trigger: 'blur' },
           ]
         },
-        { 
+        {
           prop: 'bio',
           label: '个人简介',
           type: 'textarea',
@@ -270,7 +261,7 @@ export default {
         cancelText: '返回',
         cancelType: 'default'
       }
-    
+
     }
   },
   created() {
@@ -381,11 +372,11 @@ export default {
         })
         .catch(() => { })
     },
-    bind_item_field(item){
+    bind_item_field(item) {
       this.field_form = item
       this.fieldVisible = true
     },
-    submit_field(){
+    submit_field() {
       this.fieldVisible = false
     },
     handleSubmit(data) {
