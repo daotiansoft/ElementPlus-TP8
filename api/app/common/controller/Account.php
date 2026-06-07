@@ -18,6 +18,8 @@ class Account extends Auth
         $userinfo['username']=$this->userItem['username'];
         $userinfo['avatar']='https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif?imageView2/1/w/80/h/80';
         $userinfo['roles'] = [$this->userItem['type']];
+        $userinfo['order_status'] = $this->userItem['order_status'];
+        $userinfo['balance'] = $this->userItem['balance'];
         return $this->success("SUCCESS",$userinfo);
     }
 
@@ -64,14 +66,14 @@ class Account extends Auth
 
         $user_model=new UserModel();
 
-        if(get_password($password_old,$this->request->userData['rand_code']) != $this->request->userData['password']){
+        if(get_password($password_old,$this->userItem['rand_code']) != $this->userItem['password']){
             return $this->error("原密码不正确");
         }
 
         $data=[];
         $data['rand_code'] = get_rand_str(4);
         $data['password'] = get_password($password_new,$data['rand_code']);
-        $req=$user_model->where('id','=',$this->request->userData['id'])->update($data);
+        $req=$user_model->where('id','=',$this->userItem['id'])->update($data);
         if($req){
             return $this->success("修改成功");
         }else{

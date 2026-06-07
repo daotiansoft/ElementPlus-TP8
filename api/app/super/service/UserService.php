@@ -35,7 +35,7 @@ class UserService extends Service
         $model = new UserModel();
         $lists = $model
             ->withoutField(['password','rand_code'])
-            ->withJoin(['role'])
+            ->withJoin(['role'],'LEFT')
             ->where(self::$searchWhere)
             ->order('id desc')
             ->paginate([
