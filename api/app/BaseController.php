@@ -91,30 +91,4 @@ abstract class BaseController
         return $v->failException(true)->check($data);
     }
 
-    protected function success($msg='',$data=[]){
-        $ret=[];
-        $ret['code']=1;
-        $ret['msg']=$msg;
-        if(!empty($data)){
-            $ret['data']=$data;
-        }
-        return json($ret);
-    }
-    protected function error($msg='',$data=[]){
-        $ret=[];
-        $ret['code']=-1;
-        $ret['msg']=$msg;
-        if(!empty($data)){
-            $ret['data']=$data;
-        }
-        return json($ret);
-    }
-    protected function ret_json($code=0,$msg='',$data=[]){
-        $ret=[];
-        $ret['code']=$code;
-        $ret['msg']=$msg;
-        $ret['data']=$data;
-        return json($ret);
-    }
-
 }

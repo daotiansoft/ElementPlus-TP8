@@ -18,6 +18,7 @@ namespace app\super\service;
 
 use app\common\basics\Service;
 use app\common\model\RolesModel;
+use app\common\utils\TimeUtils;
 
 class RolesService extends Service
 {
@@ -38,7 +39,10 @@ class RolesService extends Service
                 'page'      => $get['page']  ?? 1,
                 'list_rows' => $get['pagesize'] ?? 20
             ])->toArray();
-
+        foreach ($lists['data'] as &$item) {
+            $item['create_time'] = TimeUtils::formatTime($item['create_time']);
+            $item['update_time'] = TimeUtils::formatTime($item['update_time']);
+        }
         return ['count'=>$lists['total'], 'items'=>$lists['data']] ?? [];
     }
 

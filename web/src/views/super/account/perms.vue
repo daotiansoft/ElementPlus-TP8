@@ -12,6 +12,12 @@
           <el-input v-model="search_form.name" placeholder="搜索名称" />
         </el-form-item>
         <el-form-item>
+          <el-input v-model="search_form.module" placeholder="搜索模块" />
+        </el-form-item>
+        <el-form-item>
+          <el-input v-model="search_form.controller" placeholder="搜索控制器" />
+        </el-form-item>
+        <el-form-item>
           <el-input v-model="search_form.action" placeholder="搜索方法名" />
         </el-form-item>
         <el-form-item>

@@ -6,6 +6,7 @@ use app\common\model\EditorModel;
 use app\common\model\UploadModel;
 use app\common\model\UserModel;
 use app\common\service\LoginService;
+use app\common\utils\AjaxUtils;
 use think\App;
 
 
@@ -16,17 +17,23 @@ class Account extends Auth
         $userinfo=array();
         $userinfo['uid']=$this->userItem['id'];
         $userinfo['username']=$this->userItem['username'];
-        $userinfo['avatar']='https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif?imageView2/1/w/80/h/80';
+        $userinfo['nickname']=$this->userItem['nickname'];
+        $userinfo['avatar']=$this->userItem['avatar'];
         $userinfo['roles'] = [$this->userItem['type']];
-        $userinfo['order_status'] = $this->userItem['order_status'];
-        $userinfo['balance'] = $this->userItem['balance'];
-        return $this->success("SUCCESS",$userinfo);
+
+        if(empty($userinfo['nickname'])){
+            $userinfo['nickname'] = $userinfo['username'];
+        }
+        if(empty($userinfo['avatar'])){
+            $userinfo['avatar'] = 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif?imageView2/1/w/80/h/80';
+        }
+        return AjaxUtils::success("SUCCESS",$userinfo);
     }
 
     public function logout(){
         $token = request()->header('Api-Token');
         LoginService::logout($token);
-        return $this->success("退出成功");
+        return AjaxUtils::success("退出成功");
     }
 
     /**
@@ -55,19 +62,19 @@ class Account extends Auth
         $password_new=$this->request->param('password_new');
 
         if(empty($password_old)){
-            return $this->error("请输入原密码");
+            return AjaxUtils::error("请输入原密码");
         }
         if(strlen($password_new) < 6){
-            return $this->error("新密码长度不可小于6位");
+            return AjaxUtils::error("新密码长度不可小于6位");
         }
         if($password_old == $password_new){
-            return $this->error("原密码与新密码不可相同");
+            return AjaxUtils::error("原密码与新密码不可相同");
         }
 
         $user_model=new UserModel();
 
         if(get_password($password_old,$this->userItem['rand_code']) != $this->userItem['password']){
-            return $this->error("原密码不正确");
+            return AjaxUtils::error("原密码不正确");
         }
 
         $data=[];
@@ -75,9 +82,9 @@ class Account extends Auth
         $data['password'] = get_password($password_new,$data['rand_code']);
         $req=$user_model->where('id','=',$this->userItem['id'])->update($data);
         if($req){
-            return $this->success("修改成功");
+            return AjaxUtils::success("修改成功");
         }else{
-            return $this->error("修改失败");
+            return AjaxUtils::error("修改失败");
         }
     }
 
@@ -85,7 +92,7 @@ class Account extends Auth
 
         $notice=new EditorModel();
         $data=$notice->getContentByKey('notice');
-        return $this->success("获取成功",$data);
+        return AjaxUtils::success("获取成功",['content'=>$data]);
     }
 
     //获取上传地址
@@ -96,7 +103,7 @@ class Account extends Auth
         $data['headers'] = array(
             'Api-Token'=>$this->request->header('Api-Token')
         );
-        return $this->success("获取成功",$data);
+        return AjaxUtils::success("获取成功",$data);
     }
 
     //上传图片
@@ -123,10 +130,10 @@ class Account extends Auth
                 $uploadModel = new UploadModel();
                 $uploadModel->insert($data);
 
-                return $this->success("上传成功",request()->domain().$savename);
+                return AjaxUtils::success("上传成功",request()->domain().$savename);
             }
         } catch (\think\exception\ValidateException $e) {
-            return $this->error($e->getMessage());
+            return AjaxUtils::error($e->getMessage());
         }
     }
 }

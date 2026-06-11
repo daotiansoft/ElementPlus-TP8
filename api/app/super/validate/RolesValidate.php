@@ -9,12 +9,14 @@ class RolesValidate extends Validate
         'type'  => 'require|max:10',
         'name'  => 'require'
     ];
-
-    protected $message  =   [
-        'type.require' => '角色代码不能为空',
-        'name.require' => '角色名称不能为空',
-        'type.min'     => '角色代码长度不可大于10个字符'
-    ];
+    public function __construct()
+    {
+        $this->field = [
+            'type'        => '角色代码',
+            'name'        => '名称',
+        ];
+        parent::__construct();
+    }
     protected $scene = [
         'add'  =>  ['type','name'],
     ];

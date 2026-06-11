@@ -19,6 +19,7 @@ namespace app\super\service;
 use app\common\basics\Service;
 use app\common\exception\RequestException;
 use app\common\model\AppListModel;
+use app\common\utils\TimeUtils;
 
 class AppListService extends Service
 {
@@ -42,6 +43,8 @@ class AppListService extends Service
 
         foreach ($lists['data'] as &$item) {
             $item['username'] = $item['user']['username'] ?? '';
+            $item['create_time'] = TimeUtils::formatTime($item['create_time']);
+            $item['update_time'] = TimeUtils::formatTime($item['update_time']);
             unset($item['user']);
         }
 

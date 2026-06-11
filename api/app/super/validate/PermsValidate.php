@@ -13,13 +13,18 @@ class PermsValidate extends Validate
         'action'  => 'require'
     ];
 
-    protected $message  =   [
-        'type.require' => '角色代码不能为空',
-        'name.require' => '名称不能为空',
-        'module.require' => '模块不能为空',
-        'controller.require' => '控制器不能为空',
-        'action.require' => '方法名不能为空',
-    ];
+    public function __construct()
+    {
+        $this->field = [
+            'type'        => '角色代码',
+            'name'        => '名称',
+            'module'        => '模块',
+            'controller'   => '控制器',
+            'action'   => '方法名',
+        ];
+        parent::__construct();
+    }
+
     protected $scene = [
         'add'  =>  ['type','name','module','controller','action'],
         'edit'  =>  ['type','name','module','controller','action'],

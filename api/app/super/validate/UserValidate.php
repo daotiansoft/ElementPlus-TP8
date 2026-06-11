@@ -11,13 +11,15 @@ class UserValidate extends Validate
         'username'  => 'require',
         'password'  => 'require|min:6'
     ];
-
-    protected $message  =   [
-        'type.require' => '账号角色不能为空',
-        'username.require' => '账号名称不能为空',
-        'password.require' => '密码不能为空',
-        'password.min'     => '密码长度不可小于6个字符'
-    ];
+    public function __construct()
+    {
+        $this->field = [
+            'type'        => '角色代码',
+            'username'        => '账号名称',
+            'password'        => '密码',
+        ];
+        parent::__construct();
+    }
     protected $scene = [
         'add'  =>  ['type','username','password'],
         'edit'  =>  ['type','username'],

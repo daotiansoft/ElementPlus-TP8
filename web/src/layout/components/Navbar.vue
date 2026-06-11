@@ -1,10 +1,6 @@
 <template>
   <div class="navbar">
-    <hamburger
-      :is-active="sidebar.opened"
-      class="hamburger-container"
-      @toggleClick="toggleSideBar"
-    />
+    <hamburger :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
 
     <breadcrumb class="breadcrumb-container" />
 
@@ -16,7 +12,7 @@
         </div>
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
           <router-link to="/">
-            <el-dropdown-item> 您好,{{ name }} </el-dropdown-item>
+            <el-dropdown-item> 您好,{{ nickname }} </el-dropdown-item>
           </router-link>
           <router-link to="/common/account/password">
             <el-dropdown-item> 修改密码 </el-dropdown-item>
@@ -41,7 +37,7 @@ export default {
     Hamburger
   },
   computed: {
-    ...mapGetters(['sidebar', 'avatar', 'name'])
+    ...mapGetters(['sidebar', 'avatar', 'username', 'nickname'])
   },
   methods: {
     toggleSideBar() {

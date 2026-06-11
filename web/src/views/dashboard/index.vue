@@ -25,14 +25,14 @@ export default {
     this.load_notice()
   },
   methods: {
-    load_notice: function() {
+    load_notice: function () {
       var _self = this
       this.$store
         .dispatch('user/notice')
         .then((res) => {
-          _self.notice = res
+          _self.notice = res['content']
         })
-        .catch(() => {})
+        .catch(() => { })
     }
   }
 }

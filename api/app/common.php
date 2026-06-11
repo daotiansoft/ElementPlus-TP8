@@ -145,3 +145,62 @@ function check_action_exists($module, $controller, $action)
     }
 }
 
+/**
+ * 获取客户端真实IP地址
+ * 兼容负载均衡、CDN、反向代理等场景
+ * 
+ * @return string 客户端IP地址
+ */
+function getClientIp() {
+    $ip = '0.0.0.0';
+    
+    // 代理服务器传递的真实IP头（按优先级排序）
+    $ipHeaders = [
+        'HTTP_X_FORWARDED_FOR',  // 标准代理头（Squid、Nginx、Apache等）
+        'HTTP_X_REAL_IP',         // Nginx常用
+        'HTTP_CF_CONNECTING_IP',  // Cloudflare
+        'HTTP_TRUE_CLIENT_IP',    // 部分CDN
+        'HTTP_X_CLUSTER_CLIENT_IP', // 集群环境
+        'HTTP_X_FORWARDED',       // 某些代理
+        'HTTP_FORWARDED_FOR',     // 某些代理
+        'HTTP_FORWARDED'          // 某些代理
+    ];
+    
+    // 遍历检查各个代理头
+    foreach ($ipHeaders as $header) {
+        if (isset($_SERVER[$header])) {
+            $ipList = trim($_SERVER[$header]);
+            if (!empty($ipList)) {
+                // HTTP_X_FORWARDED_FOR 可能包含多个IP（逗号分隔）
+                // 格式：client, proxy1, proxy2
+                // 第一个IP是客户端真实IP
+                $ips = explode(',', $ipList);
+                $ip = trim($ips[0]);
+                
+                // 验证IP有效性
+                if (filter_var($ip, FILTER_VALIDATE_IP)) {
+                    return $ip;
+                }
+            }
+        }
+    }
+    
+    // 如果没有代理头，使用REMOTE_ADDR（直连IP）
+    if (isset($_SERVER['REMOTE_ADDR'])) {
+        $ip = $_SERVER['REMOTE_ADDR'];
+        if (filter_var($ip, FILTER_VALIDATE_IP)) {
+            return $ip;
+        }
+    }
+    
+    // 处理CLI模式或特殊环境
+    if (isset($_SERVER['HTTP_CLIENT_IP'])) {
+        $ip = $_SERVER['HTTP_CLIENT_IP'];
+        if (filter_var($ip, FILTER_VALIDATE_IP)) {
+            return $ip;
+        }
+    }
+    
+    return $ip;
+}
+

@@ -4,6 +4,7 @@ namespace app\super\controller;
 
 use app\common\basics\Auth;
 use app\common\model\EditorModel;
+use app\common\utils\AjaxUtils;
 use app\common\utils\UrlUtils;
 use think\App;
 
@@ -19,7 +20,7 @@ class Editor extends Auth
             $item['content'] = UrlUtils::editorAbsoluteSrc($item['content']);
             $items[]=$item;
         }
-        return $this->success("获取成功",$items);
+        return AjaxUtils::success("获取成功",$items);
     }
 
     public function save(){
@@ -33,7 +34,7 @@ class Editor extends Auth
                 $model->where('key','=',$item['key'])->update(array('content'=>$item['content']));
             }
         }
-        return $this->success("保存成功");
+        return AjaxUtils::success("保存成功");
     }
 
 

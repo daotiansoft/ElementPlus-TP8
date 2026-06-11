@@ -3,8 +3,8 @@
     <div class="search-block">
       <el-form :inline="true" :model="search_form">
         <el-form-item>
-          <el-date-picker v-model="search_form.time" type="datetimerange" value-format="timestamp" range-separator="至"
-            start-placeholder="开始日期" end-placeholder="结束日期" />
+          <el-date-picker v-model="search_form.time" type="datetimerange" value-format="yyyy-MM-dd HH:mm:ss"
+            range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" />
         </el-form-item>
         <el-form-item>
           <el-input v-model="search_form.username" placeholder="搜索账号" />
@@ -29,11 +29,7 @@
           <el-table-column prop="username" label="账号" />
           <el-table-column prop="appid" label="APPID" />
           <el-table-column prop="secret" label="SECRET" />
-          <el-table-column label="创建时间" width="160" align="center">
-            <template slot-scope="scope">
-              <div>{{ scope.row.create_time * 1000 | formatDate }}</div>
-            </template>
-          </el-table-column>
+          <el-table-column prop="create_time" label="创建时间" width="160" />
           <el-table-column label="状态" width="80" align="center">
             <template slot-scope="scope">
               <el-tag v-if="scope.row.status === 1" disable-transitions>正常</el-tag>
@@ -59,12 +55,12 @@
         </el-form-item>
         <el-form-item label="APPID" label-width="80px">
           <el-input placeholder="32个字符以内" v-model="add_form.appid">
-            <el-button slot="append" @click="()=>{add_form.appid = generateRandomString()}">随机生成</el-button>
+            <el-button slot="append" @click="() => { add_form.appid = generateRandomString() }">随机生成</el-button>
           </el-input>
         </el-form-item>
         <el-form-item label="SECRET" label-width="80px">
           <el-input placeholder="32个字符以内" v-model="add_form.secret">
-            <el-button slot="append" @click="()=>{add_form.secret = generateRandomString()}">随机生成</el-button>
+            <el-button slot="append" @click="() => { add_form.secret = generateRandomString() }">随机生成</el-button>
           </el-input>
         </el-form-item>
         <el-form-item label="状态" label-width="80px">
@@ -87,12 +83,12 @@
         </el-form-item>
         <el-form-item label="APPID" label-width="80px">
           <el-input placeholder="32个字符以内" v-model="edit_form.appid">
-            <el-button slot="append" @click="()=>{edit_form.appid = generateRandomString()}">随机生成</el-button>
+            <el-button slot="append" @click="() => { edit_form.appid = generateRandomString() }">随机生成</el-button>
           </el-input>
         </el-form-item>
         <el-form-item label="SECRET" label-width="80px">
           <el-input placeholder="32个字符以内" v-model="edit_form.secret">
-            <el-button slot="append" @click="()=>{edit_form.secret = generateRandomString()}">随机生成</el-button>
+            <el-button slot="append" @click="() => { edit_form.secret = generateRandomString() }">随机生成</el-button>
           </el-input>
         </el-form-item>
         <el-form-item label="状态" label-width="80px">
@@ -251,9 +247,9 @@ export default {
         })
         .catch(() => { })
     },
-	generateRandomString(){
-      return Math.random().toString(36).substring(2, 15) + 
-         Math.random().toString(36).substring(2, 15);
+    generateRandomString() {
+      return Math.random().toString(36).substring(2, 15) +
+        Math.random().toString(36).substring(2, 15);
     }
   }
 }

@@ -18,6 +18,7 @@ namespace app\super\service;
 
 use app\common\basics\Service;
 use app\common\model\PermsModel;
+use app\common\utils\TimeUtils;
 
 class PermsService extends Service
 {
@@ -26,7 +27,7 @@ class PermsService extends Service
     {
         self::setSearch([
             '%like%'   => ['action@perms_model.action'],
-            '='        => ['type@perms_model.type','name@perms_model.name']
+            '='        => ['type@perms_model.type','name@perms_model.name','module@perms_model.module','controller@perms_model.controller','action@perms_model.action']
         ],$get);
 
         $model = new PermsModel();
@@ -40,6 +41,7 @@ class PermsService extends Service
             ])->toArray();
         foreach ($lists['data'] as &$item) {
             $item['type_name'] = $item['role']['name'] ?? '';
+
             unset($item['role']);
         }
         return ['count'=>$lists['total'], 'items'=>$lists['data']] ?? [];

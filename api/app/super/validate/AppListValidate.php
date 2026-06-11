@@ -37,7 +37,6 @@ class AppListValidate extends Validate
             'secret'        => 'SECRET',
             'status'   => '状态',
         ];
-
         parent::__construct();
     }
 }

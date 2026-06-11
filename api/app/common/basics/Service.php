@@ -70,37 +70,6 @@ class Service
     }
 
     /**
-     * 事务开启
-     *
-     * @author zero
-     */
-    protected static function dbStartTrans(): void
-    {
-        self::$model = new UserModel();
-        self::$model->startTrans();
-    }
-
-    /**
-     * 事务提交
-     *
-     * @author zero
-     */
-    protected static function dbCommit(): void
-    {
-        self::$model->commit();
-    }
-
-    /**
-     * 事务回滚
-     *
-     * @author zero
-     */
-    protected static function dbRollback(): void
-    {
-        self::$model->rollback();
-    }
-
-    /**
      * 设置搜索条件
      * PS: 参数名@字段名: user@U.sn
      *
@@ -202,10 +171,10 @@ class Service
                         if (is_array($params[$key])) {
                             $start = $params[$key][0];
                             $end = $params[$key][1];
-                            $where[] = [$val, '>=', $start / 1000];
-                            $where[] = [$val, '<=', $end / 1000];
+                            $where[] = [$val, '>=', strtotime($start)];
+                            $where[] = [$val, '<=', strtotime($end)];
                         } else {
-                            $where[] = [$val, '>=', $params[$key] / 1000];
+                            $where[] = [$val, '>=', strtotime($params[$key]) / 1000];
                         }
                     }
                     break;

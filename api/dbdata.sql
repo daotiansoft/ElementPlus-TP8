@@ -5,13 +5,13 @@
  Source Server Type    : MySQL
  Source Server Version : 50726
  Source Host           : 127.0.0.1:3306
- Source Schema         : credit_diagnosis_report
+ Source Schema         : dbdata
 
  Target Server Type    : MySQL
  Target Server Version : 50726
  File Encoding         : 65001
 
- Date: 21/05/2026 12:27:39
+ Date: 11/06/2026 13:20:39
 */
 
 SET NAMES utf8mb4;
@@ -85,6 +85,26 @@ CREATE TABLE `dt_editor`  (
 INSERT INTO `dt_editor` VALUES (1, 'notice', '系统通知内容', '<p>欢迎使用！</p>');
 
 -- ----------------------------
+-- Table structure for dt_form_field
+-- ----------------------------
+DROP TABLE IF EXISTS `dt_form_field`;
+CREATE TABLE `dt_form_field`  (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `key` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '唯一标识',
+  `name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '名称',
+  `field_json` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL,
+  `create_time` int(10) NULL DEFAULT 0,
+  `update_time` int(10) NULL DEFAULT 0,
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE INDEX `key`(`key`) USING BTREE
+) ENGINE = MyISAM AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '表单字段' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of dt_form_field
+-- ----------------------------
+INSERT INTO `dt_form_field` VALUES (1, 'formTestAdd', '测试新增', '', 1779028674, 1779028674);
+
+-- ----------------------------
 -- Table structure for dt_login_log
 -- ----------------------------
 DROP TABLE IF EXISTS `dt_login_log`;
@@ -97,55 +117,7 @@ CREATE TABLE `dt_login_log`  (
   `desc` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL,
   `ip` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 45 CHARACTER SET = utf8 COLLATE = utf8_unicode_ci COMMENT = '登录记录' ROW_FORMAT = Dynamic;
-
--- ----------------------------
--- Records of dt_login_log
--- ----------------------------
-INSERT INTO `dt_login_log` VALUES (1, 1, 'api', 1693893501, 1, '登录成功', '127.0.0.1');
-INSERT INTO `dt_login_log` VALUES (2, 1, '', 1772786856, 2, '', '127.0.0.1');
-INSERT INTO `dt_login_log` VALUES (3, 1, '', 1772786862, 1, '', '127.0.0.1');
-INSERT INTO `dt_login_log` VALUES (4, 1, '', 1772786964, 1, '', '127.0.0.1');
-INSERT INTO `dt_login_log` VALUES (5, 1, '', 1772786983, 1, '', '127.0.0.1');
-INSERT INTO `dt_login_log` VALUES (6, 1, '', 1772787015, 1, '', '127.0.0.1');
-INSERT INTO `dt_login_log` VALUES (7, 1, '', 1772787059, 1, '', '127.0.0.1');
-INSERT INTO `dt_login_log` VALUES (8, 1, '', 1772787094, 1, '', '127.0.0.1');
-INSERT INTO `dt_login_log` VALUES (9, 1, '', 1772787120, 1, '', '127.0.0.1');
-INSERT INTO `dt_login_log` VALUES (10, 1, '', 1772787169, 1, '', '127.0.0.1');
-INSERT INTO `dt_login_log` VALUES (11, 1, '', 1772787215, 1, '', '127.0.0.1');
-INSERT INTO `dt_login_log` VALUES (12, 1, '', 1772787231, 1, '', '127.0.0.1');
-INSERT INTO `dt_login_log` VALUES (13, 1, '', 1772787276, 1, '', '127.0.0.1');
-INSERT INTO `dt_login_log` VALUES (14, 1, '', 1772787309, 1, '', '127.0.0.1');
-INSERT INTO `dt_login_log` VALUES (15, 1, '', 1772787348, 1, '', '127.0.0.1');
-INSERT INTO `dt_login_log` VALUES (16, 1, '', 1772787379, 1, '', '127.0.0.1');
-INSERT INTO `dt_login_log` VALUES (17, 1, '', 1772787395, 1, '', '127.0.0.1');
-INSERT INTO `dt_login_log` VALUES (18, 1, '', 1772787425, 1, '', '127.0.0.1');
-INSERT INTO `dt_login_log` VALUES (19, 1, '', 1772787456, 1, '', '127.0.0.1');
-INSERT INTO `dt_login_log` VALUES (20, 1, '', 1772787490, 1, '', '127.0.0.1');
-INSERT INTO `dt_login_log` VALUES (21, 1, '', 1772787507, 1, '', '127.0.0.1');
-INSERT INTO `dt_login_log` VALUES (22, 1, '', 1772787516, 1, '', '127.0.0.1');
-INSERT INTO `dt_login_log` VALUES (23, 1, '', 1772787549, 1, '', '127.0.0.1');
-INSERT INTO `dt_login_log` VALUES (24, 1, '', 1772787558, 1, '', '127.0.0.1');
-INSERT INTO `dt_login_log` VALUES (25, 1, '', 1772787571, 1, '', '127.0.0.1');
-INSERT INTO `dt_login_log` VALUES (26, 1, '', 1772787584, 1, '', '127.0.0.1');
-INSERT INTO `dt_login_log` VALUES (27, 1, '', 1772787595, 1, '', '127.0.0.1');
-INSERT INTO `dt_login_log` VALUES (28, 1, '', 1772846672, 1, '', '127.0.0.1');
-INSERT INTO `dt_login_log` VALUES (29, 1, '', 1772846764, 1, '', '127.0.0.1');
-INSERT INTO `dt_login_log` VALUES (30, 1, '', 1772848581, 1, '', '127.0.0.1');
-INSERT INTO `dt_login_log` VALUES (31, 1, '', 1772848651, 1, '', '127.0.0.1');
-INSERT INTO `dt_login_log` VALUES (32, 1, '', 1772849985, 1, '', '127.0.0.1');
-INSERT INTO `dt_login_log` VALUES (33, 1, '', 1772850428, 1, '', '127.0.0.1');
-INSERT INTO `dt_login_log` VALUES (34, 1, '', 1772850457, 1, '', '127.0.0.1');
-INSERT INTO `dt_login_log` VALUES (35, 1, '', 1772850831, 1, '', '127.0.0.1');
-INSERT INTO `dt_login_log` VALUES (36, 1, '', 1772851277, 2, '', '127.0.0.1');
-INSERT INTO `dt_login_log` VALUES (37, 1, '', 1772851285, 1, '', '127.0.0.1');
-INSERT INTO `dt_login_log` VALUES (38, 1, '', 1772856924, 1, '', '127.0.0.1');
-INSERT INTO `dt_login_log` VALUES (39, 1, '', 1772860651, 1, '', '127.0.0.1');
-INSERT INTO `dt_login_log` VALUES (40, 1, '', 1776436153, 1, '', '127.0.0.1');
-INSERT INTO `dt_login_log` VALUES (41, 1, '', 1776493196, 1, '', '127.0.0.1');
-INSERT INTO `dt_login_log` VALUES (42, 1, '', 1777387617, 1, '', '127.0.0.1');
-INSERT INTO `dt_login_log` VALUES (43, 1, '', 1777464110, 1, '', '127.0.0.1');
-INSERT INTO `dt_login_log` VALUES (44, 1, '', 1779337555, 1, '', '127.0.0.1');
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_unicode_ci COMMENT = '登录记录' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for dt_perms
@@ -161,7 +133,7 @@ CREATE TABLE `dt_perms`  (
   `status` tinyint(1) NULL DEFAULT 1,
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `type`(`type`, `module`, `controller`, `action`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 25 CHARACTER SET = utf8 COLLATE = utf8_unicode_ci COMMENT = '权限' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 26 CHARACTER SET = utf8 COLLATE = utf8_unicode_ci COMMENT = '权限' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of dt_perms
@@ -189,6 +161,7 @@ INSERT INTO `dt_perms` VALUES (20, '权限管理', 'admin', 'super', 'perms', 'a
 INSERT INTO `dt_perms` VALUES (21, '权限管理', 'admin', 'super', 'perms', 'edit', 1);
 INSERT INTO `dt_perms` VALUES (22, '权限管理', 'admin', 'super', 'perms', 'types', 1);
 INSERT INTO `dt_perms` VALUES (24, '权限管理', 'admin', 'super', 'Perms', 'del', 1);
+INSERT INTO `dt_perms` VALUES (25, '表单', 'admin', 'super', 'FormField', 'items', 1);
 
 -- ----------------------------
 -- Table structure for dt_roles
@@ -240,8 +213,10 @@ DROP TABLE IF EXISTS `dt_user`;
 CREATE TABLE `dt_user`  (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `type` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL COMMENT '账号类型 admin  user',
-  `username` varchar(50) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL,
+  `username` varchar(50) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL COMMENT '账号',
+  `nickname` varchar(50) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT '' COMMENT '昵称',
   `password` varchar(32) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL,
+  `avatar` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT '' COMMENT '头像',
   `rand_code` varchar(10) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL COMMENT '随机码',
   `status` tinyint(1) NULL DEFAULT 1 COMMENT '状态1正常2停用',
   `create_time` int(20) NULL DEFAULT 0,
@@ -253,7 +228,7 @@ CREATE TABLE `dt_user`  (
 -- ----------------------------
 -- Records of dt_user
 -- ----------------------------
-INSERT INTO `dt_user` VALUES (1, 'admin', 'admin', '0d3e24d606ccb8b0e1e9d5c11bdfe1ae', 'xump', 1, 1652500366, 0);
-INSERT INTO `dt_user` VALUES (2, 'user', '张三', 'f56fe008fb5908e9bd35a64730cc5226', 'cNc2', 1, 1652506679, 1772868471);
+INSERT INTO `dt_user` VALUES (1, 'admin', 'admin', '', '0d3e24d606ccb8b0e1e9d5c11bdfe1ae', '', 'xump', 1, 1652500366, 0);
+INSERT INTO `dt_user` VALUES (2, 'user', '张三', '', 'f56fe008fb5908e9bd35a64730cc5226', '', 'cNc2', 1, 1652506679, 1772868471);
 
 SET FOREIGN_KEY_CHECKS = 1;

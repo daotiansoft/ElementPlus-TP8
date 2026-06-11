@@ -288,24 +288,17 @@ class TimeUtils
         return isset($data[$month - 1]) ? $data[$month - 1] : '未知月份';
     }
 
-    /**
-     * 格式化时间戳
-     *
-     * @param int $time
+    /** 时间戳到文本
+     * @param int $timestamp 时间戳
+     * @param string $format Y-m-d H:i:s
      * @return string
      */
-    #[Pure]
-    public static function formatTime(int $time): string
+    public static function formatTime(int $timestamp, string $format = 'Y-m-d H:i:s',string $default = ''): string
     {
-        if ($time > 86400) {
-            $days = intval($time / 86400);
-            $hour = intval(($time - ($days * 86400)) / 3600);
-            return $days.'天'.$hour.'时';
-        } else {
-            $hour   = intval($time / 3600);
-            $minute = intval(($time - ($hour * 3600)) / 60);
-            return $hour.'时'.$minute.'分';
+        if($timestamp == 0){
+            return $default;
         }
+        return date($format,$timestamp);
     }
 
 }

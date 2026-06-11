@@ -19,7 +19,7 @@ class Overt extends Auth
             'key'=>$data['key'],
             'data'=>str_replace("\r\n","",$data['base64'])
         );
-        return $this->success("获取成功",$data);
+        return AjaxUtils::success("获取成功",$data);
     }
     public function login():Json
     {

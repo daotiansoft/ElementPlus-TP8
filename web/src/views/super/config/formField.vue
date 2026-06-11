@@ -3,8 +3,8 @@
     <div class="search-block">
       <el-form :inline="true" :model="search_form">
         <el-form-item>
-          <el-date-picker v-model="search_form.time" type="datetimerange" value-format="timestamp" range-separator="至"
-            start-placeholder="开始日期" end-placeholder="结束日期" />
+          <el-date-picker v-model="search_form.time" type="datetimerange" value-format="yyyy-MM-dd HH:mm:ss"
+            range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" />
         </el-form-item>
         <el-form-item>
           <el-input v-model="search_form.name" placeholder="搜索名称" />
@@ -28,11 +28,7 @@
           <el-table-column prop="id" label="ID" width="80" />
           <el-table-column prop="name" label="名称" />
           <el-table-column prop="key" label="唯一标识" />
-          <el-table-column label="创建时间" width="160" align="center">
-            <template slot-scope="scope">
-              <div>{{ scope.row.create_time * 1000 | formatDate }}</div>
-            </template>
-          </el-table-column>
+          <el-table-column prop="create_time" label="注册时间" width="160" />
           <el-table-column label="操作" width="120" fixed="right">
             <template slot-scope="scope">
               <el-button type="text" size="small" @click="bind_item_edit(scope.row)">编辑</el-button>

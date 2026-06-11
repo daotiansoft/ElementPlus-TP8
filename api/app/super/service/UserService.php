@@ -17,6 +17,7 @@ namespace app\super\service;
 
 use app\common\basics\Service;
 use app\common\model\UserModel;
+use app\common\utils\TimeUtils;
 use think\facade\Cache;
 
 class UserService extends Service
@@ -44,6 +45,9 @@ class UserService extends Service
             ])->toArray();
         foreach ($lists['data'] as &$item) {
             $item['role_name'] = $item['role']['name'] ?? '';
+            $item['create_time'] = TimeUtils::formatTime($item['create_time']);
+            $item['update_time'] = TimeUtils::formatTime($item['update_time']);
+
             unset($item['role']);
         }
 
