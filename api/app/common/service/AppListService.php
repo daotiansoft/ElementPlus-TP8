@@ -52,4 +52,29 @@ class AppListService extends Service
         }
         return $appItem;
     }
+
+    /*
+     * 签名
+     */
+    public static function order_sign($params = [],$appkey=''){
+        $data = self::build_sign_param($params);
+        return md5($data.'&secret='.$appkey);
+    }
+    /*
+     * 拼接待签名参数
+     */
+    public static function build_sign_param($params){
+        ksort($params);
+        $data = '';
+        foreach($params as $k=>$v){
+            if($k != 'sign' && !empty($v)){
+                if(empty($data)){
+                    $data = $k.'='.$v;
+                }else{
+                    $data = $data.'&'.$k.'='.$v;
+                }
+            }
+        }
+        return $data;
+    }
 }
