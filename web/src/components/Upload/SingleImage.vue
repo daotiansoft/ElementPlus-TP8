@@ -1,22 +1,10 @@
 <template>
   <div class="upload-container">
-    <el-button
-      type="primary"
-      size="mini"
-      @click="dialogVisible = true"
-    >上传图片</el-button>
+    <el-button type="primary" size="mini" @click="dialogVisible = true">上传图片</el-button>
     <el-dialog title="上传图片" :visible.sync="dialogVisible" :modal="modal">
       <div>
-        <el-upload
-          ref="upload"
-          :on-success="handleImageSuccess"
-          drag
-          :multiple="false"
-          :action="upload.action"
-          :headers="upload.headers"
-          name="image"
-          :show-file-list="false"
-        >
+        <el-upload ref="upload" :on-success="handleImageSuccess" drag :multiple="false" :action="upload.action"
+          :headers="upload.headers" name="image" :show-file-list="false">
 
           <img v-if="tempUrl" :src="tempUrl" style="height:100%;width:auto;">
           <div v-else>
@@ -27,11 +15,7 @@
       </div>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button
-          type="primary"
-          style="clear: both"
-          @click="confim"
-        >确 定</el-button>
+        <el-button type="primary" style="clear: both" @click="confim">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -60,7 +44,7 @@ export default {
       .then((res) => {
         this.upload = res
       })
-      .catch(() => {})
+      .catch(() => { })
   },
   methods: {
     emitInput(val) {
@@ -68,7 +52,7 @@ export default {
     },
     handleImageSuccess(response, file) {
       if (response.code == 1) {
-        this.tempUrl = response.data
+        this.tempUrl = response.data.url
       } else {
         this.$refs.upload.clearFiles()
         this.$message(response.msg)
@@ -84,4 +68,3 @@ export default {
   }
 }
 </script>
-

@@ -30,12 +30,15 @@ class UrlUtils
      * @param string $url (相对路径)
      * @return string     (绝对路径)
      */
-    public static function toAbsoluteUrl(string $url = '',string $domain = null): string
+    public static function toAbsoluteUrl($url = '',string $domain = null): string
     {
         if($domain == null){
             $domain = request()->domain();
         }
-        if ($url === '' || $url === '/') {
+		if(empty($url) || $url == null){
+            return '';
+        }
+        if ($url === '/') {
             return $url;
         }
 

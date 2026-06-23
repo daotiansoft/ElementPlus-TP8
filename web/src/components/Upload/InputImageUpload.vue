@@ -32,7 +32,7 @@ export default {
         },
         handleImageSuccess(response, file) {
             if (response.code === 1) {
-                this.emitInput(response.data)
+                this.emitInput(response.data.url)
             } else {
                 this.$refs.upload.clearFiles()
                 this.$message(response.msg)

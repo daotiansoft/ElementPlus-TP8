@@ -1,18 +1,12 @@
 <template>
-  <div
-    :class="{ fullscreen: fullscreen }"
-    class="tinymce-container"
-    :style="{ width: containerWidth }"
-  >
+  <div :class="{ fullscreen: fullscreen }" class="tinymce-container" :style="{ width: containerWidth }">
     <textarea :id="tinymceId" class="tinymce-textarea" />
     <div class="editor-custom-btn-container">
-      <SingleImageUpload
-        @input="
-          (val) => {
-            imageSuccessCBK(val);
-          }
-        "
-      />
+      <BtnImageUpload @input="
+        (val) => {
+          imageSuccessCBK(val);
+        }
+      " />
 
     </div>
   </div>
@@ -26,7 +20,7 @@
 import plugins from './plugins'
 import toolbar from './toolbar'
 import load from './dynamicLoadScript'
-import SingleImageUpload from '@/components/Upload/SingleImage'
+import BtnImageUpload from '@/components/Upload/BtnImageUpload'
 
 // why use this cdn, detail see https://github.com/PanJiaChen/tinymce-all-in-one
 // https://cdn.jsdelivr.net/npm/tinymce-all-in-one@4.9.3/tinymce.min.js
@@ -35,11 +29,11 @@ const tinymceCDN =
 
 export default {
   name: 'Tinymce',
-  components: { SingleImageUpload },
+  components: { BtnImageUpload },
   props: {
     id: {
       type: String,
-      default: function() {
+      default: function () {
         return (
           'vue-tinymce-' +
           +new Date() +

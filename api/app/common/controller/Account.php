@@ -130,7 +130,7 @@ class Account extends Auth
                 $uploadModel = new UploadModel();
                 $uploadModel->insert($data);
 
-                return AjaxUtils::success("上传成功",request()->domain().$savename);
+                return AjaxUtils::success("上传成功",['url'=>request()->domain().$savename]);
             }
         } catch (\think\exception\ValidateException $e) {
             return AjaxUtils::error($e->getMessage());
