@@ -11,7 +11,7 @@
  Target Server Version : 50726
  File Encoding         : 65001
 
- Date: 11/06/2026 13:20:39
+ Date: 24/06/2026 11:21:58
 */
 
 SET NAMES utf8mb4;
@@ -32,12 +32,12 @@ CREATE TABLE `dt_app_list`  (
   `update_time` int(10) NULL DEFAULT 0,
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `appid`(`appid`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 15 CHARACTER SET = utf8 COLLATE = utf8_unicode_ci COMMENT = '应用接口' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8 COLLATE = utf8_unicode_ci COMMENT = '应用接口' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of dt_app_list
 -- ----------------------------
-INSERT INTO `dt_app_list` VALUES (14, 2, 'test', 'test', 1, '', 1772865592, 1772865592);
+INSERT INTO `dt_app_list` VALUES (1, 1, 'admin', '1d3gweoqpnqyjponpzovna', 1, '', 1782270416, 1782270416);
 
 -- ----------------------------
 -- Table structure for dt_config
@@ -117,7 +117,12 @@ CREATE TABLE `dt_login_log`  (
   `desc` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL,
   `ip` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_unicode_ci COMMENT = '登录记录' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8 COLLATE = utf8_unicode_ci COMMENT = '登录记录' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of dt_login_log
+-- ----------------------------
+INSERT INTO `dt_login_log` VALUES (1, 1, '', 1782270368, 1, '', '127.0.0.1');
 
 -- ----------------------------
 -- Table structure for dt_perms
@@ -133,7 +138,7 @@ CREATE TABLE `dt_perms`  (
   `status` tinyint(1) NULL DEFAULT 1,
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `type`(`type`, `module`, `controller`, `action`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 26 CHARACTER SET = utf8 COLLATE = utf8_unicode_ci COMMENT = '权限' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 28 CHARACTER SET = utf8 COLLATE = utf8_unicode_ci COMMENT = '权限' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of dt_perms
@@ -162,6 +167,8 @@ INSERT INTO `dt_perms` VALUES (21, '权限管理', 'admin', 'super', 'perms', 'e
 INSERT INTO `dt_perms` VALUES (22, '权限管理', 'admin', 'super', 'perms', 'types', 1);
 INSERT INTO `dt_perms` VALUES (24, '权限管理', 'admin', 'super', 'Perms', 'del', 1);
 INSERT INTO `dt_perms` VALUES (25, '表单', 'admin', 'super', 'FormField', 'items', 1);
+INSERT INTO `dt_perms` VALUES (26, 'Task', 'admin', 'task', 'Api', 'getTask', 1);
+INSERT INTO `dt_perms` VALUES (27, 'Task', 'admin', 'task', 'Api', 'setReport', 1);
 
 -- ----------------------------
 -- Table structure for dt_roles
