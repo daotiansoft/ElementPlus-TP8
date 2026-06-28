@@ -82,6 +82,10 @@ class UserService extends Service
             unset($data['rand_code']);
         }
         UserModel::update($data, ['id'=>intval($post['id'])]);
+
+        //重置登录次数限制
+        $cacke_key = 'login_fail_' . $data['username'];
+        Cache::delete($cacke_key);
     }
 
     public static function del(array $ids): void
