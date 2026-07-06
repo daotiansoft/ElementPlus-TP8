@@ -5,6 +5,7 @@ use app\common\basics\Auth;
 use app\common\model\ConfigModel;
 use app\common\service\LoginService;
 use app\common\utils\AjaxUtils;
+use app\common\utils\UrlUtils;
 use jolalau\captcha\facade\CaptchaApi;
 use think\response\Json;
 
@@ -54,6 +55,10 @@ class Overt extends Auth
         $data['site_status'] = intval($config->getContentByKey('site_status'));
         $data['site_stop_msg'] = $config->getContentByKey('site_stop_msg');
         $data['captcha_status'] = intval($config->getContentByKey('captcha_status'));
+        $data['logo'] = $config->getContentByKey('logo');
+        if(!empty($data['logo'])){
+            $data['logo'] = UrlUtils::toAbsoluteUrl($data['logo']);
+        }
         return AjaxUtils::success("获取成功",$data);
     }
 }

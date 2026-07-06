@@ -1,0 +1,31 @@
+<template>
+    <div id="app">
+        <RouterView />
+    </div>
+</template>
+
+<script setup>
+import { onMounted, provide } from 'vue'
+import { RouterView } from 'vue-router'
+
+// 组件名称（在 Vue DevTools 中显示）
+defineOptions({
+    name: 'App'
+})
+
+// 生命周期钩子
+onMounted(() => {
+    console.log('App 已挂载')
+})
+
+// 提供全局数据（跨组件共享）
+provide('appVersion', '1.0.0')
+</script>
+
+<style scoped>
+/* scoped 表示样式只在此组件生效 */
+#app {
+    /* min-height: 100vh; */
+    /* background-color: #f5f5f5; */
+}
+</style>
