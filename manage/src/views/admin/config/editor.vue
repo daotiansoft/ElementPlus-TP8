@@ -2,14 +2,14 @@
     <div class="dashboard">
         <el-tabs v-model="activeName" type="card" style="background: #fff; padding: 20px; border-radius: 4px">
             <el-tab-pane v-for="item in items" :label="item.name" :name="item.key">
-                <el-input v-model="item.content" type="textarea" :rows="10" />
+                <SimpleEditor v-model="item.content" />
             </el-tab-pane>
         </el-tabs>
         <el-button type="primary" style="margin: 20px 0" @click="save">保存</el-button>
     </div>
 </template>
 <script setup>
-
+import SimpleEditor from '@/components/Tinymce/Simple.vue'
 import { ref, onMounted } from 'vue'
 import editor from '@/api/super/editor'
 

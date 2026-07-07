@@ -28,6 +28,16 @@ const user = {
       url: '/common/account/uploadinfo',
     })
   },
+  uploadFile(data) {
+    return request({
+      url: '/common/account/upload',
+      method: 'post',
+      data,
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+  }
 }
 
 export default user

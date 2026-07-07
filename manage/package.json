@@ -25,6 +25,8 @@
     "axios": "^1.18.1",
     "element-plus": "^2.14.2",
     "pinia": "^3.0.4",
+    "tinymce": "^8.7.0",
+    "tinymce-i18n": "^26.6.8",
     "vue-router": "^4.6.4"
   }
 }
