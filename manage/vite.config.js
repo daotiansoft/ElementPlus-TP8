@@ -17,7 +17,7 @@ export default defineConfig({
       resolvers: [ElementPlusResolver()],
     }),
   ],
-  
+  publicDir: 'public',
   // 路径别名
   resolve: {
     alias: {

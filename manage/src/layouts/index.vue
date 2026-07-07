@@ -162,7 +162,7 @@ const handleCommand = (command) => {
 
     }
     if (command === 'password') {
-        router.push('/config/password')
+        router.push('/center/password')
     }
 }
 

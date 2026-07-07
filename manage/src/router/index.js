@@ -18,29 +18,44 @@ const routes = [
     ]
   },
   {
-    path: '/config',
+    path: '/admin/config',
     component: Layout,
     meta: { title: '设置', icon: 'Setting' },
     hidden: false,
     children: [
       {
-        path: '/config/system',
+        path: '/admin/config/system',
         name: '系统',
-        component: () => import('@/views/config/system.vue'),
+        component: () => import('@/views/admin/config/system.vue'),
         meta: { title: '系统设置' },
         hidden: false
-      }, 
+      },
       {
-        path: '/config/other',
+        path: '/admin/config/editor',
+        name: '富文本',
+        component: () => import('@/views/admin/config/editor.vue'),
+        meta: { title: '富文本'},
+        hidden: false
+      },  
+      {
+        path: '/admin/config/other',
         name: '其他',
-        component: () => import('@/views/config/other.vue'),
+        component: () => import('@/views/admin/config/other.vue'),
         meta: { title: '其他设置'},
         hidden: false
       }, 
+    ]
+  },
+  {
+    path: '/center',
+    component: Layout,
+    meta: { title: '个人中心', icon: 'User' },
+    hidden: true,
+    children: [
       {
-        path: '/config/password',
+        path: '/center/password',
         name: 'Password',
-        component: () => import('@/views/config/Password.vue'),
+        component: () => import('@/views/center/Password.vue'),
         meta: { title: '修改密码' },
         hidden: true
       },
