@@ -11,7 +11,7 @@
 <script setup>
 import SimpleEditor from '@/components/Tinymce/Simple.vue'
 import { ref, onMounted } from 'vue'
-import editor from '@/api/super/editor'
+import editor from '@/api/admin/editor'
 
 const items = ref([])
 const activeName = ref('')

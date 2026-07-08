@@ -32,7 +32,7 @@ import InputUpload from '@/components/Upload/InputUpload.vue'
 import { ElMessage } from 'element-plus'
 import { ref, onMounted } from 'vue'
 
-import config from '@/api/super/config'
+import config from '@/api/admin/config'
 const items = ref([])
 const formRef = ref()
 
