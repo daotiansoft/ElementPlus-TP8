@@ -17,6 +17,7 @@ namespace app\super\service;
 
 
 use app\common\basics\Service;
+use app\common\enums\StatusEnum;
 use app\common\model\RolesModel;
 use app\common\utils\TimeUtils;
 
@@ -26,13 +27,14 @@ class RolesService extends Service
     public static function lists(array $get): array
     {
         self::setSearch([
-            '%like%'   => ['keyword@remark'],
-            '='        => ['type','name'],
-            'datetime' => ['time@create_time'],
+            '%like%'   => ['keyword@roles_model.remark'],
+            '='        => ['roles_model.type','roles_model.name'],
+            'datetime' => ['time@roles_model.create_time'],
         ],$get);
 
         $model = new RolesModel();
         $lists = $model
+            ->with('perms')
             ->where(self::$searchWhere)
             ->order('id desc')
             ->paginate([
@@ -42,6 +44,8 @@ class RolesService extends Service
         foreach ($lists['data'] as &$item) {
             $item['create_time'] = TimeUtils::formatTime($item['create_time']);
             $item['update_time'] = TimeUtils::formatTime($item['update_time']);
+            $item['perms_ids'] = array_column($item['perms'], 'perms_id');
+            unset($item['perms']);
         }
         return ['count'=>$lists['total'], 'items'=>$lists['data']] ?? [];
     }
@@ -51,7 +55,7 @@ class RolesService extends Service
         $model = new RolesModel();
         return $model
             ->field('type,name')
-            ->where(['status'=>1])
+            ->where(['status'=>StatusEnum::STATUS_1])
             ->order('id')
             ->select()->toArray();
     }
@@ -61,7 +65,7 @@ class RolesService extends Service
         RolesModel::create([
             'type'          => $post['type'],
             'name'        => $post['name'],
-            'status'        => $post['status'] ?? 1,
+            'status'        => $post['status'] ?? StatusEnum::STATUS_1,
             'remark'        => $post['remark'] ?? '',
             'create_time'  => time(),
             'update_time'  => time()
@@ -73,7 +77,7 @@ class RolesService extends Service
         RolesModel::update([
             'type'          => $post['type'],
             'name'        => $post['name'],
-            'status'        => $post['status'] ?? 1,
+            'status'        => $post['status'] ?? StatusEnum::STATUS_1,
             'remark'        => $post['remark'] ?? '',
             'update_time'  => time()
         ], ['id'=>intval($post['id'])]);
@@ -81,9 +85,7 @@ class RolesService extends Service
 
     public static function del(array $ids): void
     {
-        if(!in_array(1,$ids)){
-            RolesModel::destroy($ids,true);
-        }
+        RolesModel::destroy($ids,true);
     }
 
 

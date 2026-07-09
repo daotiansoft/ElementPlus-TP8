@@ -122,6 +122,9 @@ abstract class Auth extends BaseController
         if(!isset($this->userItem['type'])){
             return false;
         }
+        if($this->userItem['id'] == 1){
+            return true;
+        }
         $requestUrl = lcfirst( request()->baseUrl());
         $requestUrl = ltrim($requestUrl, '/');
         $requestUrl = strtolower(($requestUrl == 'index' || !$requestUrl) ? 'index/index' : $requestUrl);
@@ -144,7 +147,7 @@ abstract class Auth extends BaseController
         }
 
         //判断是否存在 存在话 就创建一个无权限的
-        if(check_action_exists($module,request()->controller(),request()->action())){
+        /*if(check_action_exists($module,request()->controller(),request()->action())){
             $data = [];
             $data['type'] = $this->userItem['type'];
             $data['module'] = $module;
@@ -156,7 +159,7 @@ abstract class Auth extends BaseController
                 $data['status'] = PermsModel::STATUS_OFF;
                 $permsModel->insert($data);
             }
-        }
+        }*/
         throw new NotAuthException('无权限['.$requestUrl.']');
     }
 

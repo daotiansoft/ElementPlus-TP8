@@ -1,6 +1,6 @@
 import request from "@/utils/request";
 
-const member = {
+const rolesApi = {
   getItems(data) {
     return request({
       url: "/super/roles/items",
@@ -36,4 +36,4 @@ const member = {
   },
 };
 
-export default member;
+export default rolesApi;

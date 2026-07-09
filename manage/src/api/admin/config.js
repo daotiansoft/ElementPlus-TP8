@@ -1,18 +1,18 @@
-import request from '@/utils/request'
+import request from "@/utils/request";
 
 const config = {
   getItems() {
     return request({
-      url: '/super/config/items'
-    })
+      url: "/super/config/items",
+    });
   },
   postItems(data) {
     return request({
-      url: '/super/config/save',
-      method: 'post',
-      data
-    })
+      url: "/super/config/save",
+      method: "post",
+      data,
+    });
   },
-}
+};
 
-export default config
+export default config;

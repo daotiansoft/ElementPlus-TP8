@@ -29,9 +29,9 @@ const member = {
       data,
     });
   },
-  types() {
+  all() {
     return request({
-      url: "/super/perms/types",
+      url: "/super/perms/all",
     });
   },
 };

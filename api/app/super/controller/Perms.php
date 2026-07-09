@@ -16,11 +16,11 @@ class Perms extends Auth
 {
     public function items():Json
     {
-        $list = PermsService::lists($this->request->param());
+        $list = PermsService::getTreeData(0,[]);
         return AjaxUtils::success($list);
     }
 
-    public function types():Json
+    public function all():Json
     {
         $list = RolesService::all();
         return AjaxUtils::success($list);
@@ -28,19 +28,24 @@ class Perms extends Auth
 
     public function add(){
         $data = $this->request->param();
-        (new PermsValidate())->addCheck($data);
-        if(!check_action_exists($data['module'],$data['controller'],$data['action'])){
-            throw new RequestException('方法不存在');
+        (new PermsValidate())->goCheck('add',$data);
+        if(!empty($data['module']) && !empty($data['controller']) && !empty($data['action'])){
+            if(!check_action_exists($data['module'],$data['controller'],$data['action'])){
+                throw new RequestException('方法不存在');
+            }
         }
+
         PermsService::add($data);
         return AjaxUtils::success();
     }
 
     public function edit(){
         $data = $this->request->param();
-        (new PermsValidate())->editCheck($data);
-        if(!check_action_exists($data['module'],$data['controller'],$data['action'])){
-            throw new RequestException('方法不存在');
+        (new PermsValidate())->goCheck('edit',$data);
+        if(!empty($data['module']) && !empty($data['controller']) && !empty($data['action'])){
+            if(!check_action_exists($data['module'],$data['controller'],$data['action'])){
+                throw new RequestException('方法不存在');
+            }
         }
         PermsService::edit($data);
         return AjaxUtils::success();

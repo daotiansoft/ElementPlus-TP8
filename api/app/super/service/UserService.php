@@ -30,7 +30,7 @@ class UserService extends Service
     public static function lists(array $get): array
     {
         self::setSearch([
-            '%like%'   => ['keyword@user_model.username'],
+            '%like%'   => ['username@user_model.username'],
             'datetime' => ['time@user_model.create_time'],
         ],$get);
         $model = new UserModel();

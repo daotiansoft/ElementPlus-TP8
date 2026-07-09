@@ -7,17 +7,18 @@ class PermsModel extends CommonModel
 {
     protected $name = 'perms';
 
-    const STATUS_ON = 1;
-    const STATUS_OFF = -1;
-
     protected $schema = [
         'id'=>'int',
+        'parent_id'=>'int',
         'name'=>'string',
-        'type'=>'string',
+        'menu'=>'int',
         'module'=>'string',
         'controller'=>'string',
         'action'=>'string',
+        'sort'=>'int',
         'status'=>'int',
+        'create_time'=>'int',
+        'update_time'=>'int',
     ];
 
     public function role(): HasOne

@@ -7,9 +7,6 @@ class RolesModel extends CommonModel
 {
     protected $name = 'roles';
 
-    const STATUS_ON = 1;
-    const STATUS_OFF = -1;
-
     protected $schema = [
         'id'=>'int',
         'type'=>'string',
@@ -19,4 +16,9 @@ class RolesModel extends CommonModel
         'create_time'=>'int',
         'update_time'=>'int'
     ];
+
+    public function perms()
+    {
+        return $this->hasMany(RolePermsModel::class, 'type', 'type');
+    }
 }

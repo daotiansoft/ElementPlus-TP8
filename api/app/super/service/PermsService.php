@@ -22,39 +22,35 @@ use app\common\utils\TimeUtils;
 
 class PermsService extends Service
 {
-
-    public static function lists(array $get): array
+    public static function getTreeData($parentId = 0, $fields = ['id', 'name', 'parent_id', 'sort'])
     {
-        self::setSearch([
-            '%like%'   => ['action@perms_model.action'],
-            '='        => ['type@perms_model.type','name@perms_model.name','module@perms_model.module','controller@perms_model.controller','action@perms_model.action']
-        ],$get);
-
         $model = new PermsModel();
-        $lists = $model
-            ->withJoin(['role'])
-            ->where(self::$searchWhere)
-            ->order('id desc')
-            ->paginate([
-                'page'      => $get['page']  ?? 1,
-                'list_rows' => $get['pagesize'] ?? 20
-            ])->toArray();
-        foreach ($lists['data'] as &$item) {
-            $item['type_name'] = $item['role']['name'] ?? '';
+        $perms = $model->where('parent_id','=', $parentId)
+            ->order('sort', 'asc')
+            ->select();
 
-            unset($item['role']);
+        $result = [];
+        foreach ($perms as $perm) {
+            $item = $perm->toArray();
+            $children = self::getTreeData($perm->id, $fields);
+            if (!empty($children)) {
+                $item['children'] = $children;
+            }
+            $result[] = $item;
         }
-        return ['count'=>$lists['total'], 'items'=>$lists['data']] ?? [];
+
+        return $result;
     }
 
     public static function add(array $post): void
     {
         PermsModel::create([
-            'type'          => $post['type'],
+            'parent_id'          => $post['parent_id'],
             'name'        => $post['name'],
             'module'        => $post['module'],
             'controller'        => $post['controller'],
             'action'        => $post['action'],
+            'sort'        => $post['sort'] ?? 50,
             'status'        => $post['status'] ?? 1,
         ]);
     }
@@ -62,11 +58,12 @@ class PermsService extends Service
     public static function edit(array $post): void
     {
         PermsModel::update([
-            'type'          => $post['type'],
+            'parent_id'          => $post['parent_id'],
             'name'        => $post['name'],
             'module'        => $post['module'],
             'controller'        => $post['controller'],
             'action'        => $post['action'],
+            'sort'        => $post['sort'] ?? 50,
             'status'        => $post['status'] ?? 1,
         ], ['id'=>intval($post['id'])]);
     }
@@ -75,6 +72,7 @@ class PermsService extends Service
     {
         if(!in_array(1,$ids)){
             PermsModel::destroy($ids,true);
+            PermsModel::where('parent_id','in',$ids)->delete();
         }
     }
 

@@ -37,13 +37,6 @@ const routes = [
         meta: { title: "富文本" },
         hidden: false,
       },
-      {
-        path: "/admin/config/other",
-        name: "其他",
-        component: () => import("@/views/admin/config/other.vue"),
-        meta: { title: "其他设置" },
-        hidden: false,
-      },
     ],
   },
   {
@@ -53,10 +46,31 @@ const routes = [
     hidden: false,
     children: [
       {
+        path: "/admin/account/member",
+        name: "账号",
+        component: () => import("@/views/admin/account/member.vue"),
+        meta: { title: "账号" },
+        hidden: false,
+      },
+      {
         path: "/admin/account/appList",
         name: "API管理",
         component: () => import("@/views/admin/account/appList.vue"),
         meta: { title: "API管理" },
+        hidden: false,
+      },
+      {
+        path: "/admin/account/roles",
+        name: "角色管理",
+        component: () => import("@/views/admin/account/roles.vue"),
+        meta: { title: "角色管理" },
+        hidden: false,
+      },
+      {
+        path: "/admin/account/perms",
+        name: "权限节点",
+        component: () => import("@/views/admin/account/perms.vue"),
+        meta: { title: "权限节点" },
         hidden: false,
       },
     ],

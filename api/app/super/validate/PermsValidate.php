@@ -6,7 +6,6 @@ use app\common\basics\Validate;
 class PermsValidate extends Validate
 {
     protected $rule =   [
-        'type'  => 'require',
         'name'  => 'require',
         'module'  => 'require',
         'controller'  => 'require',
@@ -26,8 +25,8 @@ class PermsValidate extends Validate
     }
 
     protected $scene = [
-        'add'  =>  ['type','name','module','controller','action'],
-        'edit'  =>  ['type','name','module','controller','action'],
+        'add'  =>  ['name'],
+        'edit'  =>  ['name'],
     ];
 
 }
