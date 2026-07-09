@@ -86,14 +86,18 @@
                 </el-form-item>
                 <el-form-item label="APPID" label-width="80px">
                     <el-input placeholder="32个字符以内" v-model="editForm.appid">
-                        <el-button slot="append"
-                            @click="() => { editForm.appid = generateRandomString() }">随机生成</el-button>
+                        <template #append>
+                            <el-button slot="append"
+                                @click="() => { editForm.appid = generateRandomString() }">随机生成</el-button>
+                        </template>
                     </el-input>
                 </el-form-item>
                 <el-form-item label="SECRET" label-width="80px">
                     <el-input placeholder="32个字符以内" v-model="editForm.secret">
-                        <el-button slot="append"
-                            @click="() => { editForm.secret = generateRandomString() }">随机生成</el-button>
+                        <template #append>
+                            <el-button slot="append"
+                                @click="() => { editForm.secret = generateRandomString() }">随机生成</el-button>
+                        </template>
                     </el-input>
                 </el-form-item>
                 <el-form-item label="状态" label-width="80px">
