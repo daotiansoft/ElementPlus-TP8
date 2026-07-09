@@ -16,8 +16,11 @@ declare (strict_types = 1);
 namespace app\common\basics;
 
 use app\BaseController;
+use app\common\enums\StatusEnum;
 use app\common\exception\NotAuthException;
+use app\common\exception\NotPermsException;
 use app\common\model\PermsModel;
+use app\common\model\RolePermsModel;
 use app\common\model\UserModel;
 use app\common\service\LoginService;
 use think\App;
@@ -130,37 +133,24 @@ abstract class Auth extends BaseController
         $requestUrl = strtolower(($requestUrl == 'index' || !$requestUrl) ? 'index/index' : $requestUrl);
 
         $permsModel = new PermsModel();
-        $items = $permsModel
-            ->whereIn('type', $this->userItem['type'])
-            ->where(['status'=>1])
-            ->field('module,controller,action')
-            ->select()->toArray();
-
-        foreach($items as $item){
-            if(
-                strtolower($item['module']) == $module
-                && strtolower($item['controller']) == $controller
-                && strtolower($item['action']) == $action
-            ){
+        $permsItem = $permsModel
+            ->where('module','=',$module)
+            ->where('controller','=',$controller)
+            ->where('action','=',$action)
+            ->find();
+        if($permsItem && $permsItem['status'] == StatusEnum::STATUS_1){
+            $rolePermsModel = new RolePermsModel();
+            $rolePermsItem = $rolePermsModel
+                ->where('type','=',$this->userItem['type'])
+                ->where('perms_id','=',$permsItem['id'])
+                ->find();
+            if($rolePermsItem){
                 return true;
             }
         }
 
-        //判断是否存在 存在话 就创建一个无权限的
-        /*if(check_action_exists($module,request()->controller(),request()->action())){
-            $data = [];
-            $data['type'] = $this->userItem['type'];
-            $data['module'] = $module;
-            $data['controller'] = request()->controller();
-            $data['action'] = request()->action();
 
-            $item = $permsModel->where($data)->field('id')->find();
-            if(!$item){
-                $data['status'] = PermsModel::STATUS_OFF;
-                $permsModel->insert($data);
-            }
-        }*/
-        throw new NotAuthException('无权限['.$requestUrl.']');
+        throw new NotPermsException('无权限['.$requestUrl.']');
     }
 
 }

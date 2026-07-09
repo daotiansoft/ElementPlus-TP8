@@ -11,7 +11,7 @@
  Target Server Version : 50726
  File Encoding         : 65001
 
- Date: 09/07/2026 14:28:56
+ Date: 09/07/2026 14:47:48
 */
 
 SET NAMES utf8mb4;
@@ -118,7 +118,7 @@ CREATE TABLE `dt_login_log`  (
   `desc` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL,
   `ip` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 14 CHARACTER SET = utf8 COLLATE = utf8_unicode_ci COMMENT = '登录记录' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 16 CHARACTER SET = utf8 COLLATE = utf8_unicode_ci COMMENT = '登录记录' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of dt_login_log
@@ -136,6 +136,8 @@ INSERT INTO `dt_login_log` VALUES (10, 1, '', 1783346944, 1, '', '127.0.0.1');
 INSERT INTO `dt_login_log` VALUES (11, 1, '', 1783346955, 1, '', '127.0.0.1');
 INSERT INTO `dt_login_log` VALUES (12, 1, '', 1783346981, 1, '', '127.0.0.1');
 INSERT INTO `dt_login_log` VALUES (13, 1, '', 1783563287, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (14, 2, '', 1783578780, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (15, 2, '', 1783579393, 1, '', '127.0.0.1');
 
 -- ----------------------------
 -- Table structure for dt_perms
@@ -155,7 +157,7 @@ CREATE TABLE `dt_perms`  (
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_parent_id`(`parent_id`) USING BTREE COMMENT '父级索引',
   INDEX `idx_module_controller_action`(`module`, `controller`, `action`) USING BTREE COMMENT '模块控制器方法组合索引'
-) ENGINE = InnoDB AUTO_INCREMENT = 29 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '权限节点表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 34 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '权限节点表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of dt_perms
@@ -187,6 +189,11 @@ INSERT INTO `dt_perms` VALUES (25, 23, 'All', 'super', 'perms', 'all', 0, 1, 0, 
 INSERT INTO `dt_perms` VALUES (26, 23, '新增', 'super', 'perms', 'add', 0, 1, 0, 0);
 INSERT INTO `dt_perms` VALUES (27, 23, '编辑', 'super', 'perms', 'edit', 0, 1, 0, 0);
 INSERT INTO `dt_perms` VALUES (28, 23, '删除', 'super', 'perms', 'del', 0, 1, 0, 0);
+INSERT INTO `dt_perms` VALUES (29, 9, '账号列表', 'super', 'member', '', 0, 1, 0, 0);
+INSERT INTO `dt_perms` VALUES (30, 29, '列表', 'super', 'member', 'items', 0, 1, 0, 0);
+INSERT INTO `dt_perms` VALUES (31, 29, '新增', 'super', 'member', 'add', 0, 1, 0, 0);
+INSERT INTO `dt_perms` VALUES (32, 29, '编辑', 'super', 'member', 'edit', 0, 1, 0, 0);
+INSERT INTO `dt_perms` VALUES (33, 29, '删除', 'super', 'member', 'del', 0, 1, 0, 0);
 
 -- ----------------------------
 -- Table structure for dt_role_perms
@@ -202,7 +209,29 @@ CREATE TABLE `dt_role_perms`  (
   UNIQUE INDEX `uk_type_perms_id`(`type`, `perms_id`) USING BTREE COMMENT '角色类型+权限ID唯一索引',
   INDEX `idx_type`(`type`) USING BTREE COMMENT '角色类型索引',
   INDEX `idx_perms_id`(`perms_id`) USING BTREE COMMENT '权限ID索引'
-) ENGINE = InnoDB AUTO_INCREMENT = 130 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '角色-权限关联表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 168 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '角色-权限关联表' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of dt_role_perms
+-- ----------------------------
+INSERT INTO `dt_role_perms` VALUES (150, 'admin', 1, 1783579562, 1783579562);
+INSERT INTO `dt_role_perms` VALUES (151, 'admin', 2, 1783579562, 1783579562);
+INSERT INTO `dt_role_perms` VALUES (152, 'admin', 7, 1783579562, 1783579562);
+INSERT INTO `dt_role_perms` VALUES (153, 'admin', 8, 1783579562, 1783579562);
+INSERT INTO `dt_role_perms` VALUES (154, 'admin', 3, 1783579562, 1783579562);
+INSERT INTO `dt_role_perms` VALUES (155, 'admin', 5, 1783579562, 1783579562);
+INSERT INTO `dt_role_perms` VALUES (156, 'admin', 6, 1783579562, 1783579562);
+INSERT INTO `dt_role_perms` VALUES (157, 'admin', 10, 1783579562, 1783579562);
+INSERT INTO `dt_role_perms` VALUES (158, 'admin', 11, 1783579562, 1783579562);
+INSERT INTO `dt_role_perms` VALUES (159, 'admin', 12, 1783579562, 1783579562);
+INSERT INTO `dt_role_perms` VALUES (160, 'admin', 13, 1783579562, 1783579562);
+INSERT INTO `dt_role_perms` VALUES (161, 'admin', 14, 1783579562, 1783579562);
+INSERT INTO `dt_role_perms` VALUES (162, 'admin', 17, 1783579562, 1783579562);
+INSERT INTO `dt_role_perms` VALUES (163, 'admin', 29, 1783579562, 1783579562);
+INSERT INTO `dt_role_perms` VALUES (164, 'admin', 30, 1783579562, 1783579562);
+INSERT INTO `dt_role_perms` VALUES (165, 'admin', 31, 1783579562, 1783579562);
+INSERT INTO `dt_role_perms` VALUES (166, 'admin', 32, 1783579562, 1783579562);
+INSERT INTO `dt_role_perms` VALUES (167, 'admin', 33, 1783579562, 1783579562);
 
 -- ----------------------------
 -- Table structure for dt_roles
@@ -223,7 +252,7 @@ CREATE TABLE `dt_roles`  (
 -- ----------------------------
 -- Records of dt_roles
 -- ----------------------------
-INSERT INTO `dt_roles` VALUES (1, 'super', '超级管理员', 1, '', 1783564275, 1783564275);
+INSERT INTO `dt_roles` VALUES (1, 'super', '超管', 1, '', 1783564275, 1783579631);
 INSERT INTO `dt_roles` VALUES (2, 'admin', '管理员', 1, '', 1783564283, 1783576767);
 INSERT INTO `dt_roles` VALUES (3, 'user', '用户', 1, '', 1783578101, 1783578101);
 
@@ -305,7 +334,7 @@ CREATE TABLE `dt_user`  (
 -- ----------------------------
 -- Records of dt_user
 -- ----------------------------
-INSERT INTO `dt_user` VALUES (1, 'admin', 'admin', '', '0d3e24d606ccb8b0e1e9d5c11bdfe1ae', '', 'xump', 1, 1652500366, 0);
-INSERT INTO `dt_user` VALUES (2, 'user', '张三', '', 'f56fe008fb5908e9bd35a64730cc5226', '', 'cNc2', 1, 1652506679, 1783578424);
+INSERT INTO `dt_user` VALUES (1, 'super', 'admin', '', '0d3e24d606ccb8b0e1e9d5c11bdfe1ae', '', 'xump', 1, 1652500366, 1783578761);
+INSERT INTO `dt_user` VALUES (2, 'admin', '张三', '', 'f56fe008fb5908e9bd35a64730cc5226', '', 'cNc2', 1, 1652506679, 1783578752);
 
 SET FOREIGN_KEY_CHECKS = 1;
