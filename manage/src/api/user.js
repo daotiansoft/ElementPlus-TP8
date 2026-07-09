@@ -1,43 +1,48 @@
-import request from '@/utils/request'
+import request from "@/utils/request";
 
 const user = {
   getUserInfo() {
     return request({
-      url: '/common/account/info'
-    })
+      url: "/common/account/info",
+    });
   },
   logout() {
     return request({
-      url: '/common/account/logout'
-    })
+      url: "/common/account/logout",
+    });
   },
   postPassword(data) {
     return request({
-      url: '/common/account/password',
-      method: 'post',
-      data
-    })
+      url: "/common/account/password",
+      method: "post",
+      data,
+    });
   },
   getNotice(data) {
     return request({
-      url: '/common/account/notice',
-    })
+      url: "/common/account/notice",
+    });
   },
   getUploadInfo(data) {
     return request({
-      url: '/common/account/uploadinfo',
-    })
+      url: "/common/account/uploadinfo",
+    });
   },
   uploadFile(data) {
     return request({
-      url: '/common/account/upload',
-      method: 'post',
+      url: "/common/account/upload",
+      method: "post",
       data,
       headers: {
-        'Content-Type': 'multipart/form-data'
-      }
-    })
-  }
-}
+        "Content-Type": "multipart/form-data",
+      },
+    });
+  },
+  getRoutes() {
+    return request({
+      url: "/common/account/getRoutes",
+    });
+  },
+};
 
-export default user
+export default user;

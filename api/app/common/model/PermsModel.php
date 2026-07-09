@@ -17,12 +17,15 @@ class PermsModel extends CommonModel
         'action'=>'string',
         'sort'=>'int',
         'status'=>'int',
+        'route_status'=>'int',
+        'route_name'=>'string',
+
         'create_time'=>'int',
         'update_time'=>'int',
     ];
 
-    public function role(): HasOne
+    public function roleperms(): HasOne
     {
-        return $this->hasOne(RolesModel::class, 'type', 'type');
+        return $this->hasOne(RolePermsModel::class, 'perms_id', 'id');
     }
 }

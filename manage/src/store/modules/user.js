@@ -1,11 +1,11 @@
-import { defineStore } from 'pinia'
-import { ref } from 'vue'
-import user from '@/api/user'
+import { defineStore } from "pinia";
+import { ref } from "vue";
+import user from "@/api/user";
 
-export const useUserStore = defineStore('user', () => {
+export const useUserStore = defineStore("user", () => {
   // ========== State ==========
-  const cache = ref({})
-  const loading = ref({})
+  const cache = ref({});
+  const loading = ref({});
 
   // ========== Actions ==========
 
@@ -19,7 +19,7 @@ export const useUserStore = defineStore('user', () => {
   const fetchData = async (key, fetchFn, useCache = true) => {
     // 如果使用缓存且有数据，直接返回缓存
     if (useCache && cache.value[key] !== undefined) {
-      return cache.value[key]
+      return cache.value[key];
     }
 
     // 防止重复请求
@@ -27,34 +27,37 @@ export const useUserStore = defineStore('user', () => {
       return new Promise((resolve) => {
         const timer = setInterval(() => {
           if (!loading.value[key]) {
-            clearInterval(timer)
-            resolve(cache.value[key])
+            clearInterval(timer);
+            resolve(cache.value[key]);
           }
-        }, 100)
-      })
+        }, 100);
+      });
     }
 
     try {
-      loading.value[key] = true
-      const data = await fetchFn()
-      cache.value[key] = data
-      return data
+      loading.value[key] = true;
+      const data = await fetchFn();
+      cache.value[key] = data;
+      return data;
     } catch (error) {
-      console.error(`获取 ${key} 失败:`, error)
-      throw error
+      console.error(`获取 ${key} 失败:`, error);
+      throw error;
     } finally {
-      loading.value[key] = false
+      loading.value[key] = false;
     }
-  }
+  };
 
   /**
-   * 
+   *
    * @param {boolean} useCache - 是否使用缓存，默认 true
    * @returns {Promise<any>}
    */
   const getUserInfo = async (useCache = true) => {
-    return fetchData('userInfo', () => user.getUserInfo(), useCache)
-  }
+    return fetchData("userInfo", () => user.getUserInfo(), useCache);
+  };
+  const getRoutesItems = async (useCache = true) => {
+    return fetchData("routerItems", () => user.getRoutes(), useCache);
+  };
 
   /**
    * 清除指定缓存
@@ -62,11 +65,11 @@ export const useUserStore = defineStore('user', () => {
    */
   const clearCache = (key) => {
     if (key) {
-      delete cache.value[key]
+      delete cache.value[key];
     } else {
-      cache.value = {}
+      cache.value = {};
     }
-  }
+  };
 
   /**
    * 获取缓存状态
@@ -74,15 +77,16 @@ export const useUserStore = defineStore('user', () => {
    * @returns {any}
    */
   const getCache = (key) => {
-    return cache.value[key]
-  }
+    return cache.value[key];
+  };
 
   return {
     cache,
     loading,
     getUserInfo,
+    getRoutesItems,
     clearCache,
     getCache,
-    fetchData
-  }
-})
+    fetchData,
+  };
+});

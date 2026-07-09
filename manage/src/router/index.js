@@ -1,6 +1,7 @@
 // src/router/index.js
 import { createRouter, createWebHistory } from "vue-router";
 import Layout from "@/layouts/index.vue";
+import { useUserStore } from "@/store/modules/user";
 
 // 1. 定义路由规则
 const routes = [
@@ -25,7 +26,7 @@ const routes = [
     children: [
       {
         path: "/admin/config/system",
-        name: "系统",
+        name: "系统设置",
         component: () => import("@/views/admin/config/system.vue"),
         meta: { title: "系统设置" },
         hidden: false,
@@ -105,11 +106,46 @@ const routes = [
   },
 ];
 
+export const commonRoutes = [
+  {
+    path: "/",
+    component: Layout,
+    redirect: "/dashboard",
+    children: [
+      {
+        path: "dashboard",
+        name: "控制台",
+        component: () => import("@/views/Dashboard.vue"),
+        meta: { title: "控制台", icon: "Odometer" },
+      },
+    ],
+  },
+  {
+    // 404 页面（必须放在最后）
+    path: "/:pathMatch(.*)*",
+    name: "NotFound",
+    component: () => import("@/views/NotFound.vue"),
+    hidden: true,
+  },
+  {
+    path: "/login",
+    name: "Login",
+    component: () => import("@/views/Login.vue"),
+    hidden: true,
+  },
+];
+
+const routesMap = {};
+
+routes.forEach((route) => {
+  commonRoutes.push(route);
+});
+
 // 2. 创建路由实例
 const router = createRouter({
   history: createWebHistory(), // HTML5 模式（无 # 号）
   // history: createWebHashHistory(), // Hash 模式（有 # 号）
-  routes,
+  routes: commonRoutes,
 
   // 可选：滚动行为
   scrollBehavior(to, from, savedPosition) {

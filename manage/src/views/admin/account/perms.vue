@@ -11,7 +11,7 @@
                             </el-icon>
                             {{ data.name }}
                             <span v-if="data.module != '' && data.controller != '' && data.action != ''">{{ data.module
-                            }}/{{ data.controller }}/{{ data.action }}</span>
+                                }}/{{ data.controller }}/{{ data.action }}</span>
                             <el-tag type="info" size="small" v-if="data.status != 1">禁用</el-tag>
                         </div>
                         <div class=" menu-right">
@@ -28,15 +28,20 @@
 
 
         <el-dialog v-model="dialogVisible" :title="dialogTitle" width="600px" destroy-on-close>
-            <el-form ref="formRef" :model="formData" :rules="formRules" label-width="100px">
-                <el-form-item label="上级节点" prop="parent_id">
-                    <el-tree-select v-model="formData.parent_id" :data="treeData" :props="treeProps" check-strictly
-                        clearable placeholder="请选择上级节点（留空为根节点）" style="width: 100%" />
-                </el-form-item>
-
-                <el-form-item label="节点名称" prop="name">
-                    <el-input v-model="formData.name" placeholder="请输入节点名称" />
-                </el-form-item>
+            <el-form ref="formRef" :model="formData" :rules="formRules" label-width="auto">
+                <el-row :gutter="24">
+                    <el-col :span="12">
+                        <el-form-item label="上级节点" prop="parent_id">
+                            <el-tree-select v-model="formData.parent_id" :data="treeData" :props="treeProps"
+                                check-strictly clearable placeholder="请选择上级节点（留空为根节点）" style="width: 100%" />
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="节点名称" prop="name">
+                            <el-input v-model="formData.name" placeholder="请输入节点名称" />
+                        </el-form-item>
+                    </el-col>
+                </el-row>
 
                 <el-form-item label="所属模块" prop="module">
                     <el-input v-model="formData.module" placeholder="请输入所属模块" />
@@ -50,14 +55,31 @@
                     <el-input v-model="formData.action" placeholder="请输入操作方法" />
                 </el-form-item>
 
-                <el-form-item label="排序" prop="sort">
-                    <el-input-number v-model="formData.sort" :min="0" :max="9999" controls-position="right" />
-                </el-form-item>
+                <el-row :gutter="24">
+                    <el-col :span="12">
+                        <el-form-item label="排序" prop="sort">
+                            <el-input-number v-model="formData.sort" :min="0" :max="9999" controls-position="right" />
+                        </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="状态" prop="status">
+                            <el-switch v-model="formData.status" :active-value="1" :inactive-value="0" active-text="启用"
+                                inactive-text="禁用" />
+                        </el-form-item>
+                    </el-col>
+                </el-row>
 
-                <el-form-item label="状态" prop="status">
-                    <el-switch v-model="formData.status" :active-value="1" :inactive-value="0" active-text="启用"
+                <el-form-item label="前端路由" prop="status">
+                    <el-switch v-model="formData.route_status" :active-value="1" :inactive-value="0" active-text="启用"
                         inactive-text="禁用" />
                 </el-form-item>
+                <el-row :gutter="24" v-if="formData.route_status == 1">
+                    <el-col :span="12">
+                        <el-form-item label="路由名称" prop="sort">
+                            <el-input v-model="formData.route_name" placeholder="" />
+                        </el-form-item>
+                    </el-col>
+                </el-row>
             </el-form>
             <template #footer>
                 <el-button @click="dialogVisible = false">取消</el-button>
@@ -92,7 +114,14 @@ const onVisibleAdd = (item) => {
         controller: item.controller,
         action: item.action,
         sort: 0,
-        status: 1
+        status: 1,
+        route_status: 0,
+        route_path: '',
+        route_name: '',
+        route_redirect: '',
+        route_component: '',
+        route_title: '',
+        route_icon: ''
     }
     dialogVisible.value = true
 }
@@ -106,7 +135,14 @@ const onVisibleEdit = (item) => {
         controller: item.controller,
         action: item.action,
         sort: item.sort,
-        status: item.status
+        status: item.status,
+        route_status: item.route_status,
+        route_path: item.route_path,
+        route_name: item.route_name,
+        route_redirect: item.route_redirect,
+        route_component: item.route_component,
+        route_title: item.route_title,
+        route_icon: item.route_icon
     }
     dialogVisible.value = true
 }

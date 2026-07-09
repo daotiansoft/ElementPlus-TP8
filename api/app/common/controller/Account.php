@@ -6,13 +6,14 @@ use app\common\model\EditorModel;
 use app\common\model\UploadModel;
 use app\common\model\UserModel;
 use app\common\service\LoginService;
+use app\common\service\PermsService;
 use app\common\utils\AjaxUtils;
 use think\App;
 
 
 class Account extends Auth
 {
-    protected $notNeedPower = ['info','logout','password','notice','uploadinfo','upload'];
+    protected $notNeedPower = ['info','logout','password','notice','uploadinfo','upload','getRoutes'];
     public function info(){
         $userinfo=array();
         $userinfo['uid']=$this->userItem['id'];
@@ -135,5 +136,10 @@ class Account extends Auth
         } catch (\think\exception\ValidateException $e) {
             return AjaxUtils::error($e->getMessage());
         }
+    }
+
+    public function getRoutes(){
+        $data = PermsService::getRoutes($this->userItem['type']);
+        return AjaxUtils::success($this->userItem['type'],$data);
     }
 }

@@ -17,6 +17,7 @@ namespace app\super\service;
 
 
 use app\common\basics\Service;
+use app\common\enums\StatusEnum;
 use app\common\model\PermsModel;
 use app\common\utils\TimeUtils;
 
@@ -51,7 +52,9 @@ class PermsService extends Service
             'controller'        => $post['controller'],
             'action'        => $post['action'],
             'sort'        => $post['sort'] ?? 50,
-            'status'        => $post['status'] ?? 1,
+            'status'        => $post['status'] ?? StatusEnum::STATUS_1,
+            'route_status'        => $post['route_status'] ?? StatusEnum::STATUS_0,
+            'route_name'        => $post['route_name'] ?? '',
         ]);
     }
 
@@ -64,16 +67,16 @@ class PermsService extends Service
             'controller'        => $post['controller'],
             'action'        => $post['action'],
             'sort'        => $post['sort'] ?? 50,
-            'status'        => $post['status'] ?? 1,
+            'status'        => $post['status'] ?? StatusEnum::STATUS_1,
+            'route_status'        => $post['route_status'] ?? StatusEnum::STATUS_0,
+            'route_name'        => $post['route_name'] ?? '',
         ], ['id'=>intval($post['id'])]);
     }
 
     public static function del(array $ids): void
     {
-        if(!in_array(1,$ids)){
-            PermsModel::destroy($ids,true);
-            PermsModel::where('parent_id','in',$ids)->delete();
-        }
+        PermsModel::destroy($ids,true);
+        PermsModel::where('parent_id','in',$ids)->delete();
     }
 
 
