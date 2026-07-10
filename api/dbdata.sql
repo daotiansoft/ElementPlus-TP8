@@ -11,7 +11,7 @@
  Target Server Version : 50726
  File Encoding         : 65001
 
- Date: 10/07/2026 14:53:15
+ Date: 10/07/2026 14:56:50
 */
 
 SET NAMES utf8mb4;
@@ -84,26 +84,6 @@ CREATE TABLE `dt_editor`  (
 -- ----------------------------
 INSERT INTO `dt_editor` VALUES (1, 'notice', '系统通知内容', '<p>欢迎使用！</p>\n<p><img src=\"storage/topic/20260707/f1252e4eead4d0c7c548113b2e7cca51.png\" alt=\"\" width=\"96\" height=\"96\" /></p>');
 INSERT INTO `dt_editor` VALUES (2, 'test', '测试内容', '<p>666</p>');
-
--- ----------------------------
--- Table structure for dt_form_field
--- ----------------------------
-DROP TABLE IF EXISTS `dt_form_field`;
-CREATE TABLE `dt_form_field`  (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `key` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '唯一标识',
-  `name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '名称',
-  `field_json` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL,
-  `create_time` int(10) NULL DEFAULT 0,
-  `update_time` int(10) NULL DEFAULT 0,
-  PRIMARY KEY (`id`) USING BTREE,
-  UNIQUE INDEX `key`(`key`) USING BTREE
-) ENGINE = MyISAM AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '表单字段' ROW_FORMAT = Dynamic;
-
--- ----------------------------
--- Records of dt_form_field
--- ----------------------------
-INSERT INTO `dt_form_field` VALUES (1, 'formTestAdd', '测试新增', '', 1779028674, 1779028674);
 
 -- ----------------------------
 -- Table structure for dt_login_log
