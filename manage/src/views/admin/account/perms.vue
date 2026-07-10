@@ -10,8 +10,12 @@
                                 <House />
                             </el-icon>
                             {{ data.name }}
-                            <span v-if="data.module != '' && data.controller != '' && data.action != ''">{{ data.module
-                                }}/{{ data.controller }}/{{ data.action }}</span>
+                            <el-tag v-if="data.module != '' && data.controller != '' && data.action != ''"
+                                effect="plain" style="margin-left: 10px;" size="small" type="primary">
+                                {{
+                                    data.module
+                                }}/{{ data.controller }}/{{ data.action }}
+                            </el-tag>
                             <el-tag type="info" size="small" v-if="data.status != 1">禁用</el-tag>
                         </div>
                         <div class=" menu-right">
@@ -116,12 +120,7 @@ const onVisibleAdd = (item) => {
         sort: 0,
         status: 1,
         route_status: 0,
-        route_path: '',
         route_name: '',
-        route_redirect: '',
-        route_component: '',
-        route_title: '',
-        route_icon: ''
     }
     dialogVisible.value = true
 }
@@ -137,12 +136,7 @@ const onVisibleEdit = (item) => {
         sort: item.sort,
         status: item.status,
         route_status: item.route_status,
-        route_path: item.route_path,
         route_name: item.route_name,
-        route_redirect: item.route_redirect,
-        route_component: item.route_component,
-        route_title: item.route_title,
-        route_icon: item.route_icon
     }
     dialogVisible.value = true
 }

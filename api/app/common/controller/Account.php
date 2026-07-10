@@ -13,7 +13,7 @@ use think\App;
 
 class Account extends Auth
 {
-    protected $notNeedPower = ['info','logout','password','notice','uploadinfo','upload','getRoutes'];
+    protected $notNeedPower = ['info','logout','password','notice','uploadinfo','upload','getroutes'];
     public function info(){
         $userinfo=array();
         $userinfo['uid']=$this->userItem['id'];

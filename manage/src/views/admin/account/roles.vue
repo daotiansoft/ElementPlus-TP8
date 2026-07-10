@@ -101,9 +101,13 @@
                             <House />
                         </el-icon>
                         {{ data.name }}
-                        <span v-if="data.module != '' && data.controller != '' && data.action != ''">{{
-                            data.module
-                        }}/{{ data.controller }}/{{ data.action }}</span>
+
+                        <el-tag v-if="data.module != '' && data.controller != '' && data.action != ''" effect="plain"
+                            style="margin-left: 10px;" size="small" type="primary">
+                            {{
+                                data.module
+                            }}/{{ data.controller }}/{{ data.action }}
+                        </el-tag>
                         <el-tag type="info" size="small" v-if="data.status != 1">禁用</el-tag>
                     </template>
                 </el-tree>
@@ -186,7 +190,7 @@ const onAdd = async () => {
     }
 }
 const onItemEdit = (item) => {
-    editForm.value = { ...item }
+    editForm.value = item
     editVisible.value = true
 }
 const onEdit = async () => {

@@ -19,22 +19,20 @@ namespace app\common\service;
 use app\common\basics\Service;
 use app\common\enums\StatusEnum;
 use app\common\model\PermsModel;
+use app\common\model\RolePermsModel;
 use app\common\utils\TimeUtils;
 
 class PermsService extends Service
 {
     public static function getRoutes($type,$parentId = 0)
     {
-        $model = new PermsModel();
-        $perms = $model
-            ->withJoin('roleperms')
-            ->where('perms_model.parent_id','=', $parentId)
-            ->where('route_status','=', StatusEnum::STATUS_1)
-            ->where('roleperms.type','=', $type)
-            ->order('sort', 'asc')
-            ->select();
+
+        $model = new RolePermsModel();
+        $perms_ids = $model->where('type','=',$type)->column('perms_id');
+        $perms = self::getTreeByChildIdsRecursive($perms_ids);
+        return $perms;
         $result = [];
-        foreach ($perms as $perm) {
+        foreach ($perms as $item) {
             $item = $perm->toArray();
             $data = [
                 'name'=>$item['route_name'],
@@ -47,6 +45,90 @@ class PermsService extends Service
         }
 
         return $result;
+    }
+
+    /**
+     * 通过子ID获取完整树形结构（递归方式）
+     * @param array $childIds
+     * @return array
+     */
+    public static function getTreeByChildIdsRecursive($childIds)
+    {
+        if (empty($childIds)) {
+            return [];
+        }
+
+        // 递归获取所有父级数据
+        $allData = self::getParentsRecursive($childIds);
+
+        // 构建树形结构
+        return self::buildTree($allData);
+    }
+
+    /**
+     * 递归获取父级数据
+     * @param array $ids
+     * @param array $result
+     * @return array
+     */
+    private static function getParentsRecursive($ids, $result = [])
+    {
+        if (empty($ids)) {
+            return $result;
+        }
+
+        $model = new PermsModel();
+        // 查询当前ID的数据
+        $data = $model->whereIn('id', $ids)->where('route_status','=',StatusEnum::STATUS_1)->field('id,route_name as name,parent_id')->select()->toArray();
+
+        if (empty($data)) {
+            return $result;
+        }
+
+        // 合并数据
+        $result = array_merge($result, $data);
+
+        // 获取父级ID
+        $parentIds = array_unique(array_column($data, 'parent_id'));
+        $parentIds = array_filter($parentIds, function($id) {
+            return $id > 0;
+        });
+
+        // 递归获取父级数据
+        return self::getParentsRecursive($parentIds, $result);
+    }
+
+    /**
+     * 构建树形结构
+     * @param array $data
+     * @return array
+     */
+    private static function buildTree($data)
+    {
+        // 按ID索引
+        $indexed = [];
+        foreach ($data as $item) {
+            $item['children'] = [];
+            $indexed[$item['id']] = $item;
+        }
+
+        $tree = [];
+        foreach ($indexed as &$item) {
+            if ($item['parent_id'] == 0) {
+                // 根节点
+                $tree[] = &$item;
+            } else {
+                // 非根节点，添加到父节点的children中
+                if (isset($indexed[$item['parent_id']])) {
+                    $indexed[$item['parent_id']]['children'][] = &$item;
+                } else {
+                    // 如果父节点不在数据中，作为根节点处理
+                    $tree[] = &$item;
+                }
+            }
+        }
+
+        return $tree;
     }
 
 

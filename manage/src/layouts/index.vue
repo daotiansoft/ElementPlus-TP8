@@ -73,9 +73,11 @@ import { useRoute, useRouter } from 'vue-router'
 import { Expand, Fold, ArrowDown } from '@element-plus/icons-vue'
 import MenuItem from './MenuItem.vue'
 import user from '@/api/user'
+import transformRoutes from '@/router/routes'
 
 import { useUserStore } from '@/store/modules/user'
 import { useOvertStore } from '@/store/modules/overt'
+import { inputNumberEmits } from 'element-plus'
 
 const userStore = useUserStore()
 const overtStore = useOvertStore()
@@ -113,10 +115,13 @@ const defaultOpeneds = computed(() => {
     return openPaths
 })
 
-// 获取需要渲染的菜单路由（过滤掉根路由和隐藏的）
-const menuRoutes = computed(() => {
-    return router.options.routes.filter(r => r.path !== '/')
-})
+const buildMenuTree = async () => {
+    const routeItems = await userStore.getRoutesItems()
+    return transformRoutes(routeItems)
+}
+
+const menuRoutes = ref({})
+
 
 // 面包屑数据
 const breadcrumbs = ref([])
@@ -150,7 +155,6 @@ const handleCommand = (command) => {
                 user.logout().then(() => {
                     localStorage.removeItem('token')
                     router.push('/login')
-                    done()
                 }).catch(err => {
                     console.error('退出登录失败', err)
                 })
@@ -177,7 +181,22 @@ onMounted(async () => {
     }).catch(err => {
         console.error('获取网站信息失败', err)
     })
+
+    //动态更新菜单
+    let routes = router.options.routes
+    const routeItems = transformRoutes(await userStore.getRoutesItems())
+    routeItems.forEach(routeItem => {
+        const hasPath = routes.some(item => item.path === routeItem.path)
+        if (!hasPath) {
+            routes.push(routeItem)
+        }
+
+    });
+    menuRoutes.value = routes.filter(r => r.path !== '/')
 })
+
+
+
 </script>
 
 <style scoped>

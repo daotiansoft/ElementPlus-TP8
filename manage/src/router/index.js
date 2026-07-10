@@ -2,109 +2,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import Layout from "@/layouts/index.vue";
 import { useUserStore } from "@/store/modules/user";
-
-// 1. 定义路由规则
-const routes = [
-  {
-    path: "/",
-    component: Layout,
-    redirect: "/dashboard",
-    children: [
-      {
-        path: "dashboard",
-        name: "控制台",
-        component: () => import("@/views/Dashboard.vue"),
-        meta: { title: "控制台", icon: "Odometer" },
-      },
-    ],
-  },
-  {
-    path: "/admin/config",
-    component: Layout,
-    meta: { title: "设置", icon: "Setting" },
-    hidden: false,
-    children: [
-      {
-        path: "/admin/config/system",
-        name: "系统设置",
-        component: () => import("@/views/admin/config/system.vue"),
-        meta: { title: "系统设置" },
-        hidden: false,
-      },
-      {
-        path: "/admin/config/editor",
-        name: "富文本",
-        component: () => import("@/views/admin/config/editor.vue"),
-        meta: { title: "富文本" },
-        hidden: false,
-      },
-    ],
-  },
-  {
-    path: "/admin/account",
-    component: Layout,
-    meta: { title: "账号管理", icon: "User" },
-    hidden: false,
-    children: [
-      {
-        path: "/admin/account/member",
-        name: "账号",
-        component: () => import("@/views/admin/account/member.vue"),
-        meta: { title: "账号" },
-        hidden: false,
-      },
-      {
-        path: "/admin/account/appList",
-        name: "API管理",
-        component: () => import("@/views/admin/account/appList.vue"),
-        meta: { title: "API管理" },
-        hidden: false,
-      },
-      {
-        path: "/admin/account/roles",
-        name: "角色管理",
-        component: () => import("@/views/admin/account/roles.vue"),
-        meta: { title: "角色管理" },
-        hidden: false,
-      },
-      {
-        path: "/admin/account/perms",
-        name: "权限节点",
-        component: () => import("@/views/admin/account/perms.vue"),
-        meta: { title: "权限节点" },
-        hidden: false,
-      },
-    ],
-  },
-  {
-    path: "/center",
-    component: Layout,
-    meta: { title: "个人中心", icon: "User" },
-    hidden: true,
-    children: [
-      {
-        path: "/center/password",
-        name: "Password",
-        component: () => import("@/views/center/Password.vue"),
-        meta: { title: "修改密码" },
-        hidden: true,
-      },
-    ],
-  },
-  {
-    // 404 页面（必须放在最后）
-    path: "/:pathMatch(.*)*",
-    name: "NotFound",
-    component: () => import("@/views/NotFound.vue"),
-    hidden: true,
-  },
-  {
-    path: "/login",
-    name: "Login",
-    component: () => import("@/views/Login.vue"),
-    hidden: true,
-  },
-];
+import transformRoutes from "@/router/routes";
 
 export const commonRoutes = [
   {
@@ -121,13 +19,6 @@ export const commonRoutes = [
     ],
   },
   {
-    // 404 页面（必须放在最后）
-    path: "/:pathMatch(.*)*",
-    name: "NotFound",
-    component: () => import("@/views/NotFound.vue"),
-    hidden: true,
-  },
-  {
     path: "/login",
     name: "Login",
     component: () => import("@/views/Login.vue"),
@@ -135,27 +26,57 @@ export const commonRoutes = [
   },
 ];
 
-const routesMap = {};
-
-routes.forEach((route) => {
-  commonRoutes.push(route);
-});
-
-// 2. 创建路由实例
 const router = createRouter({
   history: createWebHistory(), // HTML5 模式（无 # 号）
   // history: createWebHashHistory(), // Hash 模式（有 # 号）
-  routes: commonRoutes,
+  routes: [...commonRoutes],
 
   // 可选：滚动行为
-  scrollBehavior(to, from, savedPosition) {
-    if (savedPosition) {
-      return savedPosition; // 浏览器前进后退时保持滚动位置
-    } else {
-      return { top: 0 }; // 每次路由切换滚动到顶部
-    }
-  },
+  // scrollBehavior(to, from, savedPosition) {
+  //   if (savedPosition) {
+  //     return savedPosition; // 浏览器前进后退时保持滚动位置
+  //   } else {
+  //     return { top: 0 }; // 每次路由切换滚动到顶部
+  //   }
+  // },
 });
 
-// 3. 导出路由实例
+// 白名单（不需要登录验证的路由）
+const whiteList = ["/login"];
+let hasAddedRoutes = false;
+router.beforeEach(async (to, from, next) => {
+  const hasToken = localStorage.getItem("token");
+  if (hasToken) {
+    if (to.path === "/login") {
+      next("/");
+    } else {
+      if (!hasAddedRoutes) {
+        hasAddedRoutes = true;
+        const userStore = useUserStore();
+        const items = transformRoutes(await userStore.getRoutesItems());
+        items.forEach((item) => {
+          router.addRoute(item);
+        });
+
+        router.addRoute({
+          path: "/:pathMatch(.*)*",
+          name: "NotFound",
+          component: () => import("@/views/NotFound.vue"),
+          hidden: true,
+        });
+
+        next({ ...to, replace: true });
+      } else {
+        next();
+      }
+    }
+  } else {
+    if (whiteList.includes(to.path)) {
+      next();
+    } else {
+      next("/login");
+    }
+  }
+});
+
 export default router;
