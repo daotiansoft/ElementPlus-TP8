@@ -113,14 +113,10 @@ onMounted(() => {
 
 
 </script>
-<style lang="scss">
+<style scoped lang="scss">
 $bg: #2d3a4b;
 $dark_gray: #889aa4;
 $light_gray: #eee;
-
-
-
-
 
 .login-container {
     display: flex;

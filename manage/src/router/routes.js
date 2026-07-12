@@ -1,8 +1,5 @@
-import Layout from "@/layouts/index.vue";
-
 const routesMap = {
   "/admin/config": {
-    component: () => import("@/layouts/index.vue"),
     meta: { title: "设置", icon: "Setting" },
     hidden: false,
   },
@@ -20,7 +17,6 @@ const routesMap = {
   },
 
   "/admin/account": {
-    component: () => import("@/layouts/index.vue"),
     meta: { title: "账号管理", icon: "User" },
     hidden: false,
   },
@@ -50,7 +46,6 @@ const routesMap = {
   },
 
   "/center": {
-    component: () => import("@/layouts/index.vue"),
     meta: { title: "个人中心", icon: "User" },
     hidden: true,
   },

@@ -15,7 +15,6 @@ defineOptions({
 
 // 生命周期钩子
 onMounted(() => {
-    console.log('App 已挂载')
 })
 
 // 提供全局数据（跨组件共享）
