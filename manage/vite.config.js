@@ -12,9 +12,14 @@ export default defineConfig({
     vue(),
     AutoImport({
       resolvers: [ElementPlusResolver()],
+      imports: ["vue", "vue-router", "pinia"],
     }),
     Components({
-      resolvers: [ElementPlusResolver()],
+      resolvers: [
+        ElementPlusResolver({
+          importStyle: "sass", // 使用 SCSS
+        }),
+      ],
     }),
   ],
   publicDir: "public",
@@ -41,29 +46,62 @@ export default defineConfig({
     outDir: "dist", // 输出目录
     assetsDir: "assets", // 静态资源目录
     sourcemap: false, // 是否生成 sourcemap
+    //minify: "terser", // 压缩方式：'terser' | 'esbuild'
     rollupOptions: {
       output: {
-        // 代码分割
         manualChunks(id) {
-          // 将所有 node_modules 中的代码打包到 vendor
           if (id.includes("node_modules")) {
-            // 可以进一步细分
-            if (id.includes("vue")) {
-              return "vue-vendor";
+            // Vue 生态
+            if (
+              id.includes("vue") ||
+              id.includes("pinia") ||
+              id.includes("vue-router")
+            ) {
+              return "vue-core";
             }
-            if (id.includes("element-plus")) {
-              return "ui-vendor";
-            }
-            return "vendor"; // 其他第三方库
-          }
 
-          // 将 src/components 下的代码单独打包
-          if (id.includes("src/components")) {
-            return "components";
+            // Element Plus
+            if (id.includes("element-plus") || id.includes("@element-plus")) {
+              return "ui-element";
+            }
+
+            // 图表库
+            if (id.includes("echarts") || id.includes("zrender")) {
+              return "charts";
+            }
+
+            // 工具库
+            if (id.includes("lodash") || id.includes("dayjs")) {
+              return "utils";
+            }
+
+            // 其他依赖
+            return "vendor";
           }
+        },
+        // 文件命名
+        chunkFileNames: "js/[name]-[hash].js",
+        entryFileNames: "js/[name]-[hash].js",
+        assetFileNames: (assetInfo) => {
+          const info = assetInfo.name.split(".");
+          const ext = info[info.length - 1];
+          if (/\.(png|jpe?g|gif|svg|webp|ico)$/.test(assetInfo.name)) {
+            return `images/[name]-[hash].[ext]`;
+          }
+          if (/\.(css)$/.test(assetInfo.name)) {
+            return `css/[name]-[hash].[ext]`;
+          }
+          return `assets/[name]-[hash].[ext]`;
         },
       },
     },
+    chunkSizeWarningLimit: 1000, // 警告阈值 1MB
+    // terserOptions: {
+    //   compress: {
+    //     drop_console: true, // 生产环境移除 console
+    //     drop_debugger: true,
+    //   },
+    // },
   },
 
   // 环境变量
