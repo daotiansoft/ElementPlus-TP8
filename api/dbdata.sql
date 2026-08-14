@@ -5,13 +5,13 @@
  Source Server Type    : MySQL
  Source Server Version : 50726
  Source Host           : 127.0.0.1:3306
- Source Schema         : dbdata
+ Source Schema         : payment
 
  Target Server Type    : MySQL
  Target Server Version : 50726
  File Encoding         : 65001
 
- Date: 10/07/2026 14:56:50
+ Date: 14/08/2026 10:09:05
 */
 
 SET NAMES utf8mb4;
@@ -61,7 +61,7 @@ CREATE TABLE `dt_config`  (
 -- ----------------------------
 INSERT INTO `dt_config` VALUES (1, 'site_name', 'text', '站点名称', '管理面板', '', NULL, 10, 1);
 INSERT INTO `dt_config` VALUES (2, 'site_status', 'select', '是否闭站', '1', '站点关闭后，用户无法登录', '[{\"id\":1,\"name\":\"否\"},{\"id\":2,\"name\":\"是\"}]', 10, 1);
-INSERT INTO `dt_config` VALUES (3, 'logo', 'image', 'LOGO', 'storage/topic/20260707/bf572246e849a76025a6358f9ce6009b.png', NULL, NULL, 50, 1);
+INSERT INTO `dt_config` VALUES (3, 'logo', 'image', 'LOGO', 'static/logo.png', NULL, NULL, 50, 1);
 INSERT INTO `dt_config` VALUES (4, 'site_stop_msg', 'text', '闭站提示', '系统维护中...', NULL, NULL, 10, 1);
 INSERT INTO `dt_config` VALUES (5, 'demo_textarea', 'textarea', '多行文本', NULL, NULL, NULL, 1, -1);
 INSERT INTO `dt_config` VALUES (6, 'captcha_status', 'select', '登录验证码', '2', NULL, '[{\"id\":1,\"name\":\"启用\"},{\"id\":2,\"name\":\"关闭\"}]', 50, 1);
@@ -82,8 +82,8 @@ CREATE TABLE `dt_editor`  (
 -- ----------------------------
 -- Records of dt_editor
 -- ----------------------------
-INSERT INTO `dt_editor` VALUES (1, 'notice', '系统通知内容', '<p>欢迎使用！</p>\n<p><img src=\"storage/topic/20260707/f1252e4eead4d0c7c548113b2e7cca51.png\" alt=\"\" width=\"96\" height=\"96\" /></p>');
-INSERT INTO `dt_editor` VALUES (2, 'test', '测试内容', '<p>666</p>');
+INSERT INTO `dt_editor` VALUES (1, 'notice', '系统通知内容', '<p>欢迎使用！</p>');
+INSERT INTO `dt_editor` VALUES (2, 'test', '测试内容', '');
 
 -- ----------------------------
 -- Table structure for dt_login_log
@@ -98,7 +98,7 @@ CREATE TABLE `dt_login_log`  (
   `desc` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL,
   `ip` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 27 CHARACTER SET = utf8 COLLATE = utf8_unicode_ci COMMENT = '登录记录' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 28 CHARACTER SET = utf8 COLLATE = utf8_unicode_ci COMMENT = '登录记录' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of dt_login_log
@@ -129,6 +129,7 @@ INSERT INTO `dt_login_log` VALUES (23, 1, '', 1783663239, 1, '', '127.0.0.1');
 INSERT INTO `dt_login_log` VALUES (24, 1, '', 1783663268, 1, '', '127.0.0.1');
 INSERT INTO `dt_login_log` VALUES (25, 2, '', 1783663716, 1, '', '127.0.0.1');
 INSERT INTO `dt_login_log` VALUES (26, 2, '', 1783663820, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (27, 1, '', 1786673207, 1, '', '127.0.0.1');
 
 -- ----------------------------
 -- Table structure for dt_perms
