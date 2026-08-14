@@ -40,17 +40,11 @@ function create_order_id(){
  * 发起GET请求
  *
  * @param string $url (请求链接)
- * @param array $params (请求参数)
- * @param array $options (其它参数)
  * @return mixed
  * @author zero
  */
-function curl_get(string $url, array $params = [], array $options=[]): mixed
+function curl_get(string $url)
 {
-    if (isset($params)) {
-        $url = $url . '?' . http_build_query($params);
-    }
-
     $curl = curl_init();
     curl_setopt($curl, CURLOPT_URL, $url);
     curl_setopt($curl, CURLOPT_HEADER, 0);
@@ -59,20 +53,12 @@ function curl_get(string $url, array $params = [], array $options=[]): mixed
     curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
     curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
 
-    $headers[] = 'Content-Type: application/json; charset=utf-8';
-    $headers = array_merge($headers, $options['headers']??[]);
-    curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
-
     $data = curl_exec($curl);
     if (curl_error($curl)) {
         return false;
     } else {
         curl_close($curl);
-        try {
-            return json_decode($data, true);
-        } catch (Exception $e) {
-            return $data;
-        }
+        return $data;
     }
 }
 

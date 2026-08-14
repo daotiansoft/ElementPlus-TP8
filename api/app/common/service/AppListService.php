@@ -40,6 +40,9 @@ class AppListService extends Service
 
         $sign_str = [];
         foreach($params as $key=>$v){
+			if(empty($v)){
+                continue;
+            }
             if($key == 'sign'){
                 continue;
             }
