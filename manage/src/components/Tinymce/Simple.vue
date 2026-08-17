@@ -58,6 +58,7 @@ const initEditor = () => {
     window.tinymce.init({
         selector: `#${editorId.value}`,
         height: props.height,
+		width: "100%",
         menubar: false,
         plugins: 'advlist anchor autolink autosave code codesample colorpicker colorpicker contextmenu directionality emoticons fullscreen hr image imagetools insertdatetime link lists media nonbreaking noneditable pagebreak paste preview print save searchreplace spellchecker tabfocus table template textcolor textpattern   ',
         toolbar: 'searchreplace bold italic underline strikethrough alignleft aligncenter alignright outdent indent blockquote undo redo removeformat subscript superscript code codesample hr bullist numlist link image charmap preview anchor pagebreak  media table forecolor backcolor fullscreen code ',

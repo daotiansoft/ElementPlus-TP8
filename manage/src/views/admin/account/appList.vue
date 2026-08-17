@@ -68,12 +68,12 @@
     </div>
     <div class="page-block" style="text-align: center; margin: 10px 0">
       <el-pagination
-        background
-        layout="prev, pager, next"
+        v-model:current-page="searchForm.page"
+        v-model:page-size="searchForm.pagesize"
+        :page-sizes="[20, 50, 100, 200, 300, 400]"
+        layout="total, sizes, prev, pager, next, jumper"
         :total="total"
-        size="small"
-        :hide-on-single-page="true"
-        :page-size="searchForm.pagesize"
+        @size-change="onSizeChange"
         @current-change="onCurrentChange"
       />
     </div>
@@ -237,6 +237,10 @@ const getItems = async () => {
 
 const onCurrentChange = (page) => {
   searchForm.value.page = page;
+  getItems();
+};
+const onSizeChange = (size) => {
+  searchForm.value.pagesize = size;
   getItems();
 };
 
