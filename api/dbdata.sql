@@ -5,13 +5,13 @@
  Source Server Type    : MySQL
  Source Server Version : 50726
  Source Host           : 127.0.0.1:3306
- Source Schema         : payment
+ Source Schema         : dbdata
 
  Target Server Type    : MySQL
  Target Server Version : 50726
  File Encoding         : 65001
 
- Date: 14/08/2026 10:09:05
+ Date: 20/08/2026 12:46:15
 */
 
 SET NAMES utf8mb4;
@@ -61,7 +61,7 @@ CREATE TABLE `dt_config`  (
 -- ----------------------------
 INSERT INTO `dt_config` VALUES (1, 'site_name', 'text', '站点名称', '管理面板', '', NULL, 10, 1);
 INSERT INTO `dt_config` VALUES (2, 'site_status', 'select', '是否闭站', '1', '站点关闭后，用户无法登录', '[{\"id\":1,\"name\":\"否\"},{\"id\":2,\"name\":\"是\"}]', 10, 1);
-INSERT INTO `dt_config` VALUES (3, 'logo', 'image', 'LOGO', 'static/logo.png', NULL, NULL, 50, 1);
+INSERT INTO `dt_config` VALUES (3, 'logo', 'image', 'LOGO', 'storage/topic/20260707/bf572246e849a76025a6358f9ce6009b.png', NULL, NULL, 50, 1);
 INSERT INTO `dt_config` VALUES (4, 'site_stop_msg', 'text', '闭站提示', '系统维护中...', NULL, NULL, 10, 1);
 INSERT INTO `dt_config` VALUES (5, 'demo_textarea', 'textarea', '多行文本', NULL, NULL, NULL, 1, -1);
 INSERT INTO `dt_config` VALUES (6, 'captcha_status', 'select', '登录验证码', '2', NULL, '[{\"id\":1,\"name\":\"启用\"},{\"id\":2,\"name\":\"关闭\"}]', 50, 1);
@@ -82,8 +82,8 @@ CREATE TABLE `dt_editor`  (
 -- ----------------------------
 -- Records of dt_editor
 -- ----------------------------
-INSERT INTO `dt_editor` VALUES (1, 'notice', '系统通知内容', '<p>欢迎使用！</p>');
-INSERT INTO `dt_editor` VALUES (2, 'test', '测试内容', '');
+INSERT INTO `dt_editor` VALUES (1, 'notice', '系统通知内容', '<p>欢迎使用！</p>\n<p><img src=\"storage/topic/20260707/f1252e4eead4d0c7c548113b2e7cca51.png\" alt=\"\" width=\"96\" height=\"96\" /></p>');
+INSERT INTO `dt_editor` VALUES (2, 'test', '测试内容', '<p>666</p>');
 
 -- ----------------------------
 -- Table structure for dt_login_log
@@ -98,7 +98,7 @@ CREATE TABLE `dt_login_log`  (
   `desc` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL,
   `ip` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 28 CHARACTER SET = utf8 COLLATE = utf8_unicode_ci COMMENT = '登录记录' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 33 CHARACTER SET = utf8 COLLATE = utf8_unicode_ci COMMENT = '登录记录' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of dt_login_log
@@ -129,7 +129,12 @@ INSERT INTO `dt_login_log` VALUES (23, 1, '', 1783663239, 1, '', '127.0.0.1');
 INSERT INTO `dt_login_log` VALUES (24, 1, '', 1783663268, 1, '', '127.0.0.1');
 INSERT INTO `dt_login_log` VALUES (25, 2, '', 1783663716, 1, '', '127.0.0.1');
 INSERT INTO `dt_login_log` VALUES (26, 2, '', 1783663820, 1, '', '127.0.0.1');
-INSERT INTO `dt_login_log` VALUES (27, 1, '', 1786673207, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (27, 1, '', 1783840267, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (28, 1, '', 1783841057, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (29, 1, '', 1783841513, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (30, 1, '', 1784517848, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (31, 1, '', 1786972382, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (32, 1, '', 1786973568, 1, '', '127.0.0.1');
 
 -- ----------------------------
 -- Table structure for dt_perms
@@ -146,6 +151,7 @@ CREATE TABLE `dt_perms`  (
   `status` tinyint(1) NOT NULL DEFAULT 1 COMMENT '状态：0禁用 1启用',
   `route_status` tinyint(1) NULL DEFAULT 0,
   `route_name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '',
+  `only_api` tinyint(1) NULL DEFAULT 0 COMMENT '仅api',
   `create_time` int(10) NOT NULL DEFAULT 0 COMMENT '创建时间',
   `update_time` int(10) NOT NULL DEFAULT 0 COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE,
@@ -156,38 +162,38 @@ CREATE TABLE `dt_perms`  (
 -- ----------------------------
 -- Records of dt_perms
 -- ----------------------------
-INSERT INTO `dt_perms` VALUES (1, 0, '设置', 'super', '', '', 0, 1, 1, '/admin/config', 0, 0);
-INSERT INTO `dt_perms` VALUES (2, 1, '系统设置', 'super', 'system', '', 0, 1, 1, '/admin/config/system', 0, 0);
-INSERT INTO `dt_perms` VALUES (3, 1, '富文本', 'super', 'editor', '', 0, 1, 1, '/admin/config/editor', 0, 0);
-INSERT INTO `dt_perms` VALUES (5, 3, '保存', 'super', 'editor', 'save', 0, 1, 0, '', 0, 0);
-INSERT INTO `dt_perms` VALUES (6, 3, '列表', 'super', 'editor', 'items', 0, 1, 0, '', 0, 0);
-INSERT INTO `dt_perms` VALUES (7, 2, '列表', 'super', 'config', 'items', 0, 1, 0, '', 0, 0);
-INSERT INTO `dt_perms` VALUES (8, 2, '保存', 'super', 'config', 'save', 0, 1, 0, '', 0, 0);
-INSERT INTO `dt_perms` VALUES (9, 0, '账号管理', 'super', '', '', 0, 1, 1, '/admin/account', 0, 0);
-INSERT INTO `dt_perms` VALUES (10, 9, 'API管理', 'super', 'appList', '', 0, 1, 1, '/admin/account/appList', 0, 0);
-INSERT INTO `dt_perms` VALUES (11, 10, '列表', 'super', 'appList', 'items', 0, 1, 0, '', 0, 0);
-INSERT INTO `dt_perms` VALUES (12, 10, '新增', 'super', 'appList', 'add', 0, 1, 0, '', 0, 0);
-INSERT INTO `dt_perms` VALUES (13, 10, '编辑', 'super', 'appList', 'edit', 0, 1, 0, '', 0, 0);
-INSERT INTO `dt_perms` VALUES (14, 10, '删除', 'super', 'appList', 'del', 0, 1, 0, '', 0, 0);
-INSERT INTO `dt_perms` VALUES (15, 9, '角色管理', 'super', 'roles', '', 0, 1, 1, '/admin/account/roles', 0, 0);
-INSERT INTO `dt_perms` VALUES (16, 15, '列表', 'super', 'roles', 'items', 0, 1, 0, '', 0, 0);
-INSERT INTO `dt_perms` VALUES (17, 15, 'All', 'super', 'roles', 'all', 0, 1, 0, '', 0, 0);
-INSERT INTO `dt_perms` VALUES (18, 15, '新增', 'super', 'roles', 'add', 0, 1, 0, '', 0, 0);
-INSERT INTO `dt_perms` VALUES (19, 15, '编辑', 'super', 'roles', 'edit', 0, 1, 0, '', 0, 0);
-INSERT INTO `dt_perms` VALUES (20, 15, '删除', 'super', 'roles', 'del', 0, 1, 0, '', 0, 0);
-INSERT INTO `dt_perms` VALUES (21, 9, '权限关联', 'super', 'RolePerms', '', 0, 1, 0, '', 0, 0);
-INSERT INTO `dt_perms` VALUES (22, 21, '保存', 'super', 'RolePerms', 'save', 0, 1, 0, '', 0, 0);
-INSERT INTO `dt_perms` VALUES (23, 9, '权限节点', 'super', 'perms', '', 0, 1, 1, '/admin/account/perms', 0, 0);
-INSERT INTO `dt_perms` VALUES (24, 23, '列表', 'super', 'perms', 'items', 0, 1, 0, '', 0, 0);
-INSERT INTO `dt_perms` VALUES (25, 23, 'All', 'super', 'perms', 'all', 0, 1, 0, '', 0, 0);
-INSERT INTO `dt_perms` VALUES (26, 23, '新增', 'super', 'perms', 'add', 0, 1, 0, '', 0, 0);
-INSERT INTO `dt_perms` VALUES (27, 23, '编辑', 'super', 'perms', 'edit', 0, 1, 0, '', 0, 0);
-INSERT INTO `dt_perms` VALUES (28, 23, '删除', 'super', 'perms', 'del', 0, 1, 0, '', 0, 0);
-INSERT INTO `dt_perms` VALUES (29, 9, '账号列表', 'super', 'member', '', 0, 1, 1, '/admin/account/member', 0, 0);
-INSERT INTO `dt_perms` VALUES (30, 29, '列表', 'super', 'member', 'items', 0, 1, 0, '', 0, 0);
-INSERT INTO `dt_perms` VALUES (31, 29, '新增', 'super', 'member', 'add', 0, 1, 0, '', 0, 0);
-INSERT INTO `dt_perms` VALUES (32, 29, '编辑', 'super', 'member', 'edit', 0, 1, 0, '', 0, 0);
-INSERT INTO `dt_perms` VALUES (33, 29, '删除', 'super', 'member', 'del', 0, 1, 0, '', 0, 0);
+INSERT INTO `dt_perms` VALUES (1, 0, '设置', 'super', '', '', 0, 1, 1, '/admin/config', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (2, 1, '系统设置', 'super', 'system', '', 0, 1, 1, '/admin/config/system', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (3, 1, '富文本', 'super', 'editor', '', 0, 1, 1, '/admin/config/editor', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (5, 3, '保存', 'super', 'editor', 'save', 0, 1, 0, '', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (6, 3, '列表', 'super', 'editor', 'items', 0, 1, 0, '', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (7, 2, '列表', 'super', 'config', 'items', 0, 1, 0, '', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (8, 2, '保存', 'super', 'config', 'save', 0, 1, 0, '', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (9, 0, '账号管理', 'super', '', '', 0, 1, 1, '/admin/account', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (10, 9, 'API管理', 'super', 'appList', '', 0, 1, 1, '/admin/account/appList', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (11, 10, '列表', 'super', 'appList', 'items', 0, 1, 0, '', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (12, 10, '新增', 'super', 'appList', 'add', 0, 1, 0, '', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (13, 10, '编辑', 'super', 'appList', 'edit', 0, 1, 0, '', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (14, 10, '删除', 'super', 'appList', 'del', 0, 1, 0, '', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (15, 9, '角色管理', 'super', 'roles', '', 0, 1, 1, '/admin/account/roles', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (16, 15, '列表', 'super', 'roles', 'items', 0, 1, 0, '', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (17, 15, 'All', 'super', 'roles', 'all', 0, 1, 0, '', 1, 0, 0);
+INSERT INTO `dt_perms` VALUES (18, 15, '新增', 'super', 'roles', 'add', 0, 1, 0, '', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (19, 15, '编辑', 'super', 'roles', 'edit', 0, 1, 0, '', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (20, 15, '删除', 'super', 'roles', 'del', 0, 1, 0, '', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (21, 9, '权限关联', 'super', 'RolePerms', '', 0, 1, 0, '', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (22, 21, '保存', 'super', 'RolePerms', 'save', 0, 1, 0, '', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (23, 9, '权限节点', 'super', 'perms', '', 0, 1, 1, '/admin/account/perms', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (24, 23, '列表', 'super', 'perms', 'items', 0, 1, 0, '', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (25, 23, 'All', 'super', 'perms', 'all', 0, 1, 0, '', 1, 0, 0);
+INSERT INTO `dt_perms` VALUES (26, 23, '新增', 'super', 'perms', 'add', 0, 1, 0, '', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (27, 23, '编辑', 'super', 'perms', 'edit', 0, 1, 0, '', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (28, 23, '删除', 'super', 'perms', 'del', 0, 1, 0, '', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (29, 9, '账号列表', 'super', 'member', '', 0, 1, 1, '/admin/account/member', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (30, 29, '列表', 'super', 'member', 'items', 0, 1, 0, '', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (31, 29, '新增', 'super', 'member', 'add', 0, 1, 0, '', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (32, 29, '编辑', 'super', 'member', 'edit', 0, 1, 0, '', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (33, 29, '删除', 'super', 'member', 'del', 0, 1, 0, '', 0, 0, 0);
 
 -- ----------------------------
 -- Table structure for dt_role_perms
@@ -203,7 +209,7 @@ CREATE TABLE `dt_role_perms`  (
   UNIQUE INDEX `uk_type_perms_id`(`type`, `perms_id`) USING BTREE COMMENT '角色类型+权限ID唯一索引',
   INDEX `idx_type`(`type`) USING BTREE COMMENT '角色类型索引',
   INDEX `idx_perms_id`(`perms_id`) USING BTREE COMMENT '权限ID索引'
-) ENGINE = InnoDB AUTO_INCREMENT = 422 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '角色-权限关联表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 441 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '角色-权限关联表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of dt_role_perms
@@ -240,25 +246,25 @@ INSERT INTO `dt_role_perms` VALUES (196, 'super', 30, 1783603227, 1783603227);
 INSERT INTO `dt_role_perms` VALUES (197, 'super', 31, 1783603227, 1783603227);
 INSERT INTO `dt_role_perms` VALUES (198, 'super', 32, 1783603227, 1783603227);
 INSERT INTO `dt_role_perms` VALUES (199, 'super', 33, 1783603227, 1783603227);
-INSERT INTO `dt_role_perms` VALUES (403, 'admin', 1, 1783666348, 1783666348);
-INSERT INTO `dt_role_perms` VALUES (404, 'admin', 2, 1783666348, 1783666348);
-INSERT INTO `dt_role_perms` VALUES (405, 'admin', 7, 1783666348, 1783666348);
-INSERT INTO `dt_role_perms` VALUES (406, 'admin', 8, 1783666348, 1783666348);
-INSERT INTO `dt_role_perms` VALUES (407, 'admin', 3, 1783666348, 1783666348);
-INSERT INTO `dt_role_perms` VALUES (408, 'admin', 5, 1783666348, 1783666348);
-INSERT INTO `dt_role_perms` VALUES (409, 'admin', 6, 1783666348, 1783666348);
-INSERT INTO `dt_role_perms` VALUES (410, 'admin', 10, 1783666348, 1783666348);
-INSERT INTO `dt_role_perms` VALUES (411, 'admin', 11, 1783666348, 1783666348);
-INSERT INTO `dt_role_perms` VALUES (412, 'admin', 12, 1783666348, 1783666348);
-INSERT INTO `dt_role_perms` VALUES (413, 'admin', 13, 1783666348, 1783666348);
-INSERT INTO `dt_role_perms` VALUES (414, 'admin', 14, 1783666348, 1783666348);
-INSERT INTO `dt_role_perms` VALUES (415, 'admin', 17, 1783666348, 1783666348);
-INSERT INTO `dt_role_perms` VALUES (416, 'admin', 25, 1783666348, 1783666348);
-INSERT INTO `dt_role_perms` VALUES (417, 'admin', 29, 1783666348, 1783666348);
-INSERT INTO `dt_role_perms` VALUES (418, 'admin', 30, 1783666348, 1783666348);
-INSERT INTO `dt_role_perms` VALUES (419, 'admin', 31, 1783666348, 1783666348);
-INSERT INTO `dt_role_perms` VALUES (420, 'admin', 32, 1783666348, 1783666348);
-INSERT INTO `dt_role_perms` VALUES (421, 'admin', 33, 1783666348, 1783666348);
+INSERT INTO `dt_role_perms` VALUES (422, 'admin', 1, 1787200955, 1787200955);
+INSERT INTO `dt_role_perms` VALUES (423, 'admin', 2, 1787200955, 1787200955);
+INSERT INTO `dt_role_perms` VALUES (424, 'admin', 7, 1787200955, 1787200955);
+INSERT INTO `dt_role_perms` VALUES (425, 'admin', 8, 1787200955, 1787200955);
+INSERT INTO `dt_role_perms` VALUES (426, 'admin', 3, 1787200955, 1787200955);
+INSERT INTO `dt_role_perms` VALUES (427, 'admin', 5, 1787200955, 1787200955);
+INSERT INTO `dt_role_perms` VALUES (428, 'admin', 6, 1787200955, 1787200955);
+INSERT INTO `dt_role_perms` VALUES (429, 'admin', 10, 1787200955, 1787200955);
+INSERT INTO `dt_role_perms` VALUES (430, 'admin', 11, 1787200955, 1787200955);
+INSERT INTO `dt_role_perms` VALUES (431, 'admin', 12, 1787200955, 1787200955);
+INSERT INTO `dt_role_perms` VALUES (432, 'admin', 13, 1787200955, 1787200955);
+INSERT INTO `dt_role_perms` VALUES (433, 'admin', 14, 1787200955, 1787200955);
+INSERT INTO `dt_role_perms` VALUES (434, 'admin', 17, 1787200955, 1787200955);
+INSERT INTO `dt_role_perms` VALUES (435, 'admin', 25, 1787200955, 1787200955);
+INSERT INTO `dt_role_perms` VALUES (436, 'admin', 29, 1787200955, 1787200955);
+INSERT INTO `dt_role_perms` VALUES (437, 'admin', 30, 1787200955, 1787200955);
+INSERT INTO `dt_role_perms` VALUES (438, 'admin', 31, 1787200955, 1787200955);
+INSERT INTO `dt_role_perms` VALUES (439, 'admin', 32, 1787200955, 1787200955);
+INSERT INTO `dt_role_perms` VALUES (440, 'admin', 33, 1787200955, 1787200955);
 
 -- ----------------------------
 -- Table structure for dt_roles

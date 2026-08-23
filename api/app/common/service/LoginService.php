@@ -80,9 +80,7 @@ class LoginService
         $cacke_key = 'login_fail_' . $params['username'];
         $loginFailCount = intval(Cache::get($cacke_key));
         $loginFailMax = 5; //最大尝试次数
-        if($loginFailCount >= $loginFailMax){
-            throw new RequestException('密码重试次数过多，请稍后重试！');
-        }
+
         $userModel = new UserModel();
         $userItem = $userModel->where('username','=',$params['username'])->field($userModel->fields)->find();
         if(!$userItem || $userItem['status'] != UserModel::STATUS_ON){
@@ -90,9 +88,21 @@ class LoginService
         }
 
         if(isset($params['password']) && get_password($params['password'],$userItem['rand_code']) != $userItem['password']){
-            Cache::set($cacke_key,$loginFailCount + 1);
+            $loginFailCount += 1;
+
+            Cache::set($cacke_key,$loginFailCount);
             $loginLogModel->log($userItem['id'],'',$loginLogModel::STATUS_FAIL,request()->ip());
-            throw new RequestException('密码不正确，您还可以尝试['.($loginFailMax - $loginFailCount - 1).']次!');
+
+            if($loginFailCount >= $loginFailMax){
+                //锁定账号
+                $userModel->where('username','=',$params['username'])->update(['status'=>UserModel::STATUS_OFF]);
+                //清空重试失败次数
+                Cache::delete($cacke_key);
+
+                throw new RequestException('密码重试次数过多，账号已停用！');
+            }
+
+            throw new RequestException('密码不正确，您还可以尝试['.($loginFailMax - $loginFailCount).']次!');
         }
 
         //清空重试失败次数

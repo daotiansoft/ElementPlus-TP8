@@ -7,7 +7,6 @@
             v-model="searchForm.time"
             type="datetimerange"
             value-format="yyyy-MM-dd HH:mm:ss"
-            format="yyyy-MM-dd HH:mm:ss"
             range-separator="至"
             start-placeholder="开始日期"
             end-placeholder="结束日期"
@@ -185,6 +184,9 @@
             >
               {{ data.module }}/{{ data.controller }}/{{ data.action }}
             </el-tag>
+            <el-tag type="info" size="small" v-if="data.only_api == 1"
+              >API</el-tag
+            >
             <el-tag type="info" size="small" v-if="data.status != 1"
               >禁用</el-tag
             >
@@ -346,6 +348,7 @@ const onItemPerms = (item) => {
   permsVisible.value = true;
   nextTick(() => {
     if (treeRef.value) {
+      console.log(treeRef.value);
       treeRef.value.setCheckedKeys([]);
       treeRef.value.setCheckedKeys(item.perms_ids);
     }

@@ -19,6 +19,7 @@ class PermsModel extends CommonModel
         'status'=>'int',
         'route_status'=>'int',
         'route_name'=>'string',
+        'only_api'=>'int',
 
         'create_time'=>'int',
         'update_time'=>'int',

@@ -23,7 +23,7 @@ use app\common\utils\TimeUtils;
 
 class PermsService extends Service
 {
-    public static function getTreeData($parentId = 0, $fields = ['id', 'name', 'parent_id', 'sort'])
+    public static function getTreeData(int $parentId = 0,array $fields = ['id', 'name', 'parent_id','only_api', 'sort']):array
     {
         $model = new PermsModel();
         $perms = $model->where('parent_id','=', $parentId)
@@ -55,6 +55,7 @@ class PermsService extends Service
             'status'        => $post['status'] ?? StatusEnum::STATUS_1,
             'route_status'        => $post['route_status'] ?? StatusEnum::STATUS_0,
             'route_name'        => $post['route_name'] ?? '',
+            'only_api'        => $post['only_api'] ?? StatusEnum::STATUS_0,
         ]);
     }
 
@@ -70,6 +71,7 @@ class PermsService extends Service
             'status'        => $post['status'] ?? StatusEnum::STATUS_1,
             'route_status'        => $post['route_status'] ?? StatusEnum::STATUS_0,
             'route_name'        => $post['route_name'] ?? '',
+            'only_api'        => $post['only_api'] ?? StatusEnum::STATUS_0,
         ], ['id'=>intval($post['id'])]);
     }
 
