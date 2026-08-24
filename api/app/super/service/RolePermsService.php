@@ -17,7 +17,9 @@ namespace app\super\service;
 
 
 use app\common\basics\Service;
+use app\common\enums\CodeEnum;
 use app\common\enums\StatusEnum;
+use app\common\model\PermsModel;
 use app\common\model\RolePermsModel;
 use app\common\model\RolesModel;
 use app\common\utils\TimeUtils;
@@ -29,15 +31,20 @@ class RolePermsService extends Service
         $type = $post['type'];
         $perms_ids = $post['perms_ids'];
 
+        $permModel = new PermsModel();
+        $permsItems = $permModel->where('id','in',$perms_ids)->select();
         $model = new RolePermsModel();
         $items = [];
-        foreach($perms_ids as $perms_id){
-            $items[]=[
-                'type'=>$type,
-                'perms_id'=>$perms_id,
-                'create_time'=>time(),
-                'update_time'=>time(),
-            ];
+        foreach($permsItems as $permsItem){
+            if($permsItem['route_status'] == StatusEnum::STATUS_0){
+                $items[]=[
+                    'type'=>$type,
+                    'perms_id'=>$permsItem['id'],
+                    'create_time'=>time(),
+                    'update_time'=>time(),
+                ];
+            }
+
         }
         $model->where('type','=',$type)->delete();
         $model->insertAll($items);
