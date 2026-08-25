@@ -28,6 +28,19 @@ export const commonRoutes = [
     component: () => import("@/views/Login.vue"),
     hidden: true,
   },
+  {
+    path: "/center",
+    component: Layout,
+    children: [
+      {
+        path: "password",
+        name: "修改密码",
+        component: () => import("@/views/center/Password.vue"),
+        meta: { title: "修改密码", icon: "Odometer" },
+        hidden: true,
+      },
+    ],
+  },
 ];
 
 const router = createRouter({

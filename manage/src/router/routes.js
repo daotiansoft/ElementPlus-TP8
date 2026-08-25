@@ -44,17 +44,6 @@ const routesMap = {
     meta: { title: "权限节点" },
     hidden: false,
   },
-
-  "/center": {
-    meta: { title: "个人中心", icon: "User" },
-    hidden: true,
-  },
-  "/center/password": {
-    name: "Password",
-    component: () => import("@/views/center/Password.vue"),
-    meta: { title: "修改密码" },
-    hidden: true,
-  },
 };
 
 const transformRoutes = (paths) => {
