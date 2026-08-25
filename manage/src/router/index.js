@@ -30,6 +30,7 @@ export const commonRoutes = [
   },
   {
     path: "/center",
+	name: "个人中心",
     component: Layout,
     children: [
       {
