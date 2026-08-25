@@ -68,12 +68,21 @@ class UrlUtils
      */
     public static function toRelativeUrl(string $url): string
     {
-        if (str_starts_with($url, 'http:'.'//') || str_starts_with($url, 'https://')) {
-            $url = str_replace('http:'.'//', '', $url);
-            $url = str_replace('https://', '', $url);
-            $arr = explode('/', $url);
-            array_shift($arr);
-            return implode('/', $arr);
+        $domain = request()->domain();
+        if (str_starts_with($domain, 'http:'.'//') || str_starts_with($domain, 'https://')) {
+            $domain = str_replace('http:'.'//', '', $domain);
+            $domain = str_replace('https://', '', $domain);
+        }
+        
+        $host = parse_url($url, PHP_URL_HOST);
+        if ($host && stripos($host, $domain) !== false) {
+            if (str_starts_with($url, 'http:'.'//') || str_starts_with($url, 'https://')) {
+                $url = str_replace('http:'.'//', '', $url);
+                $url = str_replace('https://', '', $url);
+                $arr = explode('/', $url);
+                array_shift($arr);
+                return implode('/', $arr);
+            }
         }
         return $url;
     }
