@@ -11,7 +11,7 @@
  Target Server Version : 50726
  File Encoding         : 65001
 
- Date: 20/08/2026 12:46:15
+ Date: 15/09/2026 23:02:44
 */
 
 SET NAMES utf8mb4;
@@ -60,11 +60,11 @@ CREATE TABLE `dt_config`  (
 -- Records of dt_config
 -- ----------------------------
 INSERT INTO `dt_config` VALUES (1, 'site_name', 'text', '站点名称', '管理面板', '', NULL, 10, 1);
-INSERT INTO `dt_config` VALUES (2, 'site_status', 'select', '是否闭站', '1', '站点关闭后，用户无法登录', '[{\"id\":1,\"name\":\"否\"},{\"id\":2,\"name\":\"是\"}]', 10, 1);
+INSERT INTO `dt_config` VALUES (2, 'site_status', 'select', '是否闭站', '1', '站点关闭后，用户无法登录', '[{\"id\":\"1\",\"name\":\"否\"},{\"id\":\"2\",\"name\":\"是\"}]', 10, 1);
 INSERT INTO `dt_config` VALUES (3, 'logo', 'image', 'LOGO', 'storage/topic/20260707/bf572246e849a76025a6358f9ce6009b.png', NULL, NULL, 50, 1);
 INSERT INTO `dt_config` VALUES (4, 'site_stop_msg', 'text', '闭站提示', '系统维护中...', NULL, NULL, 10, 1);
 INSERT INTO `dt_config` VALUES (5, 'demo_textarea', 'textarea', '多行文本', NULL, NULL, NULL, 1, -1);
-INSERT INTO `dt_config` VALUES (6, 'captcha_status', 'select', '登录验证码', '2', NULL, '[{\"id\":1,\"name\":\"启用\"},{\"id\":2,\"name\":\"关闭\"}]', 50, 1);
+INSERT INTO `dt_config` VALUES (6, 'captcha_status', 'select', '登录验证码', '2', NULL, '[{\"id\":\"1\",\"name\":\"启用\"},{\"id\":\"2\",\"name\":\"关闭\"}]', 50, 1);
 
 -- ----------------------------
 -- Table structure for dt_editor
@@ -98,7 +98,7 @@ CREATE TABLE `dt_login_log`  (
   `desc` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL,
   `ip` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 33 CHARACTER SET = utf8 COLLATE = utf8_unicode_ci COMMENT = '登录记录' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 48 CHARACTER SET = utf8 COLLATE = utf8_unicode_ci COMMENT = '登录记录' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of dt_login_log
@@ -135,6 +135,21 @@ INSERT INTO `dt_login_log` VALUES (29, 1, '', 1783841513, 1, '', '127.0.0.1');
 INSERT INTO `dt_login_log` VALUES (30, 1, '', 1784517848, 1, '', '127.0.0.1');
 INSERT INTO `dt_login_log` VALUES (31, 1, '', 1786972382, 1, '', '127.0.0.1');
 INSERT INTO `dt_login_log` VALUES (32, 1, '', 1786973568, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (33, 1, '', 1787473675, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (34, 2, '', 1787474020, 2, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (35, 2, '', 1787474021, 2, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (36, 2, '', 1787474023, 2, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (37, 2, '', 1787474024, 2, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (38, 2, '', 1787474025, 2, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (39, 2, '', 1787474041, 2, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (40, 2, '', 1787474055, 2, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (41, 2, '', 1787474057, 2, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (42, 2, '', 1787474059, 2, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (43, 2, '', 1787474061, 2, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (44, 1, '', 1787659816, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (45, 1, '', 1787660095, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (46, 1, '', 1787660801, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (47, 1, '', 1789483305, 1, '', '127.0.0.1');
 
 -- ----------------------------
 -- Table structure for dt_perms
@@ -368,6 +383,6 @@ CREATE TABLE `dt_user`  (
 -- Records of dt_user
 -- ----------------------------
 INSERT INTO `dt_user` VALUES (1, 'super', 'admin', '', '0d3e24d606ccb8b0e1e9d5c11bdfe1ae', '', 'xump', 1, 1652500366, 1783578761);
-INSERT INTO `dt_user` VALUES (2, 'admin', '张三', '', 'f56fe008fb5908e9bd35a64730cc5226', '', 'cNc2', 1, 1652506679, 1783578752);
+INSERT INTO `dt_user` VALUES (2, 'admin', '张三', '', 'f56fe008fb5908e9bd35a64730cc5226', '', 'cNc2', 1, 1652506679, 1787474073);
 
 SET FOREIGN_KEY_CHECKS = 1;
