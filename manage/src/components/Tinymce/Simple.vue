@@ -14,7 +14,7 @@ const props = defineProps({
 
 const emit = defineEmits(["update:modelValue"]);
 
-const editorId = ref(`mce-${Date.now()}`);
+const editorId = ref(`mce-${Math.random().toString().slice(2)}`);
 let editor = null;
 const languageTypeList = {
   zh: "zh_CN",

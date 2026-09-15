@@ -18,7 +18,7 @@ class Config extends Auth
         foreach($data as $item){
             if($item['type'] == 'select'){
                 $item['params'] = json_decode($item['params'],true);
-                $item['content'] = intval($item['content']);
+                $item['content'] = trim($item['content']);
             }
             if($item['type'] == 'image'){
                 $item['content'] = UrlUtils::toAbsoluteUrl($item['content']);
