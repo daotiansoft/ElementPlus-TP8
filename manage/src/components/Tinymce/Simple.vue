@@ -33,7 +33,7 @@ const loadTinyMCE = () => {
       theme.onload = () => {
         // 加载语言包
         const langScript = document.createElement("script");
-        langScript.src = `/tinymce/langs/${languageTypeList["zh"]}.js`;
+        langScript.src = `./tinymce/langs/${languageTypeList["zh"]}.js`;
         langScript.async = true;
         langScript.onload = () => {
           resolve(window.tinymce);
