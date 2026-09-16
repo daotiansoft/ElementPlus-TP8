@@ -1,17 +1,29 @@
 const routesMap = {
-  "/admin/config": {
-    meta: { title: "设置", icon: "Setting" },
+  "/admin/system": {
+    meta: { title: "系统", icon: "Setting" },
     hidden: false,
   },
-  "/admin/config/system": {
-    name: "系统设置",
-    component: () => import("@/views/admin/config/system.vue"),
-    meta: { title: "系统设置" },
+  "/admin/system/config": {
+    name: "设置",
+    component: () => import("@/views/admin/system/config.vue"),
+    meta: { title: "设置" },
     hidden: false,
   },
-  "/admin/config/editor": {
+  "/admin/system/configGroup": {
+    name: "设置分组",
+    component: () => import("@/views/admin/system/configGroup.vue"),
+    meta: { title: "设置分组" },
+    hidden: false,
+  },
+  "/admin/system/configList": {
+    name: "设置列表",
+    component: () => import("@/views/admin/system/configList.vue"),
+    meta: { title: "设置列表" },
+    hidden: false,
+  },
+  "/admin/system/editor": {
     name: "富文本",
-    component: () => import("@/views/admin/config/editor.vue"),
+    component: () => import("@/views/admin/system/editor.vue"),
     meta: { title: "富文本" },
     hidden: false,
   },

@@ -3,6 +3,8 @@
 namespace app\super\controller;
 
 use app\common\basics\Auth;
+use app\common\enums\StatusEnum;
+use app\common\model\ConfigGroupModel;
 use app\common\model\ConfigModel;
 use app\common\utils\AjaxUtils;
 use app\common\utils\UrlUtils;
@@ -12,17 +14,34 @@ use think\App;
 class Config extends Auth
 {
     public function items(){
-        $model = new ConfigModel();
-        $data = $model->where('show','=',$model::SHOW_ON)->order('sort')->select();
+        $configModel = new ConfigModel();
+        $configGroupModel = new ConfigGroupModel();
+
         $items = [];
+        $data = $configGroupModel
+            ->where('status','=',StatusEnum::STATUS_1)
+            ->order('sort desc')
+            ->field('id,name')
+            ->select();
         foreach($data as $item){
-            if($item['type'] == 'select'){
-                $item['params'] = json_decode($item['params'],true);
-                $item['content'] = trim($item['content']);
+            $configItems = $configModel
+                ->where('group_id','=',$item['id'])
+                ->where('show','=',ConfigModel::SHOW_ON)
+                ->order('sort desc')->select();
+
+            $child = [];
+            foreach($configItems as $configItem){
+                if($configItem['type'] == 'select'){
+                    $configItem['params'] = json_decode($configItem['params'],true);
+                    $configItem['content'] = trim($configItem['content']);
+                }
+                if($configItem['type'] == 'image'){
+                    $configItem['content'] = UrlUtils::toAbsoluteUrl($configItem['content']);
+                }
+                $child[]=$configItem;
             }
-            if($item['type'] == 'image'){
-                $item['content'] = UrlUtils::toAbsoluteUrl($item['content']);
-            }
+            $item['child'] = $child;
+
             $items[]=$item;
         }
 
