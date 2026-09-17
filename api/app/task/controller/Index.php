@@ -9,7 +9,7 @@ use think\App;
 class Index extends BaseController
 {
 
-    public function index(){
+   /* public function index(){
         $data=[];
         $data['data'] = ['time'=>time()];
         $data['expire_time'] = time() + 5;
@@ -25,5 +25,5 @@ class Index extends BaseController
     }
     public function count(){
         return TaskService::getCount();
-    }
+    }*/
 }

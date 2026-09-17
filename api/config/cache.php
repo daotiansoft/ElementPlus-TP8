@@ -6,7 +6,7 @@
 
 return [
     // 默认缓存驱动
-    'default' => env('cache.driver', 'file'),
+    'default' => env('cache.driver', 'redis'),
 
     // 缓存连接方式配置
     'stores'  => [
@@ -32,6 +32,7 @@ return [
             'timeout' => 0,
             'expire' => 3600,
             'persistent' => false,
+			//多站点公用同一个redis建议设置此参数
             'prefix' => '',
         ],
     ],

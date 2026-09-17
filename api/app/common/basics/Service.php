@@ -211,7 +211,7 @@ class Service
     /*
      * 通用
      */
-    public static function add(array $params):void
+    public static function add(array $params)
     {
 
     }
