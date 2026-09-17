@@ -62,7 +62,8 @@ class ConfigGroupService extends Service
         ConfigGroupModel::destroy($ids,true);
     }
 
-    public static function getOptionsList(){
+    public static function getOptions():array
+    {
         $model = new ConfigGroupModel();
         $lists = $model
             ->order('sort desc')

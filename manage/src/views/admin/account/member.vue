@@ -210,7 +210,7 @@ const getItems = async () => {
 };
 const getRoles = async () => {
   try {
-    const response = await rolesApi.all();
+    const response = await rolesApi.getOptions();
     roles.value = response;
   } catch (error) {
     console.error("获取列表失败:", error);

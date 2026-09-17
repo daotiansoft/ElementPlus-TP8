@@ -3,6 +3,7 @@
 namespace app\super\controller;
 
 use app\common\basics\Auth;
+use app\common\basics\BaseController;
 use app\super\service\RolesService;
 use app\common\utils\AjaxUtils;
 use app\super\validate\RolesValidate;
@@ -10,38 +11,18 @@ use think\App;
 use think\response\Json;
 
 
-class Roles extends Auth
+class Roles extends BaseController
 {
-    public function items():Json
+    public function __construct(App $app)
     {
-        $list = RolesService::lists($this->request->param());
-        return AjaxUtils::success($list);
+        parent::__construct($app);
+        $this->service = new RolesService();
+        $this->validate = new RolesValidate();
     }
 
-    public function all():Json
+    public function getOptions():Json
     {
-        $list = RolesService::all();
+        $list = RolesService::getOptions();
         return AjaxUtils::success($list);
-    }
-
-    public function add(){
-        $data = $this->request->param();
-        (new RolesValidate())->addCheck($data);
-        RolesService::add($data);
-        return AjaxUtils::success();
-    }
-
-    public function edit(){
-        $data = $this->request->param();
-        (new RolesValidate())->editCheck($data);
-        RolesService::edit($data);
-        return AjaxUtils::success();
-    }
-
-    public function del(){
-        $ids = $this->request->param('ids/a');
-        (new RolesValidate())->idsCheck($ids);
-        RolesService::del($ids);
-        return AjaxUtils::success($ids);
     }
 }

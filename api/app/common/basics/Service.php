@@ -198,4 +198,41 @@ class Service
         self::$searchWhere = $where;
         return $where;
     }
+
+
+
+    /*
+     * 通用
+     */
+    public static function lists(array $params):array
+    {
+        return [];
+    }
+    /*
+     * 通用
+     */
+    public static function add(array $params):void
+    {
+
+    }
+    /*
+     * 通用
+     */
+    public static function edit(array $params):void
+    {
+
+    }
+    /*
+     * 通用
+     */
+    public static function del(array $params):void
+    {
+
+    }
+    /*
+     * 通用 获取选项列表
+     */
+    public static function getOptions():array{
+        return [];
+    }
 }

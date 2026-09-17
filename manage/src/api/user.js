@@ -1,48 +1,53 @@
-import request from "@/utils/request";
+import { BaseApi } from "@/utils/baseApi";
 
-const user = {
+class Api extends BaseApi {
+  constructor() {
+    super("/common/account/");
+  }
   getUserInfo() {
-    return request({
-      url: "/common/account/info",
+    return this.request({
+      url: "info",
     });
-  },
+  }
   logout() {
-    return request({
-      url: "/common/account/logout",
+    return this.request({
+      url: "logout",
     });
-  },
+  }
   postPassword(data) {
-    return request({
-      url: "/common/account/password",
+    return this.request({
+      url: "password",
       method: "post",
       data,
     });
-  },
-  getNotice(data) {
-    return request({
-      url: "/common/account/notice",
+  }
+  getNotice() {
+    return this.request({
+      url: "notice",
     });
-  },
-  getUploadInfo(data) {
-    return request({
-      url: "/common/account/uploadinfo",
+  }
+  getUploadInfo() {
+    return this.request({
+      url: "uploadinfo",
     });
-  },
+  }
   uploadFile(data) {
-    return request({
-      url: "/common/account/upload",
+    return this.request({
+      url: "upload",
       method: "post",
       data,
       headers: {
         "Content-Type": "multipart/form-data",
       },
     });
-  },
+  }
   getRoutes() {
-    return request({
-      url: "/common/account/getRoutes",
+    return this.request({
+      url: "getRoutes",
     });
-  },
-};
+  }
+}
 
-export default user;
+const api = new Api();
+
+export default api;

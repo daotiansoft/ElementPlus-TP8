@@ -6,7 +6,6 @@ namespace app\super\service;
 
 
 use app\common\basics\Service;
-use app\common\exception\RequestException;
 use app\common\model\AppListModel;
 use app\common\utils\TimeUtils;
 

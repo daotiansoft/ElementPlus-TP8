@@ -5,6 +5,7 @@ declare (strict_types = 1);
 namespace app\common\basics;
 
 use app\BaseController;
+use app\common\enums\StatusEnum;
 use app\common\exception\NotAuthException;
 use app\common\exception\RequestException;
 use app\common\model\PermsModel;
@@ -109,7 +110,7 @@ abstract class Api extends BaseController
         $permsModel = new PermsModel();
         $items = $permsModel
             ->whereIn('type', $this->userItem['type'])
-            ->where(['status'=>1])
+            ->where(['status'=>StatusEnum::STATUS_1])
             ->field('module,controller,action')
             ->select()->toArray();
 
@@ -133,7 +134,7 @@ abstract class Api extends BaseController
 
             $item = $permsModel->where($data)->field('id')->find();
             if(!$item){
-                $data['status'] = PermsModel::STATUS_OFF;
+                $data['status'] = StatusEnum::STATUS_OFF;
                 $permsModel->insert($data);
             }
         }

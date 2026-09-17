@@ -2,21 +2,21 @@
 //下级
 namespace app\super\controller;
 
-use app\common\basics\Auth;
+use app\common\basics\BaseController;
 use app\super\service\AppListService;
 use app\super\service\UserService;
 use app\common\utils\AjaxUtils;
 use app\super\validate\AppListValidate;
 use think\App;
-use think\response\Json;
 
 
-class AppList extends Auth
+class AppList extends BaseController
 {
-    public function items():Json
+    public function __construct(App $app)
     {
-        $list = AppListService::lists($this->request->param());
-        return AjaxUtils::success($list);
+        parent::__construct($app);
+        $this->service = new AppListService();
+        $this->validate = new AppListValidate();
     }
 
     public function add(){
@@ -28,8 +28,8 @@ class AppList extends Auth
             }
             $data['uid'] = $userItem['id'];
         }
-        (new AppListValidate())->addCheck($data);
-        AppListService::add($data);
+        $this->validate->addCheck($data);
+        $this->service::add($data);
         return AjaxUtils::success();
     }
 
@@ -42,15 +42,15 @@ class AppList extends Auth
             }
             $data['uid'] = $userItem['id'];
         }
-        (new AppListValidate())->editCheck($data);
-        AppListService::edit($data);
+        $this->validate->editCheck($data);
+        $this->service::edit($data);
         return AjaxUtils::success();
     }
 
     public function del(){
         $ids = $this->request->param('ids/a');
-        (new AppListValidate())->idsCheck($ids);
-        AppListService::del($ids);
+        $this->validate->idsCheck($ids);
+        $this->service::del($ids);
         return AjaxUtils::success($ids);
     }
 }

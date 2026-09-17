@@ -4,6 +4,7 @@ declare (strict_types = 1);
 
 namespace app\common\service;
 
+use app\common\enums\StatusEnum;
 use app\common\exception\NotAuthException;
 use app\common\exception\RequestException;
 use app\common\model\ConfigModel;
@@ -72,7 +73,7 @@ class LoginService
 
         $userModel = new UserModel();
         $userItem = $userModel->where('username','=',$params['username'])->field($userModel->fields)->find();
-        if(!$userItem || $userItem['status'] != UserModel::STATUS_ON){
+        if(!$userItem || $userItem['status'] != StatusEnum::STATUS_1){
             throw new RequestException('账号不存在或已停用！');
         }
 
@@ -80,11 +81,11 @@ class LoginService
             $loginFailCount += 1;
 
             Cache::set($cacke_key,$loginFailCount);
-            $loginLogModel->log($userItem['id'],'',$loginLogModel::STATUS_FAIL,request()->ip());
+            $loginLogModel->log($userItem['id'],'',StatusEnum::STATUS_OFF,request()->ip());
 
             if($loginFailCount >= $loginFailMax){
                 //锁定账号
-                $userModel->where('username','=',$params['username'])->update(['status'=>UserModel::STATUS_OFF]);
+                $userModel->where('username','=',$params['username'])->update(['status'=>StatusEnum::STATUS_OFF]);
                 //清空重试失败次数
                 Cache::delete($cacke_key);
 
@@ -97,13 +98,13 @@ class LoginService
         //清空重试失败次数
         Cache::delete($cacke_key);
 
-        $loginLogModel->log($userItem['id'],'',$loginLogModel::STATUS_SUCC,request()->ip());
+        $loginLogModel->log($userItem['id'],'',StatusEnum::STATUS_1,request()->ip());
 
         //系统停用 限制登录
-        if($userItem['type'] != UserModel::TYPE_ADMIN){
+        if($userItem['type'] != UserModel::TYPE_SUPER){
             $config = new ConfigModel();
             $site_status = intval($config->getContentByKey('site_status'));
-            if($site_status != $config::SITE_STATUS_ON){
+            if($site_status != StatusEnum::STATUS_1){
                 $site_stop_msg = $config->getContentByKey('site_stop_msg');
                 throw new RequestException($site_stop_msg);
             }

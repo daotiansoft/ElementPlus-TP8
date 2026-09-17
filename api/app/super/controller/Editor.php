@@ -2,17 +2,19 @@
 //下级
 namespace app\super\controller;
 
-use app\common\basics\Auth;
+use app\common\basics\BaseController;
 use app\common\model\EditorModel;
 use app\common\utils\AjaxUtils;
 use app\common\utils\UrlUtils;
 use think\App;
+use think\response\Json;
 
 
-class Editor extends Auth
+class Editor extends BaseController
 {
 
-    public function items(){
+    public function items():Json
+    {
         $model = new EditorModel();
         $data = $model->select();
         $items = [];

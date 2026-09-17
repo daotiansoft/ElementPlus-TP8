@@ -8,11 +8,7 @@ class UserModel extends CommonModel
     protected $name = 'user';
 
     //账号类型
-    const TYPE_ADMIN = 'admin';
-    const TYPE_USER = 'user';
-    //状态
-    const STATUS_ON=1;
-    const STATUS_OFF=-1;
+    const TYPE_SUPER = 'super';
 
     protected $schema = [
         'id'=>'int',

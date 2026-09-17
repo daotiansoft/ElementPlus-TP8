@@ -1,18 +1,23 @@
-import request from '@/utils/request'
+import { BaseApi } from "@/utils/baseApi";
 
-const editor = {
+class Api extends BaseApi {
+  constructor() {
+    super("/super/editor/");
+  }
   getItems() {
-    return request({
-      url: '/super/editor/items'
-    })
-  },
+    return this.request({
+      url: "items",
+    });
+  }
   postItems(data) {
-    return request({
-      url: '/super/editor/save',
-      method: 'post',
-      data
-    })
-  },
+    return this.request({
+      url: "save",
+      method: "post",
+      data,
+    });
+  }
 }
 
-export default editor
+const api = new Api();
+
+export default api;

@@ -1,34 +1,11 @@
-import request from "@/utils/request";
+import { BaseApi } from "@/utils/baseApi";
 
-const configList = {
-  getItems(data) {
-    return request({
-      url: "/super/configList/items",
-      method: "post",
-      data,
-    });
-  },
-  add(data) {
-    return request({
-      url: "/super/configList/add",
-      method: "post",
-      data,
-    });
-  },
-  edit(data) {
-    return request({
-      url: "/super/configList/edit",
-      method: "post",
-      data,
-    });
-  },
-  del(data) {
-    return request({
-      url: "/super/configList/del",
-      method: "post",
-      data,
-    });
-  },
-};
+class Api extends BaseApi {
+  constructor() {
+    super("/super/configList/");
+  }
+}
 
-export default configList;
+const api = new Api();
+
+export default api;

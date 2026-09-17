@@ -2,36 +2,34 @@
 //下级
 namespace app\super\controller;
 
-use app\common\basics\Auth;
-use app\common\model\UserModel;
+use app\common\basics\BaseController;
 use app\super\service\UserService;
 use app\common\utils\AjaxUtils;
 use app\super\validate\UserValidate;
 use think\App;
-use think\response\Json;
 
 
-class Member extends Auth
+class Member extends BaseController
 {
-    public function items():Json
+    public function __construct(App $app)
     {
-        $list = UserService::lists($this->request->param());
-        return AjaxUtils::success($list);
+        parent::__construct($app);
+        $this->service = new UserService();
+        $this->validate = new UserValidate();
     }
-
     public function add(){
         $data = $this->request->param();
         if(isset($data['username']) && !empty($data['username'])){
-            $userItem = UserService::getItemByUsername($data['username']);
+            $userItem = $this->service::getItemByUsername($data['username']);
             if($userItem){
                 return AjaxUtils::error("账号已存在");
             }
         }
-        (new UserValidate())->addCheck($data);
+        $this->validate->addCheck($data);
 
         $data['rand_code'] = get_rand_str(4);
         $data['password']=get_password($data['password'],$data['rand_code']);
-        UserService::add($data);
+        $this->service::add($data);
         return AjaxUtils::success();
     }
 
@@ -43,16 +41,9 @@ class Member extends Auth
         }else{
             unset($data['password']);
         }
-        (new UserValidate())->goCheck('edit',$data);
+        $this->validate->goCheck('edit',$data);
 
-        UserService::edit($data);
+        $this->service::edit($data);
         return AjaxUtils::success();
-    }
-
-    public function del(){
-        $ids = $this->request->param('ids/a');
-        (new UserValidate())->idsCheck($ids);
-        UserService::del($ids);
-        return AjaxUtils::success($ids);
     }
 }

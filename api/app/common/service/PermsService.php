@@ -16,7 +16,6 @@ class PermsService extends Service
 {
     public static function getRoutes(string $type,int $parentId = 0):array
     {
-
         $model = new RolePermsModel();
         $perms_ids = $model->where('type','=',$type)->column('perms_id');
         $perms = self::getTreeByChildIdsRecursive($perms_ids);
@@ -32,11 +31,9 @@ class PermsService extends Service
     {
         if (empty($childIds)) {
             return [];
-        }
-
+        };
         // 递归获取所有父级数据
         $allData = self::getParentsRecursive($childIds);
-
         // 构建树形结构
         return self::buildTree($allData);
     }
@@ -73,7 +70,6 @@ class PermsService extends Service
         $parentIds = array_filter($parentIds, function($id) {
             return $id > 0;
         });
-
 
         // 递归获取父级数据
         return self::getParentsRecursive($parentIds, $result);
@@ -117,11 +113,12 @@ class PermsService extends Service
         $model = new PermsModel();
         $item = $model->getItemById($id);
         // 如果该父级节点还有上级（pid不为0），则继续向上递归查找
-        if ($item['parent_id'] > 0 && $item['only_api'] == StatusEnum::STATUS_0) {
+        if ($item && $item['parent_id'] > 0 && $item['only_api'] == StatusEnum::STATUS_0) {
             $parentIds[]=$item['parent_id'];
             // 递归调用，将当前节点的 pid 作为新目标向上查找
             $parentIds = array_merge($parentIds,self::getParentIds($item['parent_id'], $parentIds));
         }
+
         return array_values(array_unique($parentIds));
     }
 

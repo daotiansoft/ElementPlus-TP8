@@ -2,18 +2,24 @@
 //下级
 namespace app\super\controller;
 
-use app\common\basics\Auth;
+use app\common\basics\BaseController;
 use app\common\enums\StatusEnum;
 use app\common\model\ConfigGroupModel;
 use app\common\model\ConfigModel;
 use app\common\utils\AjaxUtils;
 use app\common\utils\UrlUtils;
 use think\App;
+use think\response\Json;
 
 
-class Config extends Auth
+class Config extends BaseController
 {
-    public function items(){
+    public function __construct(App $app)
+    {
+        parent::__construct($app);
+    }
+    public function items():Json
+    {
         $configModel = new ConfigModel();
         $configGroupModel = new ConfigGroupModel();
 
@@ -26,7 +32,7 @@ class Config extends Auth
         foreach($data as $item){
             $configItems = $configModel
                 ->where('group_id','=',$item['id'])
-                ->where('show','=',ConfigModel::SHOW_ON)
+                ->where('show','=',StatusEnum::STATUS_1)
                 ->order('sort desc')->select();
 
             $child = [];

@@ -5,6 +5,7 @@ declare (strict_types = 1);
 namespace app\super\service;
 
 use app\common\basics\Service;
+use app\common\enums\StatusEnum;
 use app\common\model\UserModel;
 use app\common\utils\TimeUtils;
 use think\facade\Cache;
@@ -50,7 +51,7 @@ class UserService extends Service
             'username'        => $post['username'],
             'password'        => $post['password'],
             'rand_code'        => $post['rand_code'],
-            'status'        => $post['status'] ?? 1,
+            'status'        => $post['status'] ?? StatusEnum::STATUS_1,
             'create_time'  => time(),
             'update_time'  => time()
         ]);
@@ -63,7 +64,7 @@ class UserService extends Service
             'username'        => $post['username'],
             'password'        => $post['password'] ?? '',
             'rand_code'        => $post['rand_code'] ?? '',
-            'status'        => $post['status'] ?? 1,
+            'status'        => $post['status'] ?? StatusEnum::STATUS_1,
             'update_time'  => time()
         ];
         if(empty($data['password'])){

@@ -2,16 +2,21 @@
 //下级
 namespace app\super\controller;
 
-use app\common\basics\Auth;
+use app\common\basics\BaseController;
 use app\super\service\RolePermsService;
 use app\common\utils\AjaxUtils;
 use think\App;
 
 
-class RolePerms extends Auth
+class RolePerms extends BaseController
 {
+    public function __construct(App $app)
+    {
+        parent::__construct($app);
+        $this->service = new RolePermsService();
+    }
     public function save(){
-        RolePermsService::save($this->request->param());
+        $this->service::save($this->request->param());
         return AjaxUtils::success();
     }
 }

@@ -1,18 +1,23 @@
-import request from "@/utils/request";
+import { BaseApi } from "@/utils/baseApi";
 
-const config = {
+class Api extends BaseApi {
+  constructor() {
+    super("/super/config/");
+  }
   getItems() {
-    return request({
-      url: "/super/config/items",
+    return this.request({
+      url: "items",
     });
-  },
+  }
   postItems(data) {
-    return request({
-      url: "/super/config/save",
+    return this.request({
+      url: "save",
       method: "post",
       data,
     });
-  },
-};
+  }
+}
 
-export default config;
+const api = new Api();
+
+export default api;

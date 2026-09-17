@@ -2,6 +2,7 @@
 namespace app\common\controller;
 
 use app\common\basics\Auth;
+use app\common\enums\StatusEnum;
 use app\common\model\ConfigModel;
 use app\common\service\LoginService;
 use app\common\utils\AjaxUtils;
@@ -31,7 +32,7 @@ class Overt extends Auth
         $params['captcha_key']=$this->request->param('captcha_key');
 
         $config = new ConfigModel();
-        if(intval($config->getContentByKey('captcha_status')) == 1){
+        if(intval($config->getContentByKey('captcha_status')) == StatusEnum::STATUS_1){
             if(empty($params['captcha'])){
                 return AjaxUtils::error("请输入验证码");
             }

@@ -1,39 +1,11 @@
-import request from "@/utils/request";
+import { BaseApi } from "@/utils/baseApi";
 
-const member = {
-  getItems(data) {
-    return request({
-      url: "/super/perms/items",
-      method: "post",
-      data,
-    });
-  },
-  add(data) {
-    return request({
-      url: "/super/perms/add",
-      method: "post",
-      data,
-    });
-  },
-  edit(data) {
-    return request({
-      url: "/super/perms/edit",
-      method: "post",
-      data,
-    });
-  },
-  del(data) {
-    return request({
-      url: "/super/perms/del",
-      method: "post",
-      data,
-    });
-  },
-  all() {
-    return request({
-      url: "/super/perms/all",
-    });
-  },
-};
+class Api extends BaseApi {
+  constructor() {
+    super("/super/perms/");
+  }
+}
 
-export default member;
+const api = new Api();
+
+export default api;

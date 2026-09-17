@@ -39,7 +39,7 @@ class RolesService extends Service
         return ['count'=>$lists['total'], 'items'=>$lists['data']] ?? [];
     }
 
-    public static function all(): array
+    public static function getOptions(): array
     {
         $model = new RolesModel();
         return $model

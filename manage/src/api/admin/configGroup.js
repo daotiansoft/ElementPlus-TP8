@@ -1,39 +1,23 @@
-import request from "@/utils/request";
+import { BaseApi } from "@/utils/baseApi";
 
-const configGroup = {
-  getItems(data) {
-    return request({
-      url: "/super/configGroup/items",
+class Api extends BaseApi {
+  constructor() {
+    super("/super/configGroup/");
+  }
+  getItems() {
+    return this.request({
+      url: "items",
+    });
+  }
+  postItems(data) {
+    return this.request({
+      url: "save",
       method: "post",
       data,
     });
-  },
-  add(data) {
-    return request({
-      url: "/super/configGroup/add",
-      method: "post",
-      data,
-    });
-  },
-  edit(data) {
-    return request({
-      url: "/super/configGroup/edit",
-      method: "post",
-      data,
-    });
-  },
-  del(data) {
-    return request({
-      url: "/super/configGroup/del",
-      method: "post",
-      data,
-    });
-  },
-  getOptions() {
-    return request({
-      url: "/super/configGroup/getOptions",
-    });
-  },
-};
+  }
+}
 
-export default configGroup;
+const api = new Api();
+
+export default api;

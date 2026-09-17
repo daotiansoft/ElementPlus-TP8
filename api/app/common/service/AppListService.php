@@ -6,6 +6,7 @@ namespace app\common\service;
 
 
 use app\common\basics\Service;
+use app\common\enums\StatusEnum;
 use app\common\exception\RequestException;
 use app\common\model\AppListModel;
 
@@ -23,7 +24,7 @@ class AppListService extends Service
 
         $appModel = new AppListModel();
         $appItem = $appModel->where('appid','=',$appid)->find();
-        if(!$appItem || $appItem['status'] != AppListModel::STATUS_ON){
+        if(!$appItem || $appItem['status'] != StatusEnum::STATUS_1){
             throw new RequestException('appid不存在');
         }
 

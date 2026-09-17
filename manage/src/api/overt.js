@@ -1,23 +1,28 @@
-import request from '@/utils/request'
+import { BaseApi } from "@/utils/baseApi";
 
-const overt = {
+class Api extends BaseApi {
+  constructor() {
+    super("/common/overt/");
+  }
   init() {
-    return request({
-      url: '/common/overt/init'
-    })
-  },
+    return this.request({
+      url: "init",
+    });
+  }
   getCaptcha() {
-    return request({
-      url: '/common/overt/captcha'
-    })
-  },
+    return this.request({
+      url: "captcha",
+    });
+  }
   postLogin(data) {
-    return request({
-      url: '/common/overt/login',
-      method: 'post',
-      data
-    })
-  },
+    return this.request({
+      url: "login",
+      method: "post",
+      data,
+    });
+  }
 }
 
-export default overt
+const api = new Api();
+
+export default api;

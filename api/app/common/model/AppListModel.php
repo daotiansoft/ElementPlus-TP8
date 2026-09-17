@@ -7,9 +7,6 @@ class AppListModel extends CommonModel
 {
     protected $name = 'app_list';
 
-    const STATUS_ON = 1;
-    const STATUS_OFF = -1;
-
     protected $schema = [
         'id'=>'int',
         'uid'=>'int',

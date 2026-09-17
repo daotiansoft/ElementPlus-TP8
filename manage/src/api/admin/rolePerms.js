@@ -1,13 +1,18 @@
-import request from "@/utils/request";
+import { BaseApi } from "@/utils/baseApi";
 
-const rolePerms = {
+class Api extends BaseApi {
+  constructor() {
+    super("/super/rolePerms/");
+  }
   save(data) {
-    return request({
-      url: "/super/rolePerms/save",
+    return this.request({
+      url: "save",
       method: "post",
       data,
     });
-  },
-};
+  }
+}
 
-export default rolePerms;
+const api = new Api();
+
+export default api;

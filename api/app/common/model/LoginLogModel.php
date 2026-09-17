@@ -3,9 +3,6 @@ namespace app\common\model;
 
 class LoginLogModel extends CommonModel
 {
-    const STATUS_SUCC=1;
-    const STATUS_FAIL=2;
-
     protected $name = 'login_log';
 
     protected $schema=[
