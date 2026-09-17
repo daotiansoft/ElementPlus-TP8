@@ -39,7 +39,6 @@
 </template>
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
-import { ElMessage } from 'element-plus'
 
 import overt from '@/api/overt'
 import router from '../router'
