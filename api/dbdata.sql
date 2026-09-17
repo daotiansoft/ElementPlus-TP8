@@ -11,7 +11,7 @@
  Target Server Version : 50726
  File Encoding         : 65001
 
- Date: 17/09/2026 11:27:09
+ Date: 17/09/2026 12:00:11
 */
 
 SET NAMES utf8mb4;
@@ -64,7 +64,7 @@ CREATE TABLE `dt_config`  (
 -- ----------------------------
 INSERT INTO `dt_config` VALUES (1, 1, 'site_name', 'text', '站点名称', '管理面板', '', NULL, 10, 1, 0, 1789525468);
 INSERT INTO `dt_config` VALUES (2, 1, 'site_status', 'select', '是否闭站', '1', '站点关闭后，用户无法登录', '[{\"id\":\"1\",\"name\":\"否\"},{\"id\":\"2\",\"name\":\"是\"}]', 10, 1, 0, 1789525471);
-INSERT INTO `dt_config` VALUES (3, 1, 'logo', 'image', 'LOGO', 'static/logo.png', NULL, NULL, 50, 1, 0, 1789613340);
+INSERT INTO `dt_config` VALUES (3, 1, 'logo', 'image', 'LOGO', 'static/logo.png', NULL, NULL, 50, 1, 0, 1789617157);
 INSERT INTO `dt_config` VALUES (4, 1, 'site_stop_msg', 'text', '闭站提示', '系统维护中...', NULL, NULL, 10, 1, 0, 1789525475);
 INSERT INTO `dt_config` VALUES (5, 1, 'demo_textarea', 'textarea', '多行文本', NULL, NULL, NULL, 1, -1, 0, 1789525480);
 INSERT INTO `dt_config` VALUES (6, 1, 'captcha_status', 'select', '登录验证码', '2', NULL, '[{\"id\":\"1\",\"name\":\"启用\"},{\"id\":\"2\",\"name\":\"关闭\"}]', 50, 1, 0, 1789525465);
@@ -197,7 +197,7 @@ CREATE TABLE `dt_perms`  (
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_parent_id`(`parent_id`) USING BTREE COMMENT '父级索引',
   INDEX `idx_module_controller_action`(`module`, `controller`, `action`) USING BTREE COMMENT '模块控制器方法组合索引'
-) ENGINE = InnoDB AUTO_INCREMENT = 45 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '权限节点表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 47 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '权限节点表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of dt_perms
@@ -241,9 +241,9 @@ INSERT INTO `dt_perms` VALUES (38, 34, '删除', 'super', 'configGroup', 'del', 
 INSERT INTO `dt_perms` VALUES (39, 1, '设置列表', 'super', 'configList', '', 0, 1, 1, '/admin/system/configList', 0, 0, 0);
 INSERT INTO `dt_perms` VALUES (40, 39, '列表', 'super', 'configList', 'items', 0, 1, 0, '', 0, 0, 0);
 INSERT INTO `dt_perms` VALUES (41, 39, '新增', 'super', 'configList', 'add', 0, 1, 0, '', 0, 0, 0);
-INSERT INTO `dt_perms` VALUES (42, 39, '编辑', 'super', 'configList', 'edit', 0, 1, 0, '', 0, 0, 0);
-INSERT INTO `dt_perms` VALUES (43, 39, '删除', 'super', 'configList', 'del', 0, 1, 0, '', 0, 0, 0);
 INSERT INTO `dt_perms` VALUES (44, 34, 'getOptions', 'super', 'configGroup', 'getOptions', 0, 1, 0, '', 1, 0, 0);
+INSERT INTO `dt_perms` VALUES (45, 39, '编辑', 'super', 'configList', 'edit', 0, 1, 0, '', 0, 1789617122, 1789617122);
+INSERT INTO `dt_perms` VALUES (46, 39, '删除', 'super', 'configList', 'del', 0, 1, 0, '', 0, 1789617122, 1789617122);
 
 -- ----------------------------
 -- Table structure for dt_role_perms
@@ -259,24 +259,11 @@ CREATE TABLE `dt_role_perms`  (
   UNIQUE INDEX `uk_type_perms_id`(`type`, `perms_id`) USING BTREE COMMENT '角色类型+权限ID唯一索引',
   INDEX `idx_type`(`type`) USING BTREE COMMENT '角色类型索引',
   INDEX `idx_perms_id`(`perms_id`) USING BTREE COMMENT '权限ID索引'
-) ENGINE = InnoDB AUTO_INCREMENT = 729 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '角色-权限关联表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 742 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '角色-权限关联表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of dt_role_perms
 -- ----------------------------
-INSERT INTO `dt_role_perms` VALUES (685, 'admin', 5, 1789613359, 1789613359);
-INSERT INTO `dt_role_perms` VALUES (686, 'admin', 6, 1789613359, 1789613359);
-INSERT INTO `dt_role_perms` VALUES (687, 'admin', 7, 1789613359, 1789613359);
-INSERT INTO `dt_role_perms` VALUES (688, 'admin', 8, 1789613359, 1789613359);
-INSERT INTO `dt_role_perms` VALUES (689, 'admin', 11, 1789613359, 1789613359);
-INSERT INTO `dt_role_perms` VALUES (690, 'admin', 12, 1789613359, 1789613359);
-INSERT INTO `dt_role_perms` VALUES (691, 'admin', 13, 1789613359, 1789613359);
-INSERT INTO `dt_role_perms` VALUES (692, 'admin', 14, 1789613359, 1789613359);
-INSERT INTO `dt_role_perms` VALUES (693, 'admin', 17, 1789613359, 1789613359);
-INSERT INTO `dt_role_perms` VALUES (694, 'admin', 30, 1789613359, 1789613359);
-INSERT INTO `dt_role_perms` VALUES (695, 'admin', 31, 1789613359, 1789613359);
-INSERT INTO `dt_role_perms` VALUES (696, 'admin', 32, 1789613359, 1789613359);
-INSERT INTO `dt_role_perms` VALUES (697, 'admin', 33, 1789613359, 1789613359);
 INSERT INTO `dt_role_perms` VALUES (698, 'super', 5, 1789615171, 1789615171);
 INSERT INTO `dt_role_perms` VALUES (699, 'super', 6, 1789615171, 1789615171);
 INSERT INTO `dt_role_perms` VALUES (700, 'super', 7, 1789615171, 1789615171);
@@ -308,6 +295,19 @@ INSERT INTO `dt_role_perms` VALUES (725, 'super', 40, 1789615171, 1789615171);
 INSERT INTO `dt_role_perms` VALUES (726, 'super', 41, 1789615171, 1789615171);
 INSERT INTO `dt_role_perms` VALUES (727, 'super', 42, 1789615171, 1789615171);
 INSERT INTO `dt_role_perms` VALUES (728, 'super', 43, 1789615171, 1789615171);
+INSERT INTO `dt_role_perms` VALUES (729, 'admin', 5, 1789617459, 1789617459);
+INSERT INTO `dt_role_perms` VALUES (730, 'admin', 6, 1789617459, 1789617459);
+INSERT INTO `dt_role_perms` VALUES (731, 'admin', 7, 1789617459, 1789617459);
+INSERT INTO `dt_role_perms` VALUES (732, 'admin', 8, 1789617459, 1789617459);
+INSERT INTO `dt_role_perms` VALUES (733, 'admin', 11, 1789617459, 1789617459);
+INSERT INTO `dt_role_perms` VALUES (734, 'admin', 12, 1789617459, 1789617459);
+INSERT INTO `dt_role_perms` VALUES (735, 'admin', 13, 1789617459, 1789617459);
+INSERT INTO `dt_role_perms` VALUES (736, 'admin', 14, 1789617459, 1789617459);
+INSERT INTO `dt_role_perms` VALUES (737, 'admin', 17, 1789617459, 1789617459);
+INSERT INTO `dt_role_perms` VALUES (738, 'admin', 30, 1789617459, 1789617459);
+INSERT INTO `dt_role_perms` VALUES (739, 'admin', 31, 1789617459, 1789617459);
+INSERT INTO `dt_role_perms` VALUES (740, 'admin', 32, 1789617459, 1789617459);
+INSERT INTO `dt_role_perms` VALUES (741, 'admin', 33, 1789617459, 1789617459);
 
 -- ----------------------------
 -- Table structure for dt_roles

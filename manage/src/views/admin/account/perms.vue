@@ -39,6 +39,17 @@
             </div>
             <div class="menu-right">
               <el-button
+                type="danger"
+                size="small"
+                v-if="
+                  data.module != '' &&
+                  data.controller != '' &&
+                  data.action == ''
+                "
+                @click="onCurd(data)"
+                >CURD</el-button
+              >
+              <el-button
                 type="primary"
                 size="small"
                 icon="Plus"
@@ -285,6 +296,29 @@ const onDelete = (data) => {
       try {
         await perms.del({ ids: [data.id] });
         ElMessage.success("删除成功");
+        getItems();
+      } catch (error) {
+      } finally {
+        loading.value = false;
+      }
+    })
+    .catch(() => {});
+};
+const onCurd = (data) => {
+  ElMessageBox.confirm(
+    `生成 "${data.name}" CURD？`,
+    "！！！非开发人员，请勿操作！！！",
+    {
+      confirmButtonText: "确定",
+      cancelButtonText: "取消",
+      type: "warning",
+    },
+  )
+    .then(async () => {
+      loading.value = true;
+      try {
+        await perms.createCurd({ id: data.id });
+        ElMessage.success("操作成功，当前仅生成后端curd");
         getItems();
       } catch (error) {
       } finally {
