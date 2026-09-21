@@ -1,5 +1,16 @@
 <?php
-
+// +----------------------------------------------------------------------
+// | WaitAdmin快速开发后台管理系统
+// +----------------------------------------------------------------------
+// | 欢迎阅读学习程序代码,建议反馈是我们前进的动力
+// | 程序完全开源可支持商用,允许去除界面版权信息
+// | gitee:   https://gitee.com/wafts/waitadmin-php
+// | github:  https://github.com/topwait/waitadmin-php
+// | 官方网站: https://www.waitadmin.cn
+// | WaitAdmin团队版权所有并拥有最终解释权
+// +----------------------------------------------------------------------
+// | Author: WaitAdmin Team <2474369941@qq.com>
+// +----------------------------------------------------------------------
 declare (strict_types = 1);
 
 namespace app\common\basics;
@@ -9,6 +20,7 @@ use app\common\enums\StatusEnum;
 use app\common\exception\NotAuthException;
 use app\common\exception\RequestException;
 use app\common\model\PermsModel;
+use app\common\model\RolePermsModel;
 use app\common\model\UserModel;
 use app\common\service\AppListService;
 use app\common\service\LoginService;
@@ -23,6 +35,11 @@ abstract class Api extends BaseController
      * 账号信息
      */
     protected $userItem = [];
+
+    /*
+     * appid信息
+     */
+    protected $appItem = [];
 
     /**
      * 不校验登录的方法
@@ -79,6 +96,7 @@ abstract class Api extends BaseController
             return true;
         }  else {
             $appItem = AppListService::check($params);
+            $this->appItem = $appItem;
             $userModel = new UserModel();
             $this->userItem = $userModel->getItemById($appItem['uid']);
             return true;
@@ -103,39 +121,32 @@ abstract class Api extends BaseController
         if(!isset($this->userItem['type'])){
             return false;
         }
+        if($this->userItem['id'] == 1){
+            return true;
+        }
         $requestUrl = lcfirst( request()->baseUrl());
         $requestUrl = ltrim($requestUrl, '/');
         $requestUrl = strtolower(($requestUrl == 'index' || !$requestUrl) ? 'index/index' : $requestUrl);
 
         $permsModel = new PermsModel();
-        $items = $permsModel
-            ->whereIn('type', $this->userItem['type'])
-            ->where(['status'=>StatusEnum::STATUS_1])
-            ->field('module,controller,action')
-            ->select()->toArray();
-
-        foreach($items as $item){
-            if(
-                strtolower($item['module']) == $module
-                && strtolower($item['controller']) == $controller
-                && strtolower($item['action']) == $action
-            ){
-                return true;
-            }
+        $permsItem = $permsModel
+            ->where('module','=',$module)
+            ->where('controller','=',$controller)
+            ->where('action','=',$action)
+            ->find();
+        if(!$permsItem){
+            throw new NotAuthException('无权限['.$requestUrl.']');
         }
+        $permsItem = $permsItem->toArray();
 
-        //判断是否存在 存在话 就创建一个无权限的
-        if(check_action_exists($module,request()->controller(),request()->action())){
-            $data = [];
-            $data['type'] = $this->userItem['type'];
-            $data['module'] = $module;
-            $data['controller'] = request()->controller();
-            $data['action'] = request()->action();
-
-            $item = $permsModel->where($data)->field('id')->find();
-            if(!$item){
-                $data['status'] = StatusEnum::STATUS_OFF;
-                $permsModel->insert($data);
+        if($permsItem['status'] == StatusEnum::STATUS_1){
+            $rolePermsModel = new RolePermsModel();
+            $rolePermsItem = $rolePermsModel
+                ->where('type','=',$this->userItem['type'])
+                ->where('perms_id','=',$permsItem['id'])
+                ->find();
+            if($rolePermsItem){
+                return true;
             }
         }
         throw new NotAuthException('无权限['.$requestUrl.']');
