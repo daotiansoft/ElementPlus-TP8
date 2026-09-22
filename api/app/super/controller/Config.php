@@ -57,12 +57,15 @@ class Config extends BaseController
     public function save(){
         $params = $this->request->param();
         $model = new ConfigModel();
-        foreach($params as $item){
-            if(isset($item['key']) && !empty($item['key'])){
-                if($item['type'] == 'image'){
-                    $item['content'] = UrlUtils::toRelativeUrl($item['content']);
+        foreach($params as $param){
+            $items = $param['child'];
+            foreach($items as $item){
+                if(isset($item['key']) && !empty($item['key'])){
+                    if($item['type'] == 'image'){
+                        $item['content'] = UrlUtils::toRelativeUrl($item['content']);
+                    }
+                    $model->where('key','=',$item['key'])->update(array('content'=>$item['content']));
                 }
-                $model->where('key','=',$item['key'])->update(array('content'=>$item['content']));
             }
         }
         return AjaxUtils::success("保存成功");

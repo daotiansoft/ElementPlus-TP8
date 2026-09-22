@@ -27,6 +27,7 @@ class AppListService extends Service
         if(!$appItem || $appItem['status'] != StatusEnum::STATUS_1){
             throw new RequestException('appid不存在');
         }
+		$appItem = $appItem->toArray();
 
         $sign_str = [];
         foreach($params as $key=>$v){

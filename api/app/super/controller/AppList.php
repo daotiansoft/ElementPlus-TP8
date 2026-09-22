@@ -46,11 +46,4 @@ class AppList extends BaseController
         $this->service::edit($data);
         return AjaxUtils::success();
     }
-
-    public function del(){
-        $ids = $this->request->param('ids/a');
-        $this->validate->idsCheck($ids);
-        $this->service::del($ids);
-        return AjaxUtils::success($ids);
-    }
 }
