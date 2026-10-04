@@ -11,7 +11,7 @@ use app\common\utils\TimeUtils;
 
 class AppListService extends Service
 {
-    public static function lists(array $get): array
+    public static function lists(array $get,array $userItem): array
     {
         self::setSearch([
             '%like%'   => ['keyword@app_list_model.remark'],
@@ -39,7 +39,7 @@ class AppListService extends Service
         return ['count'=>$lists['total'], 'items'=>$lists['data']] ?? [];
     }
 
-    public static function add(array $post): void
+    public static function add(array $post,array $userItem): void
     {
         AppListModel::create([
             'uid'          => $post['uid'],
@@ -52,7 +52,7 @@ class AppListService extends Service
         ]);
     }
 
-    public static function edit(array $post): void
+    public static function edit(array $post,array $userItem): void
     {
         AppListModel::update([
             'uid'          => $post['uid'],
@@ -64,7 +64,7 @@ class AppListService extends Service
         ], ['id'=>intval($post['id'])]);
     }
 
-    public static function del(array $ids): void
+    public static function del(array $ids,array $userItem): void
     {
         AppListModel::destroy($ids,true);
     }

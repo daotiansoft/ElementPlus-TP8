@@ -204,35 +204,35 @@ class Service
     /*
      * 通用
      */
-    public static function lists(array $params):array
+    public static function lists(array $params,array $userItem):array
     {
         return [];
     }
     /*
      * 通用
      */
-    public static function add(array $params)
+    public static function add(array $params,array $userItem)
     {
 
     }
     /*
      * 通用
      */
-    public static function edit(array $params):void
+    public static function edit(array $params,array $userItem):void
     {
 
     }
     /*
      * 通用
      */
-    public static function del(array $params):void
+    public static function del(array $params,array $userItem):void
     {
 
     }
     /*
      * 通用 获取选项列表
      */
-    public static function getOptions():array{
+    public static function getOptions(array $userItem):array{
         return [];
     }
 }

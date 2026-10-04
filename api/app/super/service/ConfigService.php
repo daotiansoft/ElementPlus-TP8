@@ -12,7 +12,7 @@ use think\facade\Cache;
 
 class ConfigService extends Service
 {
-    public static function lists(array $get): array
+    public static function lists(array $get,array $userItem): array
     {
         self::setSearch([
             '%like%'   => ['keyword@config_model.name'],
@@ -39,7 +39,7 @@ class ConfigService extends Service
         return ['count'=>$lists['total'], 'items'=>$lists['data']] ?? [];
     }
 
-    public static function add(array $post): void
+    public static function add(array $post,array $userItem): void
     {
         ConfigModel::create([
             'group_id'          => $post['group_id'],
@@ -56,7 +56,7 @@ class ConfigService extends Service
         ]);
     }
 
-    public static function edit(array $post): void
+    public static function edit(array $post,array $userItem): void
     {
         ConfigModel::update([
             'group_id'          => $post['group_id'],
@@ -72,7 +72,7 @@ class ConfigService extends Service
         ], ['id'=>intval($post['id'])]);
     }
 
-    public static function del(array $ids): void
+    public static function del(array $ids,array $userItem): void
     {
         ConfigModel::destroy($ids,true);
     }

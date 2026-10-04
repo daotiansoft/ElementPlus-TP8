@@ -19,7 +19,12 @@ class CommonModel extends Model
      * @throws \think\db\exception\ModelNotFoundException
      */
     public function getItemById($id){
-        return $this->find($id);
+        $item = $this->find($id);
+        if($item){
+            return $item->toArray();
+        }else{
+            return false;
+        }
     }
 
     /** 获取所有字段

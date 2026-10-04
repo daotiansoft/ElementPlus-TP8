@@ -17,7 +17,7 @@ class UserService extends Service
         return $model->where('username','=',$username)->find();
     }
 
-    public static function lists(array $get): array
+    public static function lists(array $get,array $userItem): array
     {
         self::setSearch([
             '%like%'   => ['username@user_model.username'],
@@ -44,7 +44,7 @@ class UserService extends Service
         return ['count'=>$lists['total'], 'items'=>$lists['data']] ?? [];
     }
 
-    public static function add(array $post): void
+    public static function add(array $post,array $userItem): void
     {
         UserModel::create([
             'type'          => $post['type'],
@@ -57,7 +57,7 @@ class UserService extends Service
         ]);
     }
 
-    public static function edit(array $post): void
+    public static function edit(array $post,array $userItem): void
     {
         $data = [
             'type'          => $post['type'],
@@ -78,7 +78,7 @@ class UserService extends Service
         Cache::delete($cacke_key);
     }
 
-    public static function del(array $ids): void
+    public static function del(array $ids,array $userItem): void
     {
         if(!in_array(1,$ids)){
             UserModel::destroy($ids,true);

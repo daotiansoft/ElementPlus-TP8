@@ -32,7 +32,7 @@ class PermsService extends Service
         return $result;
     }
 
-    public static function add(array $post): void
+    public static function add(array $post,array $userItem): void
     {
         PermsModel::create([
             'parent_id'          => $post['parent_id'],
@@ -48,7 +48,7 @@ class PermsService extends Service
         ]);
     }
 
-    public static function edit(array $post): void
+    public static function edit(array $post,array $userItem): void
     {
         PermsModel::update([
             'parent_id'          => $post['parent_id'],
@@ -64,7 +64,7 @@ class PermsService extends Service
         ], ['id'=>intval($post['id'])]);
     }
 
-    public static function del(array $ids): void
+    public static function del(array $ids,array $userItem): void
     {
         PermsModel::destroy($ids,true);
         PermsModel::where('parent_id','in',$ids)->delete();

@@ -29,7 +29,7 @@ class Member extends BaseController
 
         $data['rand_code'] = get_rand_str(4);
         $data['password']=get_password($data['password'],$data['rand_code']);
-        $this->service::add($data);
+        $this->service::add($data,$this->userItem);
         return AjaxUtils::success();
     }
 
@@ -43,7 +43,7 @@ class Member extends BaseController
         }
         $this->validate->goCheck('edit',$data);
 
-        $this->service::edit($data);
+        $this->service::edit($data,$this->userItem);
         return AjaxUtils::success();
     }
 }

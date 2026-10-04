@@ -11,7 +11,7 @@ use app\common\utils\TimeUtils;
 
 class FormFieldService extends Service
 {
-    public static function lists(array $get): array
+    public static function lists(array $get,array $userItem): array
     {
         self::setSearch([
             '%like%'   => ['name'],
@@ -34,7 +34,7 @@ class FormFieldService extends Service
         return ['count'=>$lists['total'], 'items'=>$lists['data']] ?? [];
     }
 
-    public static function add(array $post): void
+    public static function add(array $post,array $userItem): void
     {
         FormFieldModel::create([
             'key'          => $post['key'],
@@ -45,7 +45,7 @@ class FormFieldService extends Service
         ]);
     }
 
-    public static function edit(array $post): void
+    public static function edit(array $post,array $userItem): void
     {
         FormFieldModel::update([
             'key'          => $post['key'],
@@ -55,7 +55,7 @@ class FormFieldService extends Service
         ], ['id'=>intval($post['id'])]);
     }
 
-    public static function del(array $ids): void
+    public static function del(array $ids,array $userItem): void
     {
         FormFieldModel::destroy($ids,true);
     }

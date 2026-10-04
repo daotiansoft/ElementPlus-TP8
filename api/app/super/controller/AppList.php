@@ -29,7 +29,7 @@ class AppList extends BaseController
             $data['uid'] = $userItem['id'];
         }
         $this->validate->addCheck($data);
-        $this->service::add($data);
+        $this->service::add($data,$this->userItem);
         return AjaxUtils::success();
     }
 
@@ -43,7 +43,7 @@ class AppList extends BaseController
             $data['uid'] = $userItem['id'];
         }
         $this->validate->editCheck($data);
-        $this->service::edit($data);
+        $this->service::edit($data,$this->userItem);
         return AjaxUtils::success();
     }
 }

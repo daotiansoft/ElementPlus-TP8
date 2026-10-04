@@ -36,7 +36,7 @@ class Perms extends BaseController
             }
         }
 
-        $this->service::add($data);
+        $this->service::add($data,$this->userItem);
         return AjaxUtils::success();
     }
 
@@ -48,7 +48,7 @@ class Perms extends BaseController
                 return AjaxUtils::error('方法不存在');
             }
         }
-        $this->service::edit($data);
+        $this->service::edit($data,$this->userItem);
         return AjaxUtils::success();
     }
 

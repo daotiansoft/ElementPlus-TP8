@@ -19,10 +19,4 @@ class Roles extends BaseController
         $this->service = new RolesService();
         $this->validate = new RolesValidate();
     }
-
-    public function getOptions():Json
-    {
-        $list = RolesService::getOptions();
-        return AjaxUtils::success($list);
-    }
 }
