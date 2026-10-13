@@ -38,7 +38,7 @@
         empty-text="暂无数据"
         @selection-change="handleSelectionChange"
       >
-        <el-table-column type="selection" width="55" />>
+        <el-table-column type="selection" width="55" />
         <el-table-column prop="group_name" label="分组" width="100" />
         <el-table-column prop="name" label="名称" width="120" />
         <el-table-column prop="key" label="唯一标识" width="180" />
@@ -357,6 +357,10 @@ const onDelete = () => {
     .catch(() => {
       // catch error
     });
+};
+
+const handleSelectionChange = (val) => {
+  multipleSelection.value = val;
 };
 
 const getGroupOptione = async () => {

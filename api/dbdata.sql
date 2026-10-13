@@ -11,7 +11,7 @@
  Target Server Version : 50726
  File Encoding         : 65001
 
- Date: 17/09/2026 12:00:11
+ Date: 13/10/2026 23:38:00
 */
 
 SET NAMES utf8mb4;
@@ -37,7 +37,7 @@ CREATE TABLE `dt_app_list`  (
 -- ----------------------------
 -- Records of dt_app_list
 -- ----------------------------
-INSERT INTO `dt_app_list` VALUES (1, 1, 'admin', '1d3gweoqpnqyjponpzovna', 1, '', 1782270416, 1789614601);
+INSERT INTO `dt_app_list` VALUES (1, 1, 'admin', '1d3gweoqpnqyjponpzovna', 1, '', 1782270416, 1791098588);
 
 -- ----------------------------
 -- Table structure for dt_config
@@ -64,10 +64,10 @@ CREATE TABLE `dt_config`  (
 -- ----------------------------
 INSERT INTO `dt_config` VALUES (1, 1, 'site_name', 'text', '站点名称', '管理面板', '', NULL, 10, 1, 0, 1789525468);
 INSERT INTO `dt_config` VALUES (2, 1, 'site_status', 'select', '是否闭站', '1', '站点关闭后，用户无法登录', '[{\"id\":\"1\",\"name\":\"否\"},{\"id\":\"2\",\"name\":\"是\"}]', 10, 1, 0, 1789525471);
-INSERT INTO `dt_config` VALUES (3, 1, 'logo', 'image', 'LOGO', 'static/logo.png', NULL, NULL, 50, 1, 0, 1789617157);
+INSERT INTO `dt_config` VALUES (3, 1, 'logo', 'image', 'LOGO', 'static/logo.png', NULL, NULL, 50, 1, 0, 1791903103);
 INSERT INTO `dt_config` VALUES (4, 1, 'site_stop_msg', 'text', '闭站提示', '系统维护中...', NULL, NULL, 10, 1, 0, 1789525475);
 INSERT INTO `dt_config` VALUES (5, 1, 'demo_textarea', 'textarea', '多行文本', NULL, NULL, NULL, 1, -1, 0, 1789525480);
-INSERT INTO `dt_config` VALUES (6, 1, 'captcha_status', 'select', '登录验证码', '2', NULL, '[{\"id\":\"1\",\"name\":\"启用\"},{\"id\":\"2\",\"name\":\"关闭\"}]', 50, 1, 0, 1789525465);
+INSERT INTO `dt_config` VALUES (6, 1, 'captcha_status', 'select', '登录验证码', '2', NULL, '[{\"id\":\"1\",\"name\":\"启用\"},{\"id\":\"2\",\"name\":\"关闭\"}]', 50, 1, 0, 1791098578);
 
 -- ----------------------------
 -- Table structure for dt_config_group
@@ -86,7 +86,7 @@ CREATE TABLE `dt_config_group`  (
 -- ----------------------------
 -- Records of dt_config_group
 -- ----------------------------
-INSERT INTO `dt_config_group` VALUES (1, '系统', 9999, 1, 1789522790, 1789615000);
+INSERT INTO `dt_config_group` VALUES (1, '系统', 9999, 1, 1789522790, 1791098566);
 INSERT INTO `dt_config_group` VALUES (2, '用户', 0, 1, 1789525592, 1789613335);
 
 -- ----------------------------
@@ -105,7 +105,7 @@ CREATE TABLE `dt_editor`  (
 -- ----------------------------
 -- Records of dt_editor
 -- ----------------------------
-INSERT INTO `dt_editor` VALUES (1, 'notice', '系统通知内容', '<p>欢迎使用！</p>\n<p><img src=\"storage/topic/20260707/f1252e4eead4d0c7c548113b2e7cca51.png\" alt=\"\" width=\"96\" height=\"96\" /></p>');
+INSERT INTO `dt_editor` VALUES (1, 'notice', '系统通知内容', '<p>欢迎使用！</p>');
 INSERT INTO `dt_editor` VALUES (2, 'test', '测试内容', '<p>666</p>');
 
 -- ----------------------------
@@ -121,7 +121,7 @@ CREATE TABLE `dt_login_log`  (
   `desc` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL,
   `ip` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 50 CHARACTER SET = utf8 COLLATE = utf8_unicode_ci COMMENT = '登录记录' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 58 CHARACTER SET = utf8 COLLATE = utf8_unicode_ci COMMENT = '登录记录' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of dt_login_log
@@ -175,6 +175,14 @@ INSERT INTO `dt_login_log` VALUES (46, 1, '', 1787660801, 1, '', '127.0.0.1');
 INSERT INTO `dt_login_log` VALUES (47, 1, '', 1789483305, 1, '', '127.0.0.1');
 INSERT INTO `dt_login_log` VALUES (48, 1, '', 1789520922, 1, '', '127.0.0.1');
 INSERT INTO `dt_login_log` VALUES (49, 2, '', 1789527264, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (50, 1, '', 1789996309, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (51, 1, '', 1790041625, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (52, 1, '', 1791902647, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (53, 1, '', 1791902663, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (54, 1, '', 1791902984, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (55, 1, '', 1791905810, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (56, 1, '', 1791905829, -1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (57, 1, '', 1791905833, 1, '', '127.0.0.1');
 
 -- ----------------------------
 -- Table structure for dt_perms
@@ -259,42 +267,11 @@ CREATE TABLE `dt_role_perms`  (
   UNIQUE INDEX `uk_type_perms_id`(`type`, `perms_id`) USING BTREE COMMENT '角色类型+权限ID唯一索引',
   INDEX `idx_type`(`type`) USING BTREE COMMENT '角色类型索引',
   INDEX `idx_perms_id`(`perms_id`) USING BTREE COMMENT '权限ID索引'
-) ENGINE = InnoDB AUTO_INCREMENT = 742 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '角色-权限关联表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 771 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '角色-权限关联表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of dt_role_perms
 -- ----------------------------
-INSERT INTO `dt_role_perms` VALUES (698, 'super', 5, 1789615171, 1789615171);
-INSERT INTO `dt_role_perms` VALUES (699, 'super', 6, 1789615171, 1789615171);
-INSERT INTO `dt_role_perms` VALUES (700, 'super', 7, 1789615171, 1789615171);
-INSERT INTO `dt_role_perms` VALUES (701, 'super', 8, 1789615171, 1789615171);
-INSERT INTO `dt_role_perms` VALUES (702, 'super', 11, 1789615171, 1789615171);
-INSERT INTO `dt_role_perms` VALUES (703, 'super', 12, 1789615171, 1789615171);
-INSERT INTO `dt_role_perms` VALUES (704, 'super', 13, 1789615171, 1789615171);
-INSERT INTO `dt_role_perms` VALUES (705, 'super', 14, 1789615171, 1789615171);
-INSERT INTO `dt_role_perms` VALUES (706, 'super', 16, 1789615171, 1789615171);
-INSERT INTO `dt_role_perms` VALUES (707, 'super', 17, 1789615171, 1789615171);
-INSERT INTO `dt_role_perms` VALUES (708, 'super', 18, 1789615171, 1789615171);
-INSERT INTO `dt_role_perms` VALUES (709, 'super', 19, 1789615171, 1789615171);
-INSERT INTO `dt_role_perms` VALUES (710, 'super', 20, 1789615171, 1789615171);
-INSERT INTO `dt_role_perms` VALUES (711, 'super', 21, 1789615171, 1789615171);
-INSERT INTO `dt_role_perms` VALUES (712, 'super', 22, 1789615171, 1789615171);
-INSERT INTO `dt_role_perms` VALUES (713, 'super', 24, 1789615171, 1789615171);
-INSERT INTO `dt_role_perms` VALUES (714, 'super', 26, 1789615171, 1789615171);
-INSERT INTO `dt_role_perms` VALUES (715, 'super', 27, 1789615171, 1789615171);
-INSERT INTO `dt_role_perms` VALUES (716, 'super', 28, 1789615171, 1789615171);
-INSERT INTO `dt_role_perms` VALUES (717, 'super', 30, 1789615171, 1789615171);
-INSERT INTO `dt_role_perms` VALUES (718, 'super', 31, 1789615171, 1789615171);
-INSERT INTO `dt_role_perms` VALUES (719, 'super', 32, 1789615171, 1789615171);
-INSERT INTO `dt_role_perms` VALUES (720, 'super', 33, 1789615171, 1789615171);
-INSERT INTO `dt_role_perms` VALUES (721, 'super', 35, 1789615171, 1789615171);
-INSERT INTO `dt_role_perms` VALUES (722, 'super', 36, 1789615171, 1789615171);
-INSERT INTO `dt_role_perms` VALUES (723, 'super', 37, 1789615171, 1789615171);
-INSERT INTO `dt_role_perms` VALUES (724, 'super', 38, 1789615171, 1789615171);
-INSERT INTO `dt_role_perms` VALUES (725, 'super', 40, 1789615171, 1789615171);
-INSERT INTO `dt_role_perms` VALUES (726, 'super', 41, 1789615171, 1789615171);
-INSERT INTO `dt_role_perms` VALUES (727, 'super', 42, 1789615171, 1789615171);
-INSERT INTO `dt_role_perms` VALUES (728, 'super', 43, 1789615171, 1789615171);
 INSERT INTO `dt_role_perms` VALUES (729, 'admin', 5, 1789617459, 1789617459);
 INSERT INTO `dt_role_perms` VALUES (730, 'admin', 6, 1789617459, 1789617459);
 INSERT INTO `dt_role_perms` VALUES (731, 'admin', 7, 1789617459, 1789617459);
@@ -308,6 +285,35 @@ INSERT INTO `dt_role_perms` VALUES (738, 'admin', 30, 1789617459, 1789617459);
 INSERT INTO `dt_role_perms` VALUES (739, 'admin', 31, 1789617459, 1789617459);
 INSERT INTO `dt_role_perms` VALUES (740, 'admin', 32, 1789617459, 1789617459);
 INSERT INTO `dt_role_perms` VALUES (741, 'admin', 33, 1789617459, 1789617459);
+INSERT INTO `dt_role_perms` VALUES (742, 'super', 5, 1791098594, 1791098594);
+INSERT INTO `dt_role_perms` VALUES (743, 'super', 6, 1791098594, 1791098594);
+INSERT INTO `dt_role_perms` VALUES (744, 'super', 7, 1791098594, 1791098594);
+INSERT INTO `dt_role_perms` VALUES (745, 'super', 8, 1791098594, 1791098594);
+INSERT INTO `dt_role_perms` VALUES (746, 'super', 11, 1791098594, 1791098594);
+INSERT INTO `dt_role_perms` VALUES (747, 'super', 12, 1791098594, 1791098594);
+INSERT INTO `dt_role_perms` VALUES (748, 'super', 13, 1791098594, 1791098594);
+INSERT INTO `dt_role_perms` VALUES (749, 'super', 14, 1791098594, 1791098594);
+INSERT INTO `dt_role_perms` VALUES (750, 'super', 16, 1791098594, 1791098594);
+INSERT INTO `dt_role_perms` VALUES (751, 'super', 17, 1791098594, 1791098594);
+INSERT INTO `dt_role_perms` VALUES (752, 'super', 18, 1791098594, 1791098594);
+INSERT INTO `dt_role_perms` VALUES (753, 'super', 19, 1791098594, 1791098594);
+INSERT INTO `dt_role_perms` VALUES (754, 'super', 20, 1791098594, 1791098594);
+INSERT INTO `dt_role_perms` VALUES (755, 'super', 21, 1791098594, 1791098594);
+INSERT INTO `dt_role_perms` VALUES (756, 'super', 22, 1791098594, 1791098594);
+INSERT INTO `dt_role_perms` VALUES (757, 'super', 24, 1791098594, 1791098594);
+INSERT INTO `dt_role_perms` VALUES (758, 'super', 26, 1791098594, 1791098594);
+INSERT INTO `dt_role_perms` VALUES (759, 'super', 27, 1791098594, 1791098594);
+INSERT INTO `dt_role_perms` VALUES (760, 'super', 28, 1791098594, 1791098594);
+INSERT INTO `dt_role_perms` VALUES (761, 'super', 30, 1791098594, 1791098594);
+INSERT INTO `dt_role_perms` VALUES (762, 'super', 31, 1791098594, 1791098594);
+INSERT INTO `dt_role_perms` VALUES (763, 'super', 32, 1791098594, 1791098594);
+INSERT INTO `dt_role_perms` VALUES (764, 'super', 33, 1791098594, 1791098594);
+INSERT INTO `dt_role_perms` VALUES (765, 'super', 35, 1791098594, 1791098594);
+INSERT INTO `dt_role_perms` VALUES (766, 'super', 36, 1791098594, 1791098594);
+INSERT INTO `dt_role_perms` VALUES (767, 'super', 37, 1791098594, 1791098594);
+INSERT INTO `dt_role_perms` VALUES (768, 'super', 38, 1791098594, 1791098594);
+INSERT INTO `dt_role_perms` VALUES (769, 'super', 40, 1791098594, 1791098594);
+INSERT INTO `dt_role_perms` VALUES (770, 'super', 41, 1791098594, 1791098594);
 
 -- ----------------------------
 -- Table structure for dt_roles
@@ -345,7 +351,7 @@ CREATE TABLE `dt_upload`  (
   `path` varchar(200) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT '',
   `time` int(20) NULL DEFAULT 0,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 38 CHARACTER SET = utf8 COLLATE = utf8_unicode_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 39 CHARACTER SET = utf8 COLLATE = utf8_unicode_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of dt_upload
@@ -387,6 +393,7 @@ INSERT INTO `dt_upload` VALUES (34, 'php8D2B.tmp', 7668, 'image/png', 'image', '
 INSERT INTO `dt_upload` VALUES (35, 'phpFB6.tmp', 7668, 'image/png', 'image', '/storage/topic/20260707/188a9b2dadb2f663f9f7ffb88bbefba5.png', 1783401737);
 INSERT INTO `dt_upload` VALUES (36, 'php87C4.tmp', 7668, 'image/png', 'image', '/storage/topic/20260707/ef02cb4772ee08cf32185cb0ab1d4997.png', 1783401768);
 INSERT INTO `dt_upload` VALUES (37, 'php3B9A.tmp', 7668, 'image/png', 'image', '/storage/topic/20260707/f1252e4eead4d0c7c548113b2e7cca51.png', 1783401945);
+INSERT INTO `dt_upload` VALUES (38, 'php87FE.tmp', 607354, 'image/png', 'image', '/storage/topic/20261013/4dc8b366fbdaef0823f1db9c1b1845cf.png', 1791904211);
 
 -- ----------------------------
 -- Table structure for dt_user
@@ -397,9 +404,8 @@ CREATE TABLE `dt_user`  (
   `type` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL COMMENT '账号类型 admin  user',
   `username` varchar(50) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL COMMENT '账号',
   `nickname` varchar(50) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT '' COMMENT '昵称',
-  `password` varchar(32) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL,
+  `password` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL,
   `avatar` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT '' COMMENT '头像',
-  `rand_code` varchar(10) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL COMMENT '随机码',
   `status` tinyint(1) NULL DEFAULT 1 COMMENT '状态1正常2停用',
   `create_time` int(20) NULL DEFAULT 0,
   `update_time` int(20) NULL DEFAULT 0,
@@ -410,7 +416,7 @@ CREATE TABLE `dt_user`  (
 -- ----------------------------
 -- Records of dt_user
 -- ----------------------------
-INSERT INTO `dt_user` VALUES (1, 'super', 'admin', '', '0d3e24d606ccb8b0e1e9d5c11bdfe1ae', '', 'xump', 1, 1652500366, 1783578761);
-INSERT INTO `dt_user` VALUES (2, 'admin', 'super', '', 'f56fe008fb5908e9bd35a64730cc5226', '', 'cNc2', 1, 1652506679, 1789613935);
+INSERT INTO `dt_user` VALUES (1, 'super', 'admin', '', '$2y$10$6dR9T0STRVOgBKrPkVpoNuPn8QCITYhux2RyMA4nMNNd6/R0B/vk.', '', 1, 1652500366, 1791905409);
+INSERT INTO `dt_user` VALUES (2, 'admin', 'super', '', '$2y$10$qaVPRbXHo3/OXxLKgXviiuHwEJny28/nlvJpEl3Iegpt07YNzM3Tm', '', 1, 1652506679, 1791905395);
 
 SET FOREIGN_KEY_CHECKS = 1;

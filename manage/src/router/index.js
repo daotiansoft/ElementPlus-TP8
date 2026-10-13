@@ -1,7 +1,6 @@
 // src/router/index.js
 import {
   createRouter,
-  createWebHistory,
   createWebHashHistory,
 } from "vue-router";
 import Layout from "@/layouts/index.vue";
@@ -42,10 +41,17 @@ export const commonRoutes = [
       },
     ],
   },
+  {
+    // 兜底路由：注册在静态路由中，避免首次进入动态路由时出现 No match 警告
+    path: "/:pathMatch(.*)*",
+    name: "NotFound",
+    component: () => import("@/views/NotFound.vue"),
+    hidden: true,
+  },
 ];
 
 const router = createRouter({
-  // history: createWebHistory(), // HTML5 模式（无 # 号）
+  // 如需 HTML5 模式（无 # 号），可改用 createWebHistory()
   history: createWebHashHistory(), // Hash 模式（有 # 号）
   routes: [...commonRoutes],
 
@@ -68,29 +74,23 @@ const addRoutes = async () => {
     }
     router.addRoute(item);
   });
-  router.addRoute({
-    path: "/:pathMatch(.*)*",
-    name: "NotFound",
-    component: () => import("@/views/NotFound.vue"),
-    hidden: true,
-  });
 };
 
 // 白名单（不需要登录验证的路由）
 const whiteList = ["/login"];
+// 动态路由是否已注册（防止重复注册）
 let hasAddedRoutes = false;
 router.beforeEach(async (to, from, next) => {
   const hasToken = localStorage.getItem("token");
   if (hasToken) {
     if (to.path === "/login") {
       next("/");
+    } else if (!hasAddedRoutes) {
+      await addRoutes();
+      hasAddedRoutes = true;
+      // 动态路由注册后，按 path 重新导航以命中真实路由
+      next({ path: to.path, query: to.query, hash: to.hash, replace: true });
     } else {
-      const routeExists = router.getRoutes().some((r) => r.path === to.path);
-      if (!routeExists) {
-        await addRoutes();
-        next({ ...to, replace: true });
-        return;
-      }
       next();
     }
   } else {

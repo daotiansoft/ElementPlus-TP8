@@ -11,6 +11,7 @@ use app\common\enums\StatusEnum;
 use app\common\model\PermsModel;
 use app\common\model\RolePermsModel;
 use app\common\model\RolesModel;
+use app\common\utils\CacheUtils;
 use app\common\utils\TimeUtils;
 
 class RolePermsService extends Service
@@ -37,6 +38,7 @@ class RolePermsService extends Service
         }
         $model->where('type','=',$type)->delete();
         $model->insertAll($items);
+        CacheUtils::clearTag('perms');
     }
 
 }

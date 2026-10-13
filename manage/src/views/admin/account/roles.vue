@@ -39,31 +39,14 @@
         <el-table-column prop="create_time" label="创建时间" width="160" />
         <el-table-column label="状态" width="80" align="center">
           <template #default="scope">
-            <el-tag v-if="scope.row.status === 1" disable-transitions
-              >正常</el-tag
-            >
-            <el-tag
-              v-if="scope.row.status === -1"
-              disable-transitions
-              type="info"
-              >禁用</el-tag
-            >
+            <el-tag v-if="scope.row.status === 1" disable-transitions>正常</el-tag>
+            <el-tag v-if="scope.row.status === -1" disable-transitions type="info">禁用</el-tag>
           </template>
         </el-table-column>
         <el-table-column label="操作" width="150" fixed="right">
           <template #default="scope">
-            <el-button
-              type="primary"
-              size="small"
-              @click="onItemEdit(scope.row)"
-              >编辑</el-button
-            >
-            <el-button
-              type="warning"
-              size="small"
-              @click="onItemPerms(scope.row)"
-              >权限</el-button
-            >
+            <el-button type="primary" size="small" @click="onItemEdit(scope.row)">编辑</el-button>
+            <el-button type="warning" size="small" @click="onItemPerms(scope.row)">权限</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -82,25 +65,13 @@
     <el-dialog title="添加" v-model="addVisible">
       <el-form ref="addFormRef" :model="addForm">
         <el-form-item label="角色标识" label-width="80px">
-          <el-input
-            v-model="addForm.type"
-            autocomplete="off"
-            placeholder="请输入角色标识"
-          />
+          <el-input v-model="addForm.type" autocomplete="off" placeholder="请输入角色标识" />
         </el-form-item>
         <el-form-item label="角色名称" label-width="80px">
-          <el-input
-            v-model="addForm.name"
-            autocomplete="off"
-            placeholder="请输入角色名称"
-          />
+          <el-input v-model="addForm.name" autocomplete="off" placeholder="请输入角色名称" />
         </el-form-item>
         <el-form-item label="备注" label-width="80px">
-          <el-input
-            v-model="addForm.remark"
-            autocomplete="off"
-            placeholder="可空"
-          />
+          <el-input v-model="addForm.remark" autocomplete="off" placeholder="可空" />
         </el-form-item>
         <el-form-item label="状态" label-width="80px">
           <el-select v-model="addForm.status" placeholder="请选择">
@@ -111,34 +82,20 @@
       </el-form>
       <template #footer>
         <el-button @click="addVisible = false">取 消</el-button>
-        <el-button type="primary" @click="onAdd" v-loading="loading"
-          >确 定</el-button
-        >
+        <el-button type="primary" @click="onAdd" v-loading="loading">确 定</el-button>
       </template>
     </el-dialog>
 
     <el-dialog title="编辑" v-model="editVisible">
       <el-form ref="editFormRef" :model="editForm">
         <el-form-item label="角色标识" label-width="80px">
-          <el-input
-            v-model="editForm.type"
-            autocomplete="off"
-            placeholder="请输入角色标识"
-          />
+          <el-input v-model="editForm.type" autocomplete="off" placeholder="请输入角色标识" />
         </el-form-item>
         <el-form-item label="角色名称" label-width="80px">
-          <el-input
-            v-model="editForm.name"
-            autocomplete="off"
-            placeholder="请输入角色名称"
-          />
+          <el-input v-model="editForm.name" autocomplete="off" placeholder="请输入角色名称" />
         </el-form-item>
         <el-form-item label="备注" label-width="80px">
-          <el-input
-            v-model="editForm.remark"
-            autocomplete="off"
-            placeholder="可空"
-          />
+          <el-input v-model="editForm.remark" autocomplete="off" placeholder="可空" />
         </el-form-item>
         <el-form-item label="状态" label-width="80px">
           <el-select v-model="editForm.status" placeholder="请选择">
@@ -149,9 +106,7 @@
       </el-form>
       <template #footer>
         <el-button @click="editVisible = false">取 消</el-button>
-        <el-button type="primary" @click="onEdit" v-loading="loading"
-          >确 定</el-button
-        >
+        <el-button type="primary" @click="onEdit" v-loading="loading">确 定</el-button>
       </template>
     </el-dialog>
 
@@ -174,9 +129,7 @@
             {{ data.name }}
 
             <el-tag
-              v-if="
-                data.module != '' && data.controller != '' && data.action != ''
-              "
+              v-if="data.module != '' && data.controller != '' && data.action != ''"
               effect="plain"
               style="margin-left: 10px"
               size="small"
@@ -184,26 +137,21 @@
             >
               {{ data.module }}/{{ data.controller }}/{{ data.action }}
             </el-tag>
-            <el-tag type="info" size="small" v-if="data.only_api == 1"
-              >API</el-tag
-            >
-            <el-tag type="info" size="small" v-if="data.status != 1"
-              >禁用</el-tag
-            >
+            <el-tag type="info" size="small" v-if="data.only_api == 1">API</el-tag>
+            <el-tag type="info" size="small" v-if="data.status != 1">禁用</el-tag>
           </template>
         </el-tree>
       </el-form>
       <template #footer>
         <el-button @click="permsVisible = false">取 消</el-button>
-        <el-button type="primary" @click="onPerms" v-loading="loading"
-          >确 定</el-button
-        >
+        <el-button type="primary" @click="onPerms" v-loading="loading">确 定</el-button>
       </template>
     </el-dialog>
   </div>
 </template>
 <script setup>
 import { ref, onMounted, nextTick } from "vue";
+import { House } from "@element-plus/icons-vue";
 import roles from "@/api/admin/roles";
 import perms from "@/api/admin/perms";
 import rolePerms from "@/api/admin/rolePerms";
@@ -307,7 +255,7 @@ const onDelete = () => {
       const loadingInstance = ElLoading.service({ fullscreen: true });
       try {
         const ids = multipleSelection.value.map((item) => item.id);
-        roles.del({ ids: ids });
+        await roles.del({ ids: ids });
         ElMessage.success("删除成功");
         getItems();
       } catch (error) {

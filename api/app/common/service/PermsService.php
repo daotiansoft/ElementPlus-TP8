@@ -7,72 +7,113 @@ namespace app\common\service;
 
 use app\common\basics\Service;
 use app\common\enums\StatusEnum;
-use app\common\exception\RequestException;
 use app\common\model\PermsModel;
 use app\common\model\RolePermsModel;
-use app\common\utils\TimeUtils;
+use app\common\utils\CacheUtils;
 
 class PermsService extends Service
 {
-    public static function getRoutes(string $type,int $parentId = 0):array
-    {
-        $model = new RolePermsModel();
-        $perms_ids = $model->where('type','=',$type)->column('perms_id');
-        $perms = self::getTreeByChildIdsRecursive($perms_ids);
-        return $perms;
-    }
+    /**
+     * 权限缓存标签
+     */
+    const CACHE_TAG = 'perms';
 
     /**
-     * 通过子ID获取完整树形结构（递归方式）
-     * @param array $childIds
-     * @return array
+     * 获取指定角色的路由菜单树
      */
-    public static function getTreeByChildIdsRecursive(array $childIds):array
+    public static function getRoutes(string $type, int $parentId = 0): array
     {
-        if (empty($childIds)) {
+        $cacheKey = 'perms_routes_' . $type;
+        $cached = CacheUtils::get($cacheKey);
+        if (is_array($cached)) {
+            return $cached;
+        }
+
+        $rolePermsModel = new RolePermsModel();
+        $grantedIds = $rolePermsModel->where('type', '=', $type)->column('perms_id');
+        if (empty($grantedIds)) {
             return [];
-        };
-        // 递归获取所有父级数据
-        $allData = self::getParentsRecursive($childIds);
-        // 构建树形结构
-        return self::buildTree($allData);
+        }
+
+        // 一次性取出全部权限，避免逐条递归查库（去 N+1）
+        $permsModel = new PermsModel();
+        $perms = $permsModel
+            ->field('id, route_name as name, parent_id, only_api, route_status')
+            ->select()
+            ->toArray();
+
+        $indexed = [];
+        foreach ($perms as $item) {
+            $indexed[(int) $item['id']] = $item;
+        }
+
+        // 从已授权节点向上补齐所有父级，得到完整闭包集合
+        $needIds = [];
+        foreach ($grantedIds as $grantedId) {
+            $id = (int) $grantedId;
+            $visited = [];
+            while (isset($indexed[$id]) && !isset($visited[$id])) {
+                $visited[$id] = true;
+                $needIds[$id] = true;
+                $node = $indexed[$id];
+                if ((int) $node['parent_id'] <= 0 || (int) $node['only_api'] === StatusEnum::STATUS_1) {
+                    break;
+                }
+                $id = (int) $node['parent_id'];
+            }
+        }
+
+        // 仅保留作为路由展示的节点
+        $subset = [];
+        foreach (array_keys($needIds) as $id) {
+            if (isset($indexed[$id]) && (int) $indexed[$id]['route_status'] === StatusEnum::STATUS_1) {
+                $subset[$id] = [
+                    'id' => $indexed[$id]['id'],
+                    'name' => $indexed[$id]['name'],
+                    'parent_id' => $indexed[$id]['parent_id'],
+                ];
+            }
+        }
+
+        $tree = self::buildTree(array_values($subset));
+
+        CacheUtils::set(self::CACHE_TAG, $cacheKey, $tree);
+        return $tree;
     }
 
     /**
-     * 递归获取父级数据
-     * @param array $ids
-     * @param array $result
-     * @return array
+     * 获取指定角色的权限集合（module/controller/action）
+     * 用于登录态权限校验，结果按角色缓存
      */
-    private static function getParentsRecursive(array $ids, array $result = []):array
+    public static function getPowerSet(string $type): array
     {
-        if (empty($ids)) {
-            return $result;
-        }
-        $_ids = [];
-        foreach($ids as $id){
-            $_ids = array_merge($_ids,self::getParentIds($id));
-        }
-        $ids = array_merge($_ids,$ids);
-        $model = new PermsModel();
-        // 查询当前ID的数据
-        $data = $model->whereIn('id', $ids)->where('route_status','=',StatusEnum::STATUS_1)->field('id,route_name as name,parent_id')->select()->toArray();
-
-        if (empty($data)) {
-            return $result;
+        $cacheKey = 'perms_power_' . $type;
+        $cached = CacheUtils::get($cacheKey);
+        if (is_array($cached)) {
+            return $cached;
         }
 
-        // 合并数据
-        $result = array_merge($result, $data);
+        $rolePermsModel = new RolePermsModel();
+        $permsIds = $rolePermsModel->where('type', '=', $type)->column('perms_id');
+        if (empty($permsIds)) {
+            return [];
+        }
 
-        // 获取父级ID
-        $parentIds = array_unique(array_column($data, 'parent_id'));
-        $parentIds = array_filter($parentIds, function($id) {
-            return $id > 0;
-        });
+        $permsModel = new PermsModel();
+        $items = $permsModel
+            ->where('id', 'in', $permsIds)
+            ->where('status', '=', StatusEnum::STATUS_1)
+            ->field('module, controller, action')
+            ->select()
+            ->toArray();
 
-        // 递归获取父级数据
-        return self::getParentsRecursive($parentIds, $result);
+        $set = [];
+        foreach ($items as $item) {
+            $set[strtolower($item['module'] . '/' . $item['controller'] . '/' . $item['action'])] = true;
+        }
+
+        CacheUtils::set(self::CACHE_TAG, $cacheKey, $set);
+        return $set;
     }
 
     /**
@@ -108,20 +149,5 @@ class PermsService extends Service
         return $tree;
     }
 
-    public static function getParentIds($id, $parentIds = [])
-    {
-        $model = new PermsModel();
-        $item = $model->getItemById($id);
-        // 如果该父级节点还有上级（pid不为0），则继续向上递归查找
-        if ($item && $item['parent_id'] > 0 && $item['only_api'] == StatusEnum::STATUS_0) {
-            $parentIds[]=$item['parent_id'];
-            // 递归调用，将当前节点的 pid 作为新目标向上查找
-            $parentIds = array_merge($parentIds,self::getParentIds($item['parent_id'], $parentIds));
-        }
-
-        return array_values(array_unique($parentIds));
-    }
-
-
-
 }
+

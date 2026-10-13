@@ -13,7 +13,7 @@ class Index extends BaseController
         $data=[];
         $data['data'] = ['time'=>time()];
         $data['expire_time'] = time() + 5;
-        $task_id = TaskService::add($data);
+        $task_id = TaskService::push($data);
         return $task_id;
     }
     public function pop(){

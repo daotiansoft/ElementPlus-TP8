@@ -1,12 +1,22 @@
 <?php
 // 应用公共文件
 /**
- * 密码加密
- * @param $password
+ * 生成密码哈希（使用 PHP 推荐的默认算法，目前为 bcrypt）
+ * @param string $password
  * @return string
  */
-function get_password($password, $rand_code){
-    return md5($rand_code . md5($password));
+function make_password($password){
+    return password_hash($password, PASSWORD_DEFAULT);
+}
+
+/**
+ * 校验密码
+ * @param string $password 明文密码
+ * @param string $hash     数据库中的密码哈希
+ * @return bool
+ */
+function verify_password($password, $hash){
+    return $hash !== '' && password_verify($password, $hash);
 }
 
 /**

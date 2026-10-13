@@ -214,7 +214,6 @@ const getRoles = async () => {
     roles.value = response;
   } catch (error) {
     console.error("获取列表失败:", error);
-  } finally {
   }
 };
 
@@ -271,7 +270,7 @@ const onDelete = () => {
       const loadingInstance = ElLoading.service({ fullscreen: true });
       try {
         const ids = multipleSelection.value.map((item) => item.id);
-        member.del({ ids: ids });
+        await member.del({ ids: ids });
         ElMessage.success("删除成功");
         getItems();
       } catch (error) {

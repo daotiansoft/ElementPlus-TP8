@@ -27,8 +27,7 @@ class Member extends BaseController
         }
         $this->validate->addCheck($data);
 
-        $data['rand_code'] = get_rand_str(4);
-        $data['password']=get_password($data['password'],$data['rand_code']);
+        $data['password'] = make_password($data['password']);
         $this->service::add($data,$this->userItem);
         return AjaxUtils::success();
     }
@@ -36,8 +35,7 @@ class Member extends BaseController
     public function edit(){
         $data = $this->request->param();
         if(!empty($data['password'])){
-            $data['rand_code'] = get_rand_str(4);
-            $data['password']=get_password($data['password'],$data['rand_code']);
+            $data['password'] = make_password($data['password']);
         }else{
             unset($data['password']);
         }

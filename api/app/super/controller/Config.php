@@ -7,6 +7,7 @@ use app\common\enums\StatusEnum;
 use app\common\model\ConfigGroupModel;
 use app\common\model\ConfigModel;
 use app\common\utils\AjaxUtils;
+use app\common\utils\CacheUtils;
 use app\common\utils\UrlUtils;
 use think\App;
 use think\response\Json;
@@ -68,6 +69,7 @@ class Config extends BaseController
                 }
             }
         }
+        CacheUtils::clearTag('config');
         return AjaxUtils::success("保存成功");
     }
 

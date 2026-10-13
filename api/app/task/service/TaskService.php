@@ -12,7 +12,7 @@ class TaskService extends Service
 {
     const REDIS_LIST_KEY = 'redis_task_list';
 
-    public static function add(array $params):string
+    public static function push(array $params):string
     {
         $data = [];
         //必填参数

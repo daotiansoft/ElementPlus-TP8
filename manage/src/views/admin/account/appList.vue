@@ -104,7 +104,6 @@
           <el-input placeholder="32个字符以内" v-model="addForm.secret">
             <template #append>
               <el-button
-                slot="append"
                 @click="
                   () => {
                     addForm.secret = generateRandomString();
@@ -143,7 +142,6 @@
           <el-input placeholder="32个字符以内" v-model="editForm.appid">
             <template #append>
               <el-button
-                slot="append"
                 @click="
                   () => {
                     editForm.appid = generateRandomString();
@@ -158,7 +156,6 @@
           <el-input placeholder="32个字符以内" v-model="editForm.secret">
             <template #append>
               <el-button
-                slot="append"
                 @click="
                   () => {
                     editForm.secret = generateRandomString();

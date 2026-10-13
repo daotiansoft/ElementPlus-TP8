@@ -21,11 +21,21 @@ use think\facade\Cache;
 class LoginService
 {
     protected static function getJwtKey(){
-        $cache_key = 'jwt_key';
-        $key = Cache::get($cache_key);
-        if(empty($key)){
-            $key = md5(get_rand_str(32).get_rand_str(32));
-            Cache::set($cache_key,$key);
+        $key = (string) config('jwt.secret', '');
+        if (!empty($key)) {
+            return $key;
+        }
+
+        // 未配置 JWT_SECRET 时，自动生成密钥并持久化到「根」runtime 目录。
+        // 注意：多应用模式下 runtime_path() 会按应用分区（runtime/common、runtime/super…），
+        // 必须使用根 runtime 目录，保证登录（common）与鉴权（super）共享同一密钥
+        $keyFile = root_path() . 'runtime' . DIRECTORY_SEPARATOR . 'jwt_key';
+        if (is_file($keyFile)) {
+            $key = trim((string) file_get_contents($keyFile));
+        }
+        if (empty($key)) {
+            $key = md5(get_rand_str(32) . get_rand_str(32));
+            file_put_contents($keyFile, $key, LOCK_EX);
         }
         return $key;
     }
@@ -39,7 +49,7 @@ class LoginService
             "aud" => UrlUtils::getDomain(), // 接收者
             "iat" => time(), // 发行时间
             "nbf" => time(), // 生效时间
-            "exp" => time() + 3600 * 24 * 7, // 过期时间（例如，1小时后过期）
+            "exp" => time() + (int) config('jwt.expire', 3600 * 24 * 7), // 过期时间
             "data" => $data
         );
         $jwt = JWT::encode($payload, self::getJwtKey(), 'HS256');
@@ -77,7 +87,7 @@ class LoginService
             throw new RequestException('账号不存在或已停用！');
         }
 
-        if(isset($params['password']) && get_password($params['password'],$userItem['rand_code']) != $userItem['password']){
+        if(isset($params['password']) && !verify_password($params['password'], $userItem['password'])){
             $loginFailCount += 1;
 
             Cache::set($cacke_key,$loginFailCount);

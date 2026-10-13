@@ -8,6 +8,7 @@ namespace app\super\service;
 use app\common\basics\Service;
 use app\common\enums\StatusEnum;
 use app\common\model\PermsModel;
+use app\common\utils\CacheUtils;
 use app\common\utils\TimeUtils;
 
 class PermsService extends Service
@@ -46,6 +47,7 @@ class PermsService extends Service
             'route_name'        => $post['route_name'] ?? '',
             'only_api'        => $post['only_api'] ?? StatusEnum::STATUS_0,
         ]);
+        CacheUtils::clearTag('perms');
     }
 
     public static function edit(array $post,array $userItem): void
@@ -62,12 +64,14 @@ class PermsService extends Service
             'route_name'        => $post['route_name'] ?? '',
             'only_api'        => $post['only_api'] ?? StatusEnum::STATUS_0,
         ], ['id'=>intval($post['id'])]);
+        CacheUtils::clearTag('perms');
     }
 
     public static function del(array $ids,array $userItem): void
     {
         PermsModel::destroy($ids,true);
         PermsModel::where('parent_id','in',$ids)->delete();
+        CacheUtils::clearTag('perms');
     }
 
 

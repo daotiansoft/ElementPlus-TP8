@@ -5,13 +5,11 @@ declare (strict_types = 1);
 namespace app\common\basics;
 
 use app\BaseController;
-use app\common\enums\StatusEnum;
 use app\common\exception\NotAuthException;
 use app\common\exception\NotPermsException;
-use app\common\model\PermsModel;
-use app\common\model\RolePermsModel;
 use app\common\model\UserModel;
 use app\common\service\LoginService;
+use app\common\service\PermsService;
 use think\App;
 use think\facade\Request;
 
@@ -117,27 +115,16 @@ abstract class Auth extends BaseController
         if($this->userItem['id'] == 1){
             return true;
         }
+
+        $permsSet = PermsService::getPowerSet($this->userItem['type']);
+        $key = $module . '/' . $controller . '/' . $action;
+        if (isset($permsSet[$key])) {
+            return true;
+        }
+
         $requestUrl = lcfirst( request()->baseUrl());
         $requestUrl = ltrim($requestUrl, '/');
         $requestUrl = strtolower(($requestUrl == 'index' || !$requestUrl) ? 'index/index' : $requestUrl);
-
-        $permsModel = new PermsModel();
-        $permsItem = $permsModel
-            ->where('module','=',$module)
-            ->where('controller','=',$controller)
-            ->where('action','=',$action)
-            ->find();
-        if($permsItem && $permsItem['status'] == StatusEnum::STATUS_1){
-            $rolePermsModel = new RolePermsModel();
-            $rolePermsItem = $rolePermsModel
-                ->where('type','=',$this->userItem['type'])
-                ->where('perms_id','=',$permsItem['id'])
-                ->find();
-            if($rolePermsItem){
-                return true;
-            }
-        }
-
 
         throw new NotPermsException('无权限['.$requestUrl.']');
     }

@@ -4,7 +4,7 @@
         <el-sub-menu v-if="hasVisibleChildren" :index="route.path">
             <template #title>
                 <el-icon v-if="route.meta?.icon">
-                    <component :is="route.meta.icon" />
+                    <component :is="menuIcons[route.meta.icon]" />
                 </el-icon>
                 <span>{{ route.meta?.title || route.path }}</span>
             </template>
@@ -15,7 +15,7 @@
         <!-- 没有子路由时，渲染为 el-menu-item -->
         <el-menu-item v-else-if="!hasVisibleChildren" :index="route.path">
             <el-icon v-if="route.meta?.icon">
-                <component :is="route.meta.icon" />
+                <component :is="menuIcons[route.meta.icon]" />
             </el-icon>
             <template #title>
                 <span>{{ route.meta?.title || route.path }}</span>
@@ -26,6 +26,7 @@
 
 <script setup>
 import { computed } from 'vue'
+import { menuIcons } from '@/utils/menuIcons'
 
 const props = defineProps({
     route: {

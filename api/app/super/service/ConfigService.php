@@ -7,8 +7,8 @@ namespace app\super\service;
 use app\common\basics\Service;
 use app\common\model\ConfigModel;
 use app\common\model\UserModel;
+use app\common\utils\CacheUtils;
 use app\common\utils\TimeUtils;
-use think\facade\Cache;
 
 class ConfigService extends Service
 {
@@ -54,6 +54,7 @@ class ConfigService extends Service
             'create_time'  => time(),
             'update_time'  => time()
         ]);
+        CacheUtils::clearTag('config');
     }
 
     public static function edit(array $post,array $userItem): void
@@ -70,11 +71,13 @@ class ConfigService extends Service
             'show'        => $post['show'],
             'update_time'  => time()
         ], ['id'=>intval($post['id'])]);
+        CacheUtils::clearTag('config');
     }
 
     public static function del(array $ids,array $userItem): void
     {
         ConfigModel::destroy($ids,true);
+        CacheUtils::clearTag('config');
     }
 
 

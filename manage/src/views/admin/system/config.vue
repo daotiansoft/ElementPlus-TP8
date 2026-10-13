@@ -13,10 +13,15 @@
       >
         <el-tab-pane
           v-for="groupItem in items"
+          :key="groupItem.id"
           :label="groupItem.name"
           :name="groupItem.id"
         >
-          <el-form-item v-for="item in groupItem['child']" :label="item.name">
+          <el-form-item
+            v-for="item in groupItem['child']"
+            :key="item.key"
+            :label="item.name"
+          >
             <el-input v-if="item.type == 'text'" v-model="item.content" />
             <el-input
               v-if="item.type == 'textarea'"

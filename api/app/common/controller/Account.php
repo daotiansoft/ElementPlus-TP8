@@ -74,13 +74,12 @@ class Account extends Auth
 
         $user_model=new UserModel();
 
-        if(get_password($password_old,$this->userItem['rand_code']) != $this->userItem['password']){
+        if(!verify_password($password_old, $this->userItem['password'])){
             return AjaxUtils::error("原密码不正确");
         }
 
         $data=[];
-        $data['rand_code'] = get_rand_str(4);
-        $data['password'] = get_password($password_new,$data['rand_code']);
+        $data['password'] = make_password($password_new);
         $req=$user_model->where('id','=',$this->userItem['id'])->update($data);
         if($req){
             return AjaxUtils::success("修改成功");

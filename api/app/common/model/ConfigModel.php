@@ -1,6 +1,7 @@
 <?php
 namespace app\common\model;
 
+use app\common\utils\CacheUtils;
 use app\common\utils\UrlUtils;
 use think\model\relation\HasOne;
 
@@ -25,14 +26,21 @@ class ConfigModel extends CommonModel
         'update_time'=>'int',
     ];
     public function getContentByKey($key){
-        $req= $this->where('key','=',$key)->find();
-        if($req){
-            if($req['type'] == 'image'){
-                return UrlUtils::editorAbsoluteSrc($req['content']);
-            }
-            return $req['content'];
+        $cacheKey = 'config_content_' . $key;
+        $content = CacheUtils::get($cacheKey);
+        if ($content !== null) {
+            return $content;
         }
-        return '';
+
+        $req = $this->where('key','=',$key)->find();
+        if($req){
+            $content = ($req['type'] == 'image') ? UrlUtils::editorAbsoluteSrc($req['content']) : $req['content'];
+        } else {
+            $content = '';
+        }
+
+        CacheUtils::set('config', $cacheKey, $content);
+        return $content;
     }
 
     public function group(): HasOne

@@ -41,9 +41,12 @@ request.interceptors.response.use(
     if (code === 1) {
       return data
     } else {
-        if(code === -10001) {
+        if (code === -10001) {
             localStorage.removeItem('token')
-            window.location.href = '/login'
+            // hash 模式下跳转登录页，避免整页刷新丢失状态
+            if (window.location.hash !== '#/login') {
+                window.location.hash = '#/login'
+            }
             return Promise.reject(new Error('未登录或登录已过期，请重新登录'))
         }
       ElMessage.error(msg || '请求失败')

@@ -7,19 +7,19 @@
             </div>
             <!-- 账号 -->
             <el-form-item prop="username">
-                <el-input v-model="form.username" placeholder="请输入账号" size="large" prefix-icon="User" clearable />
+                <el-input v-model="form.username" placeholder="请输入账号" size="large" :prefix-icon="User" clearable />
             </el-form-item>
 
             <!-- 密码 -->
             <el-form-item prop="password">
-                <el-input v-model="form.password" type="password" placeholder="请输入密码" size="large" prefix-icon="Lock"
+                <el-input v-model="form.password" type="password" placeholder="请输入密码" size="large" :prefix-icon="Lock"
                     show-password clearable />
             </el-form-item>
 
             <!-- 图片验证码 -->
             <el-form-item prop="captcha" v-if="website.captcha_status === 1">
                 <div class="captcha-wrapper">
-                    <el-input v-model="form.captcha" placeholder="请输入验证码" size="large" prefix-icon="Stamp" clearable
+                    <el-input v-model="form.captcha" placeholder="请输入验证码" size="large" :prefix-icon="Stamp" clearable
                         class="captcha-input" />
                     <div class="captcha-image" @click="onCaptcha">
                         <img :src="captcha_image" alt="验证码" :title="'点击更换验证码'" />
@@ -39,6 +39,7 @@
 </template>
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
+import { User, Lock, Stamp } from '@element-plus/icons-vue'
 
 import overt from '@/api/overt'
 import router from '../router'

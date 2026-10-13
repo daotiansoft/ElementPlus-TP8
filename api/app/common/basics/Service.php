@@ -163,7 +163,7 @@ class Service
                             $where[] = [$val, '>=', strtotime($start)];
                             $where[] = [$val, '<=', strtotime($end)];
                         } else {
-                            $where[] = [$val, '>=', strtotime($params[$key]) / 1000];
+                            $where[] = [$val, '>=', strtotime($params[$key])];
                         }
                     }
                     break;

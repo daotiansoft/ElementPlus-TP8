@@ -14,70 +14,73 @@ const props = defineProps({
 
 const emit = defineEmits(["update:modelValue"]);
 
+// TinyMCE 8 使用的开源插件（同时用于动态加载与 init 配置）
+const plugins = [
+  "advlist", "anchor", "autolink", "autoresize", "charmap", "code",
+  "codesample", "directionality", "emoticons", "fullscreen", "help",
+  "image", "insertdatetime", "link", "lists", "media", "nonbreaking",
+  "pagebreak", "preview", "searchreplace", "table", "visualblocks",
+  "visualchars", "wordcount",
+];
+
 const editorId = ref(`mce-${Math.random().toString().slice(2)}`);
 let editor = null;
-const languageTypeList = {
-  zh: "zh_CN",
-  en: "en",
-};
 
-const loadTinyMCE = () => {
-  return new Promise((resolve) => {
-    if (window.tinymce) return resolve();
-
+const loadScript = (src) =>
+  new Promise((resolve, reject) => {
     const script = document.createElement("script");
-    script.src = "./tinymce/tinymce.min.js";
-    script.onload = () => {
-      const theme = document.createElement("script");
-      theme.src = "./tinymce/themes/inlite/theme.min.js";
-      theme.onload = () => {
-        // 加载语言包
-        const langScript = document.createElement("script");
-        langScript.src = `./tinymce/langs/${languageTypeList["zh"]}.js`;
-        langScript.async = true;
-        langScript.onload = () => {
-          resolve(window.tinymce);
-        };
-        langScript.onerror = () => {
-          resolve(window.tinymce);
-        };
-        document.head.appendChild(langScript);
-      };
-      document.head.appendChild(theme);
-    };
+    script.src = src;
+    script.async = false;
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error(`脚本加载失败: ${src}`));
     document.head.appendChild(script);
   });
+
+const loadTinyMCE = async () => {
+  if (window.tinymce) return;
+
+  const scripts = [
+    "./tinymce/tinymce.min.js",
+    "./tinymce/models/dom/model.min.js",
+    "./tinymce/themes/silver/theme.min.js",
+    "./tinymce/icons/default/icons.min.js",
+    ...plugins.map((p) => `./tinymce/plugins/${p}/plugin.min.js`),
+    "./tinymce/langs/zh-CN.js",
+  ];
+
+  for (const src of scripts) {
+    await loadScript(src);
+  }
 };
 
 onMounted(async () => {
   await loadTinyMCE();
   initEditor();
 });
+const imageUploadHandler = (blobInfo) =>
+  new Promise((resolve, reject) => {
+    user
+      .uploadFile({ image: blobInfo.blob() })
+      .then((data) => resolve(data?.url || ""))
+      .catch((error) => reject(error?.msg || "上传失败"));
+  });
+
 const initEditor = () => {
   window.tinymce.init({
     selector: `#${editorId.value}`,
     height: props.height,
-    width: "100%",
     menubar: false,
-    plugins:
-      "advlist anchor autolink autosave code codesample colorpicker colorpicker contextmenu directionality emoticons fullscreen hr image imagetools insertdatetime link lists media nonbreaking noneditable pagebreak paste preview print save searchreplace spellchecker tabfocus table template textcolor textpattern   ",
+    branding: false,
+    // 自托管 GPL 开源许可（TinyMCE 8 不提供 license_key 会禁用编辑器）
+    license_key: "gpl",
+    language: "zh-CN",
+    skin_url: "./tinymce/skins/ui/oxide",
+    content_css: "./tinymce/skins/content/default/content.min.css",
+    plugins: plugins.join(" "),
     toolbar:
-      "searchreplace bold italic underline strikethrough alignleft aligncenter alignright outdent indent blockquote undo redo removeformat subscript superscript code codesample hr bullist numlist link image charmap preview anchor pagebreak  media table forecolor backcolor fullscreen code ",
+      "undo redo | blocks | bold italic underline strikethrough subscript superscript | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media table | searchreplace | removeformat | fullscreen code preview",
     toolbar_mode: "wrap",
-    skin_url: "./tinymce/skins/lightgray",
-    content_css: "./tinymce/skins/lightgray/content.min.css",
-    maxImageSize: { type: Number, default: 10 * 1024 * 1024 }, // 10MB
     images_upload_handler: imageUploadHandler,
-    allowedImageTypes: {
-      type: Array,
-      default: () => [
-        "image/jpeg",
-        "image/png",
-        "image/gif",
-        "image/webp",
-        "image/bmp",
-      ],
-    },
     setup: (ed) => {
       editor = ed;
       ed.on("init", () => props.modelValue && ed.setContent(props.modelValue));
@@ -102,33 +105,6 @@ onBeforeUnmount(() => {
   }
 });
 
-const imageUploadHandler = (blobInfo, success, failure, progress) => {
-  return new Promise(async (resolve, reject) => {
-    const file = blobInfo.blob();
-    const filename = blobInfo.filename();
-    try {
-      user
-        .uploadFile({ image: file })
-        .then((data) => {
-          const imageUrl = data?.url || "";
-          const editor = getEditorInstance();
-          success(imageUrl);
-        })
-        .catch((error) => {
-          failure(error.msg || error);
-        });
-    } catch (error) {
-      reject(error.message || error);
-    }
-  });
-};
-
-const getEditorInstance = () => {
-  if (window.tinymce) {
-    return window.tinymce.get(editorId.value);
-  }
-  return null;
-};
 
 defineExpose({
   getContent: () => editor?.getContent() || "",

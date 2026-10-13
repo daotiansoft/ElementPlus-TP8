@@ -5,7 +5,12 @@
       type="card"
       style="background: #fff; padding: 20px; border-radius: 4px"
     >
-      <el-tab-pane v-for="item in items" :label="item.name" :name="item.key">
+      <el-tab-pane
+        v-for="item in items"
+        :key="item.key"
+        :label="item.name"
+        :name="item.key"
+      >
         <SimpleEditor v-model="item.content" />
       </el-tab-pane>
     </el-tabs>

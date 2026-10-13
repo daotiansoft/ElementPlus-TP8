@@ -18,11 +18,7 @@
               </el-icon>
               {{ data.name }}
               <el-tag
-                v-if="
-                  data.module != '' &&
-                  data.controller != '' &&
-                  data.action != ''
-                "
+                v-if="data.module != '' && data.controller != '' && data.action != ''"
                 effect="plain"
                 style="margin-left: 10px"
                 size="small"
@@ -30,42 +26,34 @@
               >
                 {{ data.module }}/{{ data.controller }}/{{ data.action }}
               </el-tag>
-              <el-tag type="info" size="small" v-if="data.only_api == 1"
-                >API</el-tag
-              >
-              <el-tag type="info" size="small" v-if="data.status != 1"
-                >禁用</el-tag
-              >
+              <el-tag type="info" size="small" v-if="data.only_api == 1">API</el-tag>
+              <el-tag type="info" size="small" v-if="data.status != 1">禁用</el-tag>
             </div>
             <div class="menu-right">
               <el-button
                 type="danger"
                 size="small"
-                v-if="
-                  data.module != '' &&
-                  data.controller != '' &&
-                  data.action == ''
-                "
+                v-if="data.module != '' && data.controller != '' && data.action == ''"
                 @click="onCurd(data)"
                 >CURD</el-button
               >
               <el-button
                 type="primary"
                 size="small"
-                icon="Plus"
+                :icon="Plus"
                 @click="onVisibleAdd(data)"
               ></el-button>
               <el-button
                 type="primary"
                 size="small"
-                icon="Edit"
+                :icon="Edit"
                 v-if="data.id > 0"
                 @click="onVisibleEdit(data)"
               ></el-button>
               <el-button
                 type="danger"
                 size="small"
-                icon="Delete"
+                :icon="Delete"
                 v-if="data.id > 0"
                 @click="onDelete(data)"
               ></el-button>
@@ -75,18 +63,8 @@
       </el-tree>
     </el-card>
 
-    <el-dialog
-      v-model="dialogVisible"
-      :title="dialogTitle"
-      width="600px"
-      destroy-on-close
-    >
-      <el-form
-        ref="formRef"
-        :model="formData"
-        :rules="formRules"
-        label-width="auto"
-      >
+    <el-dialog v-model="dialogVisible" :title="dialogTitle" width="600px" destroy-on-close>
+      <el-form ref="formRef" :model="formData" :rules="formRules" label-width="auto">
         <el-row :gutter="24">
           <el-col :span="12">
             <el-form-item label="上级节点" prop="parent_id">
@@ -156,11 +134,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item
-              label="前端路由"
-              prop="status"
-              v-if="formData.only_api == 0"
-            >
+            <el-form-item label="前端路由" prop="status" v-if="formData.only_api == 0">
               <el-switch
                 v-model="formData.route_status"
                 :active-value="1"
@@ -172,10 +146,7 @@
           </el-col>
         </el-row>
 
-        <el-row
-          :gutter="24"
-          v-if="formData.only_api == 0 && formData.route_status == 1"
-        >
+        <el-row :gutter="24" v-if="formData.only_api == 0 && formData.route_status == 1">
           <el-col :span="12">
             <el-form-item label="路由名称" prop="sort">
               <el-input v-model="formData.route_name" placeholder="" />
@@ -193,6 +164,7 @@
 
 <script setup>
 import { ref, reactive, onMounted } from "vue";
+import { House, Plus, Edit, Delete } from "@element-plus/icons-vue";
 import perms from "@/api/admin/perms";
 
 const dialogVisible = ref(false);
@@ -282,15 +254,11 @@ const filterNode = (value, data) => {
 
 // 删除节点
 const onDelete = (data) => {
-  ElMessageBox.confirm(
-    `确定要删除节点 "${data.name}" 及其所有子节点吗？`,
-    "删除确认",
-    {
-      confirmButtonText: "确定",
-      cancelButtonText: "取消",
-      type: "warning",
-    },
-  )
+  ElMessageBox.confirm(`确定要删除节点 "${data.name}" 及其所有子节点吗？`, "删除确认", {
+    confirmButtonText: "确定",
+    cancelButtonText: "取消",
+    type: "warning",
+  })
     .then(async () => {
       loading.value = true;
       try {
@@ -305,15 +273,11 @@ const onDelete = (data) => {
     .catch(() => {});
 };
 const onCurd = (data) => {
-  ElMessageBox.confirm(
-    `生成 "${data.name}" CURD？`,
-    "！！！非开发人员，请勿操作！！！",
-    {
-      confirmButtonText: "确定",
-      cancelButtonText: "取消",
-      type: "warning",
-    },
-  )
+  ElMessageBox.confirm(`生成 "${data.name}" CURD？`, "！！！非开发人员，请勿操作！！！", {
+    confirmButtonText: "确定",
+    cancelButtonText: "取消",
+    type: "warning",
+  })
     .then(async () => {
       loading.value = true;
       try {

@@ -77,7 +77,6 @@ import transformRoutes from '@/router/routes'
 
 import { useUserStore } from '@/store/modules/user'
 import { useOvertStore } from '@/store/modules/overt'
-import { inputNumberEmits } from 'element-plus'
 
 const userStore = useUserStore()
 const overtStore = useOvertStore()
@@ -120,7 +119,7 @@ const buildMenuTree = async () => {
     return transformRoutes(routeItems)
 }
 
-const menuRoutes = ref({})
+const menuRoutes = ref([])
 
 
 // 面包屑数据
@@ -182,17 +181,10 @@ onMounted(async () => {
         console.error('获取网站信息失败', err)
     })
 
-    //动态更新菜单
-    let routes = router.options.routes
-    const routeItems = transformRoutes(await userStore.getRoutesItems())
-    routeItems.forEach(routeItem => {
-        const hasPath = routes.some(item => item.path === routeItem.path)
-        if (!hasPath) {
-            routes.push(routeItem)
-        }
-
-    });
-    menuRoutes.value = routes.filter(r => r.path !== '/')
+    // 动态更新菜单：直接使用后端返回的权限路由构建，
+    // 保证与 router.addRoute 注册的路由完全一致
+    const routeItems = await buildMenuTree()
+    menuRoutes.value = routeItems.filter(item => item && item.hidden === false)
 })
 
 

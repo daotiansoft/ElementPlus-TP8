@@ -25,7 +25,7 @@ class UserService extends Service
         ],$get);
         $model = new UserModel();
         $lists = $model
-            ->withoutField(['password','rand_code'])
+            ->withoutField(['password'])
             ->withJoin(['role'],'LEFT')
             ->where(self::$searchWhere)
             ->order('id desc')
@@ -50,7 +50,6 @@ class UserService extends Service
             'type'          => $post['type'],
             'username'        => $post['username'],
             'password'        => $post['password'],
-            'rand_code'        => $post['rand_code'],
             'status'        => $post['status'] ?? StatusEnum::STATUS_1,
             'create_time'  => time(),
             'update_time'  => time()
@@ -63,13 +62,11 @@ class UserService extends Service
             'type'          => $post['type'],
             'username'        => $post['username'],
             'password'        => $post['password'] ?? '',
-            'rand_code'        => $post['rand_code'] ?? '',
             'status'        => $post['status'] ?? StatusEnum::STATUS_1,
             'update_time'  => time()
         ];
         if(empty($data['password'])){
             unset($data['password']);
-            unset($data['rand_code']);
         }
         UserModel::update($data, ['id'=>intval($post['id'])]);
 
