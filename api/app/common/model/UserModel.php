@@ -17,6 +17,7 @@ class UserModel extends CommonModel
         'nickname'=>'string',
         'password'=>'string',
         'avatar'=>'string',
+        'balance'=>'int',
         'status'=>'int',
         'create_time'=>'int',
         'update_time'=>'int'

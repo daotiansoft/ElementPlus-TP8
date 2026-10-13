@@ -2,7 +2,7 @@ import { BaseApi } from "@/utils/baseApi";
 
 class Api extends BaseApi {
   constructor() {
-    super("/super/editor/");
+    super("/admin/editor/");
   }
   getItems() {
     return this.request({

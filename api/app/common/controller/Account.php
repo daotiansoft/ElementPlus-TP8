@@ -38,7 +38,7 @@ class Account extends Auth
     }
 
     /**
-     * @api {GET} /super/user/password 修改密码
+     * @api {GET} /common/account/password 修改密码
      * @apiVersion 1.0.0
      * @apiName password
      * @apiGroup user

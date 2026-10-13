@@ -56,6 +56,28 @@ const routesMap = {
     meta: { title: "权限节点" },
     hidden: false,
   },
+
+  "/admin/finance": {
+    meta: { title: "财务管理", icon: "Wallet" },
+    hidden: false,
+  },
+  "/admin/finance/balance": {
+    name: "余额记录",
+    component: () => import("@/views/admin/account/balance.vue"),
+    meta: { title: "余额记录" },
+    hidden: false,
+  },
+
+  "/user": {
+    meta: { title: "个人中心", icon: "User" },
+    hidden: false,
+  },
+  "/user/balance": {
+    name: "我的余额",
+    component: () => import("@/views/user/balance.vue"),
+    meta: { title: "我的余额" },
+    hidden: false,
+  },
 };
 
 const transformRoutes = (paths) => {

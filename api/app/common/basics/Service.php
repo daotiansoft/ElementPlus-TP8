@@ -158,12 +158,19 @@ class Service
                         }
 
                         if (is_array($params[$key])) {
-                            $start = $params[$key][0];
-                            $end = $params[$key][1];
-                            $where[] = [$val, '>=', strtotime($start)];
-                            $where[] = [$val, '<=', strtotime($end)];
+                            $start = self::toTimestamp($params[$key][0] ?? '');
+                            $end = self::toTimestamp($params[$key][1] ?? '');
+                            if ($start !== null) {
+                                $where[] = [$val, '>=', $start];
+                            }
+                            if ($end !== null) {
+                                $where[] = [$val, '<=', $end];
+                            }
                         } else {
-                            $where[] = [$val, '>=', strtotime($params[$key])];
+                            $start = self::toTimestamp($params[$key]);
+                            if ($start !== null) {
+                                $where[] = [$val, '>=', $start];
+                            }
                         }
                     }
                     break;
@@ -197,6 +204,24 @@ class Service
         }
         self::$searchWhere = $where;
         return $where;
+    }
+
+    /**
+     * 时间参数统一转为时间戳
+     * 支持 10 位时间戳（前端 value-format="X" 输出）与日期字符串（2026-10-14 00:48:49）
+     *
+     * @param mixed $value
+     * @return int|null 无法识别时返回 null
+     * @author zero
+     */
+    protected static function toTimestamp($value): ?int
+    {
+        if (is_int($value) || (is_string($value) && preg_match('/^\d{10}$/', $value))) {
+            return (int) $value;
+        }
+
+        $time = strtotime((string) $value);
+        return $time === false ? null : $time;
     }
 
 

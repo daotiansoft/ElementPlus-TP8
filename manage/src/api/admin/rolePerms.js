@@ -2,7 +2,7 @@ import { BaseApi } from "@/utils/baseApi";
 
 class Api extends BaseApi {
   constructor() {
-    super("/super/rolePerms/");
+    super("/admin/rolePerms/");
   }
   save(data) {
     return this.request({

@@ -27,8 +27,8 @@ class LoginService
         }
 
         // 未配置 JWT_SECRET 时，自动生成密钥并持久化到「根」runtime 目录。
-        // 注意：多应用模式下 runtime_path() 会按应用分区（runtime/common、runtime/super…），
-        // 必须使用根 runtime 目录，保证登录（common）与鉴权（super）共享同一密钥
+        // 注意：多应用模式下 runtime_path() 会按应用分区（runtime/common、runtime/admin…），
+        // 必须使用根 runtime 目录，保证登录（common）与鉴权（admin）共享同一密钥
         $keyFile = root_path() . 'runtime' . DIRECTORY_SEPARATOR . 'jwt_key';
         if (is_file($keyFile)) {
             $key = trim((string) file_get_contents($keyFile));

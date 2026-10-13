@@ -11,7 +11,7 @@
  Target Server Version : 50726
  File Encoding         : 65001
 
- Date: 13/10/2026 23:38:00
+ Date: 14/10/2026 00:57:04
 */
 
 SET NAMES utf8mb4;
@@ -38,6 +38,30 @@ CREATE TABLE `dt_app_list`  (
 -- Records of dt_app_list
 -- ----------------------------
 INSERT INTO `dt_app_list` VALUES (1, 1, 'admin', '1d3gweoqpnqyjponpzovna', 1, '', 1782270416, 1791098588);
+
+-- ----------------------------
+-- Table structure for dt_balance_log
+-- ----------------------------
+DROP TABLE IF EXISTS `dt_balance_log`;
+CREATE TABLE `dt_balance_log`  (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+  `user_id` int(11) NOT NULL DEFAULT 0 COMMENT '用户ID',
+  `change_amount` bigint(20) NOT NULL DEFAULT 0 COMMENT '变动金额(分，可为负)',
+  `balance_after` bigint(20) NOT NULL DEFAULT 0 COMMENT '变动后余额(分)',
+  `type` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '交易类型',
+  `remark` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '备注',
+  `operator` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '操作员',
+  `create_time` int(10) NOT NULL DEFAULT 0 COMMENT '时间',
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `idx_user_id`(`user_id`) USING BTREE COMMENT '用户索引',
+  INDEX `idx_create_time`(`create_time`) USING BTREE COMMENT '时间索引'
+) ENGINE = InnoDB AUTO_INCREMENT = 7 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '余额变动记录表' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of dt_balance_log
+-- ----------------------------
+INSERT INTO `dt_balance_log` VALUES (1, 1, 10000, 10000, 'adjust', 'test', 'admin', 1791908719);
+INSERT INTO `dt_balance_log` VALUES (4, 3, 10000, 10000, 'recharge', '', 'admin', 1791909561);
 
 -- ----------------------------
 -- Table structure for dt_config
@@ -121,7 +145,7 @@ CREATE TABLE `dt_login_log`  (
   `desc` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL,
   `ip` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 58 CHARACTER SET = utf8 COLLATE = utf8_unicode_ci COMMENT = '登录记录' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 59 CHARACTER SET = utf8 COLLATE = utf8_unicode_ci COMMENT = '登录记录' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of dt_login_log
@@ -183,6 +207,7 @@ INSERT INTO `dt_login_log` VALUES (54, 1, '', 1791902984, 1, '', '127.0.0.1');
 INSERT INTO `dt_login_log` VALUES (55, 1, '', 1791905810, 1, '', '127.0.0.1');
 INSERT INTO `dt_login_log` VALUES (56, 1, '', 1791905829, -1, '', '127.0.0.1');
 INSERT INTO `dt_login_log` VALUES (57, 1, '', 1791905833, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (58, 3, '', 1791908670, 1, '', '127.0.0.1');
 
 -- ----------------------------
 -- Table structure for dt_perms
@@ -205,53 +230,63 @@ CREATE TABLE `dt_perms`  (
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_parent_id`(`parent_id`) USING BTREE COMMENT '父级索引',
   INDEX `idx_module_controller_action`(`module`, `controller`, `action`) USING BTREE COMMENT '模块控制器方法组合索引'
-) ENGINE = InnoDB AUTO_INCREMENT = 47 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '权限节点表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 58 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '权限节点表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of dt_perms
 -- ----------------------------
-INSERT INTO `dt_perms` VALUES (1, 0, '设置', 'super', '', '', 0, 1, 1, '/admin/system', 0, 0, 0);
-INSERT INTO `dt_perms` VALUES (2, 1, '系统设置', 'super', 'system', '', 0, 1, 1, '/admin/system/config', 0, 0, 0);
-INSERT INTO `dt_perms` VALUES (3, 1, '富文本', 'super', 'editor', '', 0, 1, 1, '/admin/system/editor', 0, 0, 0);
-INSERT INTO `dt_perms` VALUES (5, 3, '保存', 'super', 'editor', 'save', 0, 1, 0, '', 0, 0, 0);
-INSERT INTO `dt_perms` VALUES (6, 3, '列表', 'super', 'editor', 'items', 0, 1, 0, '', 0, 0, 0);
-INSERT INTO `dt_perms` VALUES (7, 2, '列表', 'super', 'config', 'items', 0, 1, 0, '', 0, 0, 0);
-INSERT INTO `dt_perms` VALUES (8, 2, '保存', 'super', 'config', 'save', 0, 1, 0, '', 0, 0, 0);
-INSERT INTO `dt_perms` VALUES (9, 0, '账号管理', 'super', '', '', 0, 1, 1, '/admin/account', 0, 0, 0);
-INSERT INTO `dt_perms` VALUES (10, 9, 'API管理', 'super', 'appList', '', 0, 1, 1, '/admin/account/appList', 0, 0, 0);
-INSERT INTO `dt_perms` VALUES (11, 10, '列表', 'super', 'appList', 'items', 0, 1, 0, '', 0, 0, 0);
-INSERT INTO `dt_perms` VALUES (12, 10, '新增', 'super', 'appList', 'add', 0, 1, 0, '', 0, 0, 0);
-INSERT INTO `dt_perms` VALUES (13, 10, '编辑', 'super', 'appList', 'edit', 0, 1, 0, '', 0, 0, 0);
-INSERT INTO `dt_perms` VALUES (14, 10, '删除', 'super', 'appList', 'del', 0, 1, 0, '', 0, 0, 0);
-INSERT INTO `dt_perms` VALUES (15, 9, '角色管理', 'super', 'roles', '', 0, 1, 1, '/admin/account/roles', 0, 0, 0);
-INSERT INTO `dt_perms` VALUES (16, 15, '列表', 'super', 'roles', 'items', 0, 1, 0, '', 0, 0, 0);
-INSERT INTO `dt_perms` VALUES (17, 15, 'getOptions', 'super', 'roles', 'getOptions', 0, 1, 0, '', 1, 0, 0);
-INSERT INTO `dt_perms` VALUES (18, 15, '新增', 'super', 'roles', 'add', 0, 1, 0, '', 0, 0, 0);
-INSERT INTO `dt_perms` VALUES (19, 15, '编辑', 'super', 'roles', 'edit', 0, 1, 0, '', 0, 0, 0);
-INSERT INTO `dt_perms` VALUES (20, 15, '删除', 'super', 'roles', 'del', 0, 1, 0, '', 0, 0, 0);
-INSERT INTO `dt_perms` VALUES (21, 9, '权限关联', 'super', 'RolePerms', '', 0, 1, 0, '', 0, 0, 0);
-INSERT INTO `dt_perms` VALUES (22, 21, '保存', 'super', 'RolePerms', 'save', 0, 1, 0, '', 0, 0, 0);
-INSERT INTO `dt_perms` VALUES (23, 9, '权限节点', 'super', 'perms', '', 0, 1, 1, '/admin/account/perms', 0, 0, 0);
-INSERT INTO `dt_perms` VALUES (24, 23, '列表', 'super', 'perms', 'items', 0, 1, 0, '', 0, 0, 0);
-INSERT INTO `dt_perms` VALUES (26, 23, '新增', 'super', 'perms', 'add', 0, 1, 0, '', 0, 0, 0);
-INSERT INTO `dt_perms` VALUES (27, 23, '编辑', 'super', 'perms', 'edit', 0, 1, 0, '', 0, 0, 0);
-INSERT INTO `dt_perms` VALUES (28, 23, '删除', 'super', 'perms', 'del', 0, 1, 0, '', 0, 0, 0);
-INSERT INTO `dt_perms` VALUES (29, 9, '账号列表', 'super', 'member', '', 0, 1, 1, '/admin/account/member', 0, 0, 0);
-INSERT INTO `dt_perms` VALUES (30, 29, '列表', 'super', 'member', 'items', 0, 1, 0, '', 0, 0, 0);
-INSERT INTO `dt_perms` VALUES (31, 29, '新增', 'super', 'member', 'add', 0, 1, 0, '', 0, 0, 0);
-INSERT INTO `dt_perms` VALUES (32, 29, '编辑', 'super', 'member', 'edit', 0, 1, 0, '', 0, 0, 0);
-INSERT INTO `dt_perms` VALUES (33, 29, '删除', 'super', 'member', 'del', 0, 1, 0, '', 0, 0, 0);
-INSERT INTO `dt_perms` VALUES (34, 1, '设置分组', 'super', 'configGroup', '', 0, 1, 1, '/admin/system/configGroup', 0, 0, 0);
-INSERT INTO `dt_perms` VALUES (35, 34, '列表', 'super', 'configGroup', 'items', 0, 1, 0, '', 0, 0, 0);
-INSERT INTO `dt_perms` VALUES (36, 34, '新增', 'super', 'configGroup', 'add', 0, 1, 0, '', 0, 0, 0);
-INSERT INTO `dt_perms` VALUES (37, 34, '编辑', 'super', 'configGroup', 'edit', 0, 1, 0, '', 0, 0, 0);
-INSERT INTO `dt_perms` VALUES (38, 34, '删除', 'super', 'configGroup', 'del', 0, 1, 0, '', 0, 0, 0);
-INSERT INTO `dt_perms` VALUES (39, 1, '设置列表', 'super', 'configList', '', 0, 1, 1, '/admin/system/configList', 0, 0, 0);
-INSERT INTO `dt_perms` VALUES (40, 39, '列表', 'super', 'configList', 'items', 0, 1, 0, '', 0, 0, 0);
-INSERT INTO `dt_perms` VALUES (41, 39, '新增', 'super', 'configList', 'add', 0, 1, 0, '', 0, 0, 0);
-INSERT INTO `dt_perms` VALUES (44, 34, 'getOptions', 'super', 'configGroup', 'getOptions', 0, 1, 0, '', 1, 0, 0);
-INSERT INTO `dt_perms` VALUES (45, 39, '编辑', 'super', 'configList', 'edit', 0, 1, 0, '', 0, 1789617122, 1789617122);
-INSERT INTO `dt_perms` VALUES (46, 39, '删除', 'super', 'configList', 'del', 0, 1, 0, '', 0, 1789617122, 1789617122);
+INSERT INTO `dt_perms` VALUES (1, 0, '设置', 'admin', '', '', 0, 1, 1, '/admin/system', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (2, 1, '系统设置', 'admin', 'system', '', 0, 1, 1, '/admin/system/config', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (3, 1, '富文本', 'admin', 'editor', '', 0, 1, 1, '/admin/system/editor', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (5, 3, '保存', 'admin', 'editor', 'save', 0, 1, 0, '', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (6, 3, '列表', 'admin', 'editor', 'items', 0, 1, 0, '', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (7, 2, '列表', 'admin', 'config', 'items', 0, 1, 0, '', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (8, 2, '保存', 'admin', 'config', 'save', 0, 1, 0, '', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (9, 0, '账号管理', 'admin', '', '', 0, 1, 1, '/admin/account', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (10, 9, 'API管理', 'admin', 'appList', '', 0, 1, 1, '/admin/account/appList', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (11, 10, '列表', 'admin', 'appList', 'items', 0, 1, 0, '', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (12, 10, '新增', 'admin', 'appList', 'add', 0, 1, 0, '', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (13, 10, '编辑', 'admin', 'appList', 'edit', 0, 1, 0, '', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (14, 10, '删除', 'admin', 'appList', 'del', 0, 1, 0, '', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (15, 9, '角色管理', 'admin', 'roles', '', 0, 1, 1, '/admin/account/roles', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (16, 15, '列表', 'admin', 'roles', 'items', 0, 1, 0, '', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (17, 15, 'getOptions', 'admin', 'roles', 'getOptions', 0, 1, 0, '', 1, 0, 0);
+INSERT INTO `dt_perms` VALUES (18, 15, '新增', 'admin', 'roles', 'add', 0, 1, 0, '', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (19, 15, '编辑', 'admin', 'roles', 'edit', 0, 1, 0, '', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (20, 15, '删除', 'admin', 'roles', 'del', 0, 1, 0, '', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (21, 9, '权限关联', 'admin', 'RolePerms', '', 0, 1, 0, '', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (22, 21, '保存', 'admin', 'RolePerms', 'save', 0, 1, 0, '', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (23, 9, '权限节点', 'admin', 'perms', '', 0, 1, 1, '/admin/account/perms', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (24, 23, '列表', 'admin', 'perms', 'items', 0, 1, 0, '', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (26, 23, '新增', 'admin', 'perms', 'add', 0, 1, 0, '', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (27, 23, '编辑', 'admin', 'perms', 'edit', 0, 1, 0, '', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (28, 23, '删除', 'admin', 'perms', 'del', 0, 1, 0, '', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (29, 9, '账号列表', 'admin', 'member', '', 0, 1, 1, '/admin/account/member', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (30, 29, '列表', 'admin', 'member', 'items', 0, 1, 0, '', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (31, 29, '新增', 'admin', 'member', 'add', 0, 1, 0, '', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (32, 29, '编辑', 'admin', 'member', 'edit', 0, 1, 0, '', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (33, 29, '删除', 'admin', 'member', 'del', 0, 1, 0, '', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (34, 1, '设置分组', 'admin', 'configGroup', '', 0, 1, 1, '/admin/system/configGroup', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (35, 34, '列表', 'admin', 'configGroup', 'items', 0, 1, 0, '', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (36, 34, '新增', 'admin', 'configGroup', 'add', 0, 1, 0, '', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (37, 34, '编辑', 'admin', 'configGroup', 'edit', 0, 1, 0, '', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (38, 34, '删除', 'admin', 'configGroup', 'del', 0, 1, 0, '', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (39, 1, '设置列表', 'admin', 'configList', '', 0, 1, 1, '/admin/system/configList', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (40, 39, '列表', 'admin', 'configList', 'items', 0, 1, 0, '', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (41, 39, '新增', 'admin', 'configList', 'add', 0, 1, 0, '', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (44, 34, 'getOptions', 'admin', 'configGroup', 'getOptions', 0, 1, 0, '', 1, 0, 0);
+INSERT INTO `dt_perms` VALUES (45, 39, '编辑', 'admin', 'configList', 'edit', 0, 1, 0, '', 0, 1789617122, 1789617122);
+INSERT INTO `dt_perms` VALUES (46, 39, '删除', 'admin', 'configList', 'del', 0, 1, 0, '', 0, 1789617122, 1789617122);
+INSERT INTO `dt_perms` VALUES (47, 0, '财务管理', 'admin', '', '', 0, 1, 1, '/admin/finance', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (48, 47, '余额记录', 'admin', 'balance', '', 0, 1, 1, '/admin/finance/balance', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (49, 48, '列表', 'admin', 'balance', 'items', 0, 1, 0, '', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (51, 48, '删除', 'admin', 'balance', 'del', 0, 1, 0, '', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (52, 29, 'getOptions', 'admin', 'member', 'getOptions', 0, 1, 0, '', 1, 0, 0);
+INSERT INTO `dt_perms` VALUES (53, 0, '个人中心', 'user', '', '', 0, 1, 1, '/user', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (54, 53, '我的余额', 'user', 'balance', '', 0, 1, 1, '/user/balance', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (55, 54, '余额信息', 'user', 'balance', 'info', 0, 1, 0, '', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (56, 54, '交易记录', 'user', 'balance', 'items', 0, 1, 0, '', 0, 0, 0);
+INSERT INTO `dt_perms` VALUES (57, 29, '调整余额', 'admin', 'member', 'adjust', 0, 1, 0, '', 0, 0, 0);
 
 -- ----------------------------
 -- Table structure for dt_role_perms
@@ -267,7 +302,7 @@ CREATE TABLE `dt_role_perms`  (
   UNIQUE INDEX `uk_type_perms_id`(`type`, `perms_id`) USING BTREE COMMENT '角色类型+权限ID唯一索引',
   INDEX `idx_type`(`type`) USING BTREE COMMENT '角色类型索引',
   INDEX `idx_perms_id`(`perms_id`) USING BTREE COMMENT '权限ID索引'
-) ENGINE = InnoDB AUTO_INCREMENT = 771 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '角色-权限关联表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 781 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '角色-权限关联表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of dt_role_perms
@@ -314,6 +349,15 @@ INSERT INTO `dt_role_perms` VALUES (767, 'super', 37, 1791098594, 1791098594);
 INSERT INTO `dt_role_perms` VALUES (768, 'super', 38, 1791098594, 1791098594);
 INSERT INTO `dt_role_perms` VALUES (769, 'super', 40, 1791098594, 1791098594);
 INSERT INTO `dt_role_perms` VALUES (770, 'super', 41, 1791098594, 1791098594);
+INSERT INTO `dt_role_perms` VALUES (771, 'super', 47, 1791098594, 1791098594);
+INSERT INTO `dt_role_perms` VALUES (772, 'super', 48, 1791098594, 1791098594);
+INSERT INTO `dt_role_perms` VALUES (773, 'super', 49, 1791098594, 1791098594);
+INSERT INTO `dt_role_perms` VALUES (775, 'super', 51, 1791098594, 1791098594);
+INSERT INTO `dt_role_perms` VALUES (776, 'super', 52, 1791098594, 1791098594);
+INSERT INTO `dt_role_perms` VALUES (777, 'user', 55, 1791098594, 1791098594);
+INSERT INTO `dt_role_perms` VALUES (778, 'user', 56, 1791098594, 1791098594);
+INSERT INTO `dt_role_perms` VALUES (779, 'super', 57, 1791098594, 1791098594);
+INSERT INTO `dt_role_perms` VALUES (780, 'admin', 57, 1791098594, 1791098594);
 
 -- ----------------------------
 -- Table structure for dt_roles
@@ -406,17 +450,19 @@ CREATE TABLE `dt_user`  (
   `nickname` varchar(50) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT '' COMMENT '昵称',
   `password` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL,
   `avatar` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT '' COMMENT '头像',
+  `balance` bigint(20) NOT NULL DEFAULT 0 COMMENT '余额(分)',
   `status` tinyint(1) NULL DEFAULT 1 COMMENT '状态1正常2停用',
   `create_time` int(20) NULL DEFAULT 0,
   `update_time` int(20) NULL DEFAULT 0,
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `username`(`username`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8 COLLATE = utf8_unicode_ci COMMENT = '账号表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8 COLLATE = utf8_unicode_ci COMMENT = '账号表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of dt_user
 -- ----------------------------
-INSERT INTO `dt_user` VALUES (1, 'super', 'admin', '', '$2y$10$6dR9T0STRVOgBKrPkVpoNuPn8QCITYhux2RyMA4nMNNd6/R0B/vk.', '', 1, 1652500366, 1791905409);
-INSERT INTO `dt_user` VALUES (2, 'admin', 'super', '', '$2y$10$qaVPRbXHo3/OXxLKgXviiuHwEJny28/nlvJpEl3Iegpt07YNzM3Tm', '', 1, 1652506679, 1791905395);
+INSERT INTO `dt_user` VALUES (1, 'super', 'admin', '', '$2y$10$6dR9T0STRVOgBKrPkVpoNuPn8QCITYhux2RyMA4nMNNd6/R0B/vk.', '', 10000, 1, 1652500366, 1791905409);
+INSERT INTO `dt_user` VALUES (2, 'admin', 'super', '', '$2y$10$qaVPRbXHo3/OXxLKgXviiuHwEJny28/nlvJpEl3Iegpt07YNzM3Tm', '', 0, 1, 1652506679, 1791905395);
+INSERT INTO `dt_user` VALUES (3, 'user', '张三', '', '$2y$10$.ypfEnribqVwP41oRiddiO2qIHaAAjOQDjHxg5RROWika0/TuJT6a', '', 10000, 1, 1791908658, 1791908658);
 
 SET FOREIGN_KEY_CHECKS = 1;

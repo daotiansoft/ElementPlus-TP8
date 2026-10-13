@@ -2,7 +2,7 @@ import { BaseApi } from "@/utils/baseApi";
 
 class Api extends BaseApi {
   constructor() {
-    super("/super/configGroup/");
+    super("/admin/configGroup/");
   }
   getItems() {
     return this.request({

@@ -6,8 +6,8 @@
           <el-date-picker
             v-model="searchForm.time"
             type="datetimerange"
-            value-format="YYYY-MM-DD HH:mm:ss"
-            format="yyyy-MM-dd HH:mm:ss"
+            value-format="X"
+            format="YYYY-MM-DD HH:mm:ss"
             range-separator="至"
             start-placeholder="开始日期"
             end-placeholder="结束日期"
@@ -36,28 +36,23 @@
         <el-table-column prop="id" label="ID" width="80" />
         <el-table-column prop="role_name" label="角色" width="80" />
         <el-table-column prop="username" label="账号" />
-        <el-table-column prop="create_time" label="注册时间" width="160" />
+        <el-table-column label="余额(元)" width="120" align="right">
+          <template #default="scope">
+            {{ formatAmount(scope.row.balance) }}
+          </template>
+        </el-table-column>
         <el-table-column prop="create_time" label="创建时间" width="160" />
         <el-table-column label="状态" width="80" align="center">
           <template #default="scope">
-            <el-tag v-if="scope.row.status === 1" disable-transitions
-              >正常</el-tag
-            >
-            <el-tag
-              v-if="scope.row.status === -1"
-              disable-transitions
-              type="info"
-              >禁用</el-tag
-            >
+            <el-tag v-if="scope.row.status === 1" disable-transitions>正常</el-tag>
+            <el-tag v-if="scope.row.status === -1" disable-transitions type="info">禁用</el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="80" fixed="right">
+        <el-table-column label="操作" width="180" fixed="right">
           <template #default="scope">
-            <el-button
-              type="primary"
-              size="small"
-              @click="onItemEdit(scope.row)"
-              >编辑</el-button
+            <el-button type="primary" size="small" @click="onItemEdit(scope.row)">编辑</el-button>
+            <el-button type="warning" size="small" @click="onItemAdjust(scope.row)"
+              >调整余额</el-button
             >
           </template>
         </el-table-column>
@@ -78,20 +73,11 @@
       <el-form ref="add_form" :model="addForm">
         <el-form-item label="角色" label-width="80px">
           <el-select v-model="addForm.type" placeholder="选择角色">
-            <el-option
-              v-for="(val, key) in roles"
-              :key="key"
-              :label="val.name"
-              :value="val.type"
-            />
+            <el-option v-for="(val, key) in roles" :key="key" :label="val.name" :value="val.type" />
           </el-select>
         </el-form-item>
         <el-form-item label="账号名称" label-width="80px" prop="username">
-          <el-input
-            v-model="addForm.username"
-            autocomplete="off"
-            placeholder="请输入账号名称"
-          />
+          <el-input v-model="addForm.username" autocomplete="off" placeholder="请输入账号名称" />
         </el-form-item>
         <el-form-item label="账号密码" label-width="80px" prop="password">
           <el-input
@@ -109,9 +95,7 @@
       </el-form>
       <template #footer>
         <el-button @click="addVisible = false">取 消</el-button>
-        <el-button type="primary" @click="onAdd" v-loading="loading"
-          >确 定</el-button
-        >
+        <el-button type="primary" @click="onAdd" v-loading="loading">确 定</el-button>
       </template>
     </el-dialog>
 
@@ -119,20 +103,11 @@
       <el-form ref="edit_form" :model="editForm">
         <el-form-item label="角色" label-width="80px">
           <el-select v-model="editForm.type" placeholder="选择角色">
-            <el-option
-              v-for="(val, key) in roles"
-              :key="key"
-              :label="val.name"
-              :value="val.type"
-            />
+            <el-option v-for="(val, key) in roles" :key="key" :label="val.name" :value="val.type" />
           </el-select>
         </el-form-item>
         <el-form-item label="账号名称" label-width="80px" prop="username">
-          <el-input
-            v-model="editForm.username"
-            autocomplete="off"
-            placeholder="请输入账号名称"
-          />
+          <el-input v-model="editForm.username" autocomplete="off" placeholder="请输入账号名称" />
         </el-form-item>
         <el-form-item label="账号密码" label-width="80px" prop="password">
           <el-input
@@ -150,9 +125,38 @@
       </el-form>
       <template #footer>
         <el-button @click="editVisible = false">取 消</el-button>
-        <el-button type="primary" @click="onEdit" v-loading="loading"
-          >确 定</el-button
-        >
+        <el-button type="primary" @click="onEdit" v-loading="loading">确 定</el-button>
+      </template>
+    </el-dialog>
+
+    <el-dialog title="调整余额" v-model="adjustVisible">
+      <el-form ref="adjustFormRef" :model="adjustForm" :rules="adjustRules">
+        <el-form-item label="账号" label-width="80px">
+          <el-input :model-value="adjustForm.username" disabled />
+        </el-form-item>
+        <el-form-item label="变动金额" label-width="80px" prop="amount">
+          <el-input-number
+            v-model="adjustForm.amount"
+            :precision="2"
+            :min="-1000000"
+            :max="1000000"
+            :step="1"
+            style="width: 100%"
+            placeholder="正数增加，负数扣减（单位：元）"
+          />
+        </el-form-item>
+        <el-form-item label="交易类型" label-width="80px">
+          <el-select v-model="adjustForm.type" placeholder="选择类型" style="width: 100%">
+            <el-option v-for="t in typeOptions" :key="t.value" :label="t.label" :value="t.value" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="备注" label-width="80px">
+          <el-input v-model="adjustForm.remark" type="textarea" placeholder="备注" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="adjustVisible = false">取 消</el-button>
+        <el-button type="primary" @click="onAdjust" v-loading="loading">确 定</el-button>
       </template>
     </el-dialog>
   </div>
@@ -191,6 +195,30 @@ const editForm = ref({
 });
 const roles = ref([]);
 const multipleSelection = ref([]);
+
+const typeOptions = [
+  { value: "recharge", label: "充值" },
+  { value: "deduct", label: "扣减" },
+  { value: "refund", label: "退款" },
+  { value: "adjust", label: "调整" },
+  { value: "consume", label: "消费" },
+];
+
+const adjustVisible = ref(false);
+const adjustFormRef = ref(null);
+const adjustForm = ref({
+  user_id: null,
+  username: "",
+  amount: null,
+  type: "adjust",
+  remark: "",
+});
+const adjustRules = {
+  amount: [{ required: true, message: "请输入变动金额", trigger: "blur" }],
+};
+
+// 分 -> 元
+const formatAmount = (fen) => (Number(fen) / 100).toFixed(2);
 
 const onSearch = () => {
   searchForm.value.page = 1;
@@ -242,6 +270,46 @@ const onAdd = async () => {
 const onItemEdit = (item) => {
   editForm.value = { ...item };
   editVisible.value = true;
+};
+
+const onItemAdjust = (item) => {
+  adjustForm.value = {
+    user_id: item.id,
+    username: item.username,
+    amount: null,
+    type: "adjust",
+    remark: "",
+  };
+  adjustVisible.value = true;
+};
+
+const onAdjust = async () => {
+  const valid = await adjustFormRef.value.validate().catch(() => false);
+  if (!valid) return;
+
+  // 元 -> 分（整数）
+  const changeAmount = Math.round(Number(adjustForm.value.amount) * 100);
+  if (changeAmount === 0) {
+    ElMessage.warning("变动金额不能为0");
+    return;
+  }
+
+  loading.value = true;
+  try {
+    await member.adjust({
+      user_id: adjustForm.value.user_id,
+      change_amount: changeAmount,
+      type: adjustForm.value.type,
+      remark: adjustForm.value.remark,
+    });
+    ElMessage.success("调整成功");
+    adjustVisible.value = false;
+    getItems();
+  } catch (error) {
+    console.error("调整失败:", error);
+  } finally {
+    loading.value = false;
+  }
 };
 const onEdit = async () => {
   loading.value = true;
