@@ -11,7 +11,7 @@
  Target Server Version : 50726
  File Encoding         : 65001
 
- Date: 14/10/2026 08:47:21
+ Date: 14/10/2026 09:11:06
 */
 
 SET NAMES utf8mb4;
@@ -23,16 +23,17 @@ SET FOREIGN_KEY_CHECKS = 0;
 DROP TABLE IF EXISTS `dt_app_list`;
 CREATE TABLE `dt_app_list`  (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `uid` int(10) NULL DEFAULT 0,
-  `appid` varchar(32) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT '',
-  `secret` varchar(32) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT '',
-  `status` tinyint(1) NULL DEFAULT 1,
-  `remark` varchar(200) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT '',
-  `create_time` int(10) NULL DEFAULT 0,
-  `update_time` int(10) NULL DEFAULT 0,
+  `uid` int(11) NOT NULL DEFAULT 0,
+  `appid` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '',
+  `secret` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '',
+  `status` tinyint(1) NOT NULL DEFAULT 1,
+  `remark` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '',
+  `create_time` int(10) NOT NULL DEFAULT 0,
+  `update_time` int(10) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`) USING BTREE,
-  UNIQUE INDEX `appid`(`appid`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8 COLLATE = utf8_unicode_ci COMMENT = '应用接口' ROW_FORMAT = Dynamic;
+  UNIQUE INDEX `appid`(`appid`) USING BTREE,
+  INDEX `idx_create_time`(`create_time`) USING BTREE COMMENT '创建时间区间筛选'
+) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '应用接口' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of dt_app_list
@@ -69,29 +70,31 @@ INSERT INTO `dt_balance_log` VALUES (4, 3, 10000, 10000, 'recharge', '', 'admin'
 DROP TABLE IF EXISTS `dt_config`;
 CREATE TABLE `dt_config`  (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `group_id` int(10) NULL DEFAULT 0,
-  `key` varchar(20) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL COMMENT '英文名称',
-  `type` varchar(20) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL COMMENT '类型 text image select',
-  `name` varchar(50) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL COMMENT '中文名称',
-  `content` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL COMMENT '内容',
-  `placeholder` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL COMMENT '提示内容',
-  `params` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL COMMENT '附加内容',
-  `sort` int(10) NULL DEFAULT 50,
-  `show` tinyint(1) NULL DEFAULT 1 COMMENT '是否显示 1是-1否',
-  `create_time` int(10) NULL DEFAULT 0,
-  `update_time` int(10) NULL DEFAULT 0,
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 7 CHARACTER SET = utf8 COLLATE = utf8_unicode_ci COMMENT = '配置' ROW_FORMAT = Dynamic;
+  `group_id` int(11) NOT NULL DEFAULT 0 COMMENT '分组ID',
+  `key` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '英文名称(唯一标识)',
+  `type` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '类型 text image select',
+  `name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '中文名称',
+  `content` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '内容',
+  `placeholder` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '提示内容',
+  `params` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '附加内容',
+  `sort` int(11) NOT NULL DEFAULT 50,
+  `show` tinyint(1) NOT NULL DEFAULT 1 COMMENT '是否显示 1是 -1否',
+  `create_time` int(10) NOT NULL DEFAULT 0,
+  `update_time` int(10) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE INDEX `uk_key`(`key`) USING BTREE COMMENT '唯一标识(供 getContentByKey 精确查找)',
+  INDEX `idx_group_show_sort`(`group_id`, `show`, `sort`) USING BTREE COMMENT '设置页按分组取显示项并排序'
+) ENGINE = InnoDB AUTO_INCREMENT = 7 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '配置' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of dt_config
 -- ----------------------------
-INSERT INTO `dt_config` VALUES (1, 1, 'site_name', 'text', '站点名称', '管理面板', '', NULL, 10, 1, 0, 1789525468);
+INSERT INTO `dt_config` VALUES (1, 1, 'site_name', 'text', '站点名称', '管理面板', '', '', 10, 1, 0, 1789525468);
 INSERT INTO `dt_config` VALUES (2, 1, 'site_status', 'select', '是否闭站', '1', '站点关闭后，用户无法登录', '[{\"id\":\"1\",\"name\":\"否\"},{\"id\":\"2\",\"name\":\"是\"}]', 10, 1, 0, 1789525471);
-INSERT INTO `dt_config` VALUES (3, 1, 'logo', 'image', 'LOGO', 'static/logo.png', NULL, NULL, 50, 1, 0, 1791903103);
-INSERT INTO `dt_config` VALUES (4, 1, 'site_stop_msg', 'text', '闭站提示', '系统维护中...', NULL, NULL, 10, 1, 0, 1789525475);
-INSERT INTO `dt_config` VALUES (5, 1, 'demo_textarea', 'textarea', '多行文本', NULL, NULL, NULL, 1, -1, 0, 1789525480);
-INSERT INTO `dt_config` VALUES (6, 1, 'captcha_status', 'select', '登录验证码', '2', NULL, '[{\"id\":\"1\",\"name\":\"启用\"},{\"id\":\"2\",\"name\":\"关闭\"}]', 50, 1, 0, 1791098578);
+INSERT INTO `dt_config` VALUES (3, 1, 'logo', 'image', 'LOGO', 'static/logo.png', '', '', 50, 1, 0, 1791939916);
+INSERT INTO `dt_config` VALUES (4, 1, 'site_stop_msg', 'text', '闭站提示', '系统维护中...', '', '', 10, 1, 0, 1789525475);
+INSERT INTO `dt_config` VALUES (5, 1, 'demo_textarea', 'textarea', '多行文本', '', '', '', 1, -1, 0, 1789525480);
+INSERT INTO `dt_config` VALUES (6, 1, 'captcha_status', 'select', '登录验证码', '2', '', '[{\"id\":\"1\",\"name\":\"启用\"},{\"id\":\"2\",\"name\":\"关闭\"}]', 50, 1, 0, 1791098578);
 
 -- ----------------------------
 -- Table structure for dt_config_group
@@ -99,12 +102,13 @@ INSERT INTO `dt_config` VALUES (6, 1, 'captcha_status', 'select', '登录验证�
 DROP TABLE IF EXISTS `dt_config_group`;
 CREATE TABLE `dt_config_group`  (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `sort` int(10) NULL DEFAULT 0,
-  `status` tinyint(1) NULL DEFAULT 1,
-  `create_time` int(10) NULL DEFAULT 0,
-  `update_time` int(10) NULL DEFAULT 0,
-  PRIMARY KEY (`id`) USING BTREE
+  `name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '',
+  `sort` int(11) NOT NULL DEFAULT 0,
+  `status` tinyint(1) NOT NULL DEFAULT 1,
+  `create_time` int(10) NOT NULL DEFAULT 0,
+  `update_time` int(10) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `idx_status_sort`(`status`, `sort`) USING BTREE COMMENT '按状态筛选并排序'
 ) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '配置分组' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
@@ -119,12 +123,12 @@ INSERT INTO `dt_config_group` VALUES (2, '用户', 0, 1, 1789525592, 1789613335)
 DROP TABLE IF EXISTS `dt_editor`;
 CREATE TABLE `dt_editor`  (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `key` varchar(20) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL COMMENT '英文名称',
-  `name` varchar(50) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL COMMENT '中文名称',
-  `content` text CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL COMMENT '内容',
+  `key` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '英文名称(唯一标识)',
+  `name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '中文名称',
+  `content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '内容',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `key`(`key`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8 COLLATE = utf8_unicode_ci COMMENT = '富文本内容' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '富文本内容' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of dt_editor
@@ -138,14 +142,14 @@ INSERT INTO `dt_editor` VALUES (2, 'test', '测试内容', '<p>666</p>');
 DROP TABLE IF EXISTS `dt_login_log`;
 CREATE TABLE `dt_login_log`  (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `uid` int(20) NULL DEFAULT 0,
-  `device` varchar(20) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL COMMENT '登录设备',
-  `time` int(20) NULL DEFAULT 0,
-  `status` tinyint(1) NULL DEFAULT 1 COMMENT '状态1成功2失败',
-  `desc` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL,
-  `ip` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL,
+  `uid` int(11) NOT NULL DEFAULT 0,
+  `device` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '登录设备',
+  `time` int(10) NOT NULL DEFAULT 0,
+  `status` tinyint(1) NOT NULL DEFAULT 1 COMMENT '状态 1成功 -1失败',
+  `desc` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '',
+  `ip` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT 'IPv4/IPv6',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 63 CHARACTER SET = utf8 COLLATE = utf8_unicode_ci COMMENT = '登录记录' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 63 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '登录记录' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of dt_login_log
@@ -232,8 +236,8 @@ CREATE TABLE `dt_perms`  (
   `create_time` int(10) NOT NULL DEFAULT 0 COMMENT '创建时间',
   `update_time` int(10) NOT NULL DEFAULT 0 COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE,
-  INDEX `idx_parent_id`(`parent_id`) USING BTREE COMMENT '父级索引',
-  INDEX `idx_module_controller_action`(`module`, `controller`, `action`) USING BTREE COMMENT '模块控制器方法组合索引'
+  INDEX `idx_module_controller_action`(`module`, `controller`, `action`) USING BTREE COMMENT '模块控制器方法组合索引',
+  INDEX `idx_parent_sort`(`parent_id`, `sort`) USING BTREE COMMENT '父级+排序(菜单树/级联删除)'
 ) ENGINE = InnoDB AUTO_INCREMENT = 59 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '权限节点表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
@@ -301,11 +305,10 @@ CREATE TABLE `dt_role_perms`  (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
   `type` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '角色类型(关联dt_roles.type)',
   `perms_id` int(10) NOT NULL DEFAULT 0 COMMENT '权限ID(关联dt_perms.id)',
-  `create_time` bigint(10) NOT NULL DEFAULT 0 COMMENT '创建时间',
+  `create_time` int(10) NOT NULL DEFAULT 0 COMMENT '创建时间',
   `update_time` int(10) NOT NULL DEFAULT 0 COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `uk_type_perms_id`(`type`, `perms_id`) USING BTREE COMMENT '角色类型+权限ID唯一索引',
-  INDEX `idx_type`(`type`) USING BTREE COMMENT '角色类型索引',
   INDEX `idx_perms_id`(`perms_id`) USING BTREE COMMENT '权限ID索引'
 ) ENGINE = InnoDB AUTO_INCREMENT = 830 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '角色-权限关联表' ROW_FORMAT = Dynamic;
 
@@ -373,7 +376,7 @@ CREATE TABLE `dt_roles`  (
   `type` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '角色类型唯一标识(对应用户表角色字段)',
   `name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '角色名称',
   `status` tinyint(1) NOT NULL DEFAULT 1 COMMENT '状态：0禁用 1启用',
-  `remark` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '备注',
+  `remark` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '备注',
   `create_time` int(10) NOT NULL DEFAULT 0 COMMENT '创建时间',
   `update_time` int(10) NOT NULL DEFAULT 0 COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE,
@@ -393,14 +396,14 @@ INSERT INTO `dt_roles` VALUES (3, 'user', '用户', 1, '', 1783578101, 178961395
 DROP TABLE IF EXISTS `dt_upload`;
 CREATE TABLE `dt_upload`  (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT '',
-  `size` int(20) NULL DEFAULT 0,
-  `mime` varchar(20) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT '',
-  `type` varchar(20) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT '',
-  `path` varchar(200) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT '',
-  `time` int(20) NULL DEFAULT 0,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '',
+  `size` int(11) NOT NULL DEFAULT 0,
+  `mime` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '',
+  `type` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT 'image/video/file',
+  `path` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '',
+  `time` int(10) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 39 CHARACTER SET = utf8 COLLATE = utf8_unicode_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 39 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of dt_upload
@@ -450,24 +453,26 @@ INSERT INTO `dt_upload` VALUES (38, 'php87FE.tmp', 607354, 'image/png', 'image',
 DROP TABLE IF EXISTS `dt_user`;
 CREATE TABLE `dt_user`  (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `type` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL COMMENT '账号类型 admin  user',
-  `username` varchar(50) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL COMMENT '账号',
-  `nickname` varchar(50) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT '' COMMENT '昵称',
-  `password` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL,
-  `avatar` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT '' COMMENT '头像',
+  `type` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '账号类型 super/admin/user(关联 dt_roles.type)',
+  `username` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '账号',
+  `nickname` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '昵称',
+  `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '',
+  `avatar` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '头像',
   `balance` bigint(20) NOT NULL DEFAULT 0 COMMENT '余额(分)',
-  `status` tinyint(1) NULL DEFAULT 1 COMMENT '状态1正常2停用',
-  `create_time` int(20) NULL DEFAULT 0,
-  `update_time` int(20) NULL DEFAULT 0,
+  `status` tinyint(1) NOT NULL DEFAULT 1 COMMENT '状态 1正常 -1停用',
+  `create_time` int(10) NOT NULL DEFAULT 0,
+  `update_time` int(10) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`) USING BTREE,
-  UNIQUE INDEX `username`(`username`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8 COLLATE = utf8_unicode_ci COMMENT = '账号表' ROW_FORMAT = Dynamic;
+  UNIQUE INDEX `username`(`username`) USING BTREE,
+  INDEX `idx_type`(`type`) USING BTREE COMMENT '角色JOIN/按角色筛选',
+  INDEX `idx_create_time`(`create_time`) USING BTREE COMMENT '注册时间区间筛选'
+) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '账号表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of dt_user
 -- ----------------------------
 INSERT INTO `dt_user` VALUES (1, 'super', 'admin', '', '$2y$10$6dR9T0STRVOgBKrPkVpoNuPn8QCITYhux2RyMA4nMNNd6/R0B/vk.', '', 10000, 1, 1652500366, 1791905409);
 INSERT INTO `dt_user` VALUES (2, 'admin', 'super', '', '$2y$10$qaVPRbXHo3/OXxLKgXviiuHwEJny28/nlvJpEl3Iegpt07YNzM3Tm', '', 0, 1, 1652506679, 1791905395);
-INSERT INTO `dt_user` VALUES (3, 'user', '张三', '', '$2y$10$.ypfEnribqVwP41oRiddiO2qIHaAAjOQDjHxg5RROWika0/TuJT6a', '', 10000, 1, 1791908658, 1791908658);
+INSERT INTO `dt_user` VALUES (3, 'user', '张三', '', '$2y$10$.ypfEnribqVwP41oRiddiO2qIHaAAjOQDjHxg5RROWika0/TuJT6a', '', 10000, 1, 1791908658, 1791940193);
 
 SET FOREIGN_KEY_CHECKS = 1;

@@ -20,12 +20,6 @@ class Member extends BaseController
     }
     public function add(){
         $data = $this->request->param();
-        if(isset($data['username']) && !empty($data['username'])){
-            $userItem = $this->service::getItemByUsername($data['username']);
-            if($userItem){
-                return AjaxUtils::error("账号已存在");
-            }
-        }
         $this->validate->addCheck($data);
 
         $data['password'] = make_password($data['password']);

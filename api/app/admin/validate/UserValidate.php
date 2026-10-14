@@ -8,7 +8,7 @@ class UserValidate extends Validate
 {
     protected $rule =   [
         'type'  => 'require',
-        'username'  => 'require',
+        'username'  => 'require|unique:user',
         'password'  => 'require|min:6'
     ];
     public function __construct()

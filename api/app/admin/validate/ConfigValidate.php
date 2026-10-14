@@ -12,7 +12,7 @@ class ConfigValidate extends Validate
     protected $rule = [
         'id'           => 'require|integer',
         'ids'          => 'require|array',
-        'key'        => 'require',
+        'key'        => 'require|max:50|unique:config',
         'name'        => 'require',
         'show'   => 'require|in:-1,1'
     ];

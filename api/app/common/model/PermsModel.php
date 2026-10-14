@@ -11,7 +11,6 @@ class PermsModel extends CommonModel
         'id'=>'int',
         'parent_id'=>'int',
         'name'=>'string',
-        'menu'=>'int',
         'module'=>'string',
         'controller'=>'string',
         'action'=>'string',
