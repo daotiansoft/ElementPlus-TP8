@@ -74,7 +74,7 @@ class Websocket extends Server
             $queryString = parse_url($uri, PHP_URL_QUERY);
             parse_str($queryString, $params);
 
-            $user = isset($params['user']) ? $params['user'].'' : '';
+            $user = $params['user'] ?? '';
             if(!empty($user)){
                 if(isset($this->userItems[$user])){
                     $this->userItems[$user]['conn']->close();
@@ -136,9 +136,9 @@ class Websocket extends Server
      * 内部发送出去消息 处理
      */
     protected function textSendMessage(array $data){
-        $type = isset($data['type']) ? $data['type'] : '';
-        $user = isset($data['user']) ? $data['user'] : '';
-        $message = isset($data['message']) ? $data['message'] : '';
+        $type = $data['type'] ?? '';
+        $user = $data['user'] ?? '';
+        $message = $data['message'] ?? '';
 
         try {
             if($type == self::TEXT_TYPE_SEND_MESSAGE && !empty($user)){
@@ -171,7 +171,7 @@ class Websocket extends Server
      */
     protected function commandOnMessage($user,array $data){
         dump(json_encode($data,JSON_UNESCAPED_UNICODE));
-        $type = isset($data['type'])?$data['type']:'';
+        $type = $data['type'] ?? '';
         if($type == 'pong'){
 
         }

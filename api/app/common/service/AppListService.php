@@ -14,9 +14,9 @@ class AppListService extends Service
 {
     public static function check($params = []){
         ksort($params);
-        $appid = isset($params['appid']) ? $params['appid'] : '';
-        $sign = isset($params['sign']) ? $params['sign'] : '';
-        $time = isset($params['time']) ? intval($params['time']) : 0;
+        $appid = $params['appid'] ?? '';
+        $sign = $params['sign'] ?? '';
+        $time = intval($params['time'] ?? 0);
 
         if(empty($appid) || empty($sign) || $time < time() - 60){
             throw new RequestException('参数错误');
@@ -28,21 +28,8 @@ class AppListService extends Service
             throw new RequestException('appid不存在');
         }
 		$appItem = $appItem->toArray();
-
-        $sign_str = [];
-        foreach($params as $key=>$v){
-			if(empty($v)){
-                continue;
-            }
-            if($key == 'sign'){
-                continue;
-            }
-            $sign_str[] = $key . '=' .$v;
-        }
-        $sign_str = implode('&',$sign_str);
-
-        if($sign != md5($sign_str . '&secret=' .$appItem['secret'])){
-            throw new RequestException('sign错误',-1,['sign_str'=>$sign_str . '&secret=****']);
+        if($sign != self::order_sign($params,$appItem['secret'])){
+            throw new RequestException('sign错误',-1,['sign_str'=>self::build_sign_param($params) . '&secret=****']);
         }
         return $appItem;
     }
@@ -50,25 +37,25 @@ class AppListService extends Service
     /*
      * 签名
      */
-    public static function order_sign($params = [],$appkey=''){
+    public static function order_sign(array $params,string $secret){
         $data = self::build_sign_param($params);
-        return md5($data.'&secret='.$appkey);
+        return md5($data.'&secret='.$secret);
     }
     /*
      * 拼接待签名参数
      */
     public static function build_sign_param($params){
         ksort($params);
-        $data = '';
-        foreach($params as $k=>$v){
-            if($k != 'sign' && !empty($v)){
-                if(empty($data)){
-                    $data = $k.'='.$v;
-                }else{
-                    $data = $data.'&'.$k.'='.$v;
-                }
+        unset($params['sign']);
+
+        $parts = [];
+        foreach ($params as $k => $v) {
+            $v = ''.$v;
+            if (!empty($v)) {
+                $parts[] = $k . '=' . $v;
             }
         }
-        return $data;
+
+        return implode('&', $parts);
     }
 }

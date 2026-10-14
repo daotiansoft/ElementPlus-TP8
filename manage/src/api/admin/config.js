@@ -16,6 +16,11 @@ class Api extends BaseApi {
       data,
     });
   }
+  clearCache() {
+    return this.request({
+      url: "clearCache",
+    });
+  }
 }
 
 const api = new Api();

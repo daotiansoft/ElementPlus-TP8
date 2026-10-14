@@ -4,12 +4,14 @@ namespace app\admin\controller;
 
 use app\common\basics\BaseController;
 use app\common\enums\StatusEnum;
+use app\common\exception\NotPermsException;
 use app\common\model\ConfigGroupModel;
 use app\common\model\ConfigModel;
 use app\common\utils\AjaxUtils;
 use app\common\utils\CacheUtils;
 use app\common\utils\UrlUtils;
 use think\App;
+use think\facade\Cache;
 use think\response\Json;
 
 
@@ -73,6 +75,12 @@ class Config extends BaseController
         return AjaxUtils::success("保存成功");
     }
 
-
-
+    /**
+     * 清理所有缓存（仅超级管理员 id=1 可用）
+     */
+    public function clearCache():Json
+    {
+        Cache::clear();
+        return AjaxUtils::success("缓存清理成功");
+    }
 }

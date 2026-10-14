@@ -17,17 +17,9 @@
           :label="groupItem.name"
           :name="groupItem.id"
         >
-          <el-form-item
-            v-for="item in groupItem['child']"
-            :key="item.key"
-            :label="item.name"
-          >
+          <el-form-item v-for="item in groupItem['child']" :key="item.key" :label="item.name">
             <el-input v-if="item.type == 'text'" v-model="item.content" />
-            <el-input
-              v-if="item.type == 'textarea'"
-              v-model="item.content"
-              type="textarea"
-            />
+            <el-input v-if="item.type == 'textarea'" v-model="item.content" type="textarea" />
             <el-input v-if="item.type == 'image'" v-model="item.content">
               <template #append>
                 <InputUpload
@@ -53,14 +45,8 @@
           </el-form-item>
         </el-tab-pane>
       </el-tabs>
-      <div
-        style="
-          display: flex;
-          justify-content: flex-end;
-          background-color: #fff;
-          padding: 10px;
-        "
-      >
+      <div style="display: flex; justify-content: flex-end; background-color: #fff; padding: 10px">
+        <el-button @click="clearCache">清理缓存</el-button>
         <el-button type="primary" @click="submitForm(formRef)">保存</el-button>
       </div>
     </el-form>
@@ -71,11 +57,17 @@ import InputUpload from "@/components/Upload/InputUpload.vue";
 import { ref, onMounted } from "vue";
 
 import config from "@/api/admin/config";
+import { useUserStore } from "@/store/modules/user";
+import { useOvertStore } from "@/store/modules/overt";
+
 const items = ref([]);
 const formRef = ref();
 const activeName = ref("");
 
-onMounted(() => {
+const userStore = useUserStore();
+const overtStore = useOvertStore();
+
+onMounted(async () => {
   getItems();
 });
 const getItems = async () => {
@@ -102,5 +94,25 @@ const setImage = (val, key) => {
   if (item) {
     item.content = val.url || "";
   }
+};
+const clearCache = () => {
+  ElMessageBox.confirm("确定要清理所有缓存吗？", "提示", {
+    confirmButtonText: "确定",
+    cancelButtonText: "取消",
+  })
+    .then(async () => {
+      try {
+        await config.clearCache();
+        // 服务端缓存已清空，同步清掉前端本地缓存，后续请求会重新拉取
+        userStore.clearCache();
+        overtStore.clearCache();
+        ElMessage.success("缓存清理成功");
+      } catch (error) {
+        console.error("清理缓存失败:", error);
+      }
+    })
+    .catch(() => {
+      // 取消操作
+    });
 };
 </script>
