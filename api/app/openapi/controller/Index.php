@@ -14,8 +14,4 @@ class Index extends BaseController
     public function index(){
         return 'element-ui-admin-tp6';
     }
-    public function test(){
-        $data = PermsService::getRoutes('admin');
-        return AjaxUtils::success($data);
-    }
 }
