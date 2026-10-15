@@ -9,3 +9,37 @@
 # npm run build
 # .env.development 配置开发信息
 # .env.production 配置打包信息
+
+# 新增/编辑表单
+## 列表页的「新增」「编辑」共用组件 src/components/FormDialog/index.vue，只需维护一份字段配置
+```vue
+<FormDialog
+  v-model="dialogVisible"
+  :title="dialogTitle"
+  :mode="mode"
+  v-model:model="form"
+  :fields="formFields"
+  :loading="loading"
+  @submit="onSubmit"
+/>
+
+const dialogVisible = ref(false);
+const mode = ref("add"); // add / edit
+const form = ref({});
+const dialogTitle = computed(() => (mode.value === "add" ? "添加" : "编辑"));
+
+const formFields = [
+  { prop: "name", label: "名称", placeholder: "请输入名称" },
+  { prop: "appid", label: "APPID", disabledInEdit: true }, // 编辑时不可修改
+  { prop: "status", label: "状态", type: "select", options: [{ label: "启用", value: 1 }] },
+];
+```
+### 字段配置项
+* prop / label：字段名与标签
+* type：控件类型，默认 input，可选 textarea、select、number、switch、tree-select
+* options：select 的选项，格式 [{ label, value }]
+* props：透传给控件的属性，如 { min: 0, max: 9999 }
+* span：栅格宽度，默认 24；gutter 默认 0
+* hidden：true 或 (mode, model) => boolean，控制条件显示
+* disabled / disabledInEdit：永久禁用 / 仅编辑态禁用
+* slot：使用插槽自定义控件，插槽参数为 { field, model, mode, disabled }

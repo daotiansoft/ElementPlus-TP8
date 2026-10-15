@@ -21,7 +21,7 @@
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="onSearch">查询</el-button>
-          <el-button @click="addVisible = true">新增</el-button>
+          <el-button @click="onAdd">新增</el-button>
           <el-button type="danger" @click="onDelete">删除</el-button>
         </el-form-item>
       </el-form>
@@ -73,102 +73,40 @@
         @current-change="onCurrentChange"
       />
     </div>
-    <el-dialog title="添加" v-model="addVisible">
-      <el-form ref="add_form" :model="addForm">
-        <el-form-item label="账号" label-width="80px">
-          <el-input v-model="addForm.username" autocomplete="off" placeholder="请输入账号" />
-        </el-form-item>
-        <el-form-item label="APPID" label-width="80px">
-          <el-input placeholder="32个字符以内" v-model="addForm.appid">
-            <template #append>
-              <el-button
-                @click="
-                  () => {
-                    addForm.appid = generateRandomString();
-                  }
-                "
-                >随机生成</el-button
-              >
-            </template>
-          </el-input>
-        </el-form-item>
-        <el-form-item label="SECRET" label-width="80px">
-          <el-input placeholder="32个字符以内" v-model="addForm.secret">
-            <template #append>
-              <el-button
-                @click="
-                  () => {
-                    addForm.secret = generateRandomString();
-                  }
-                "
-                >随机生成</el-button
-              >
-            </template>
-          </el-input>
-        </el-form-item>
-        <el-form-item label="状态" label-width="80px">
-          <el-select v-model="addForm.status" placeholder="请选择">
-            <el-option label="启用" :value="1" />
-            <el-option label="停用" :value="-1" />
-          </el-select>
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <el-button @click="addVisible = false">取 消</el-button>
-        <el-button type="primary" @click="onAdd" v-loading="loading">确 定</el-button>
+    <FormDialog
+      v-model="dialogVisible"
+      :title="dialogTitle"
+      :mode="mode"
+      v-model:model="form"
+      :fields="formFields"
+      :loading="loading"
+      @submit="onSubmit"
+    >
+      <template #appid="{ disabled }">
+        <el-input v-model="form.appid" :disabled="disabled" placeholder="32个字符以内">
+          <template #append>
+            <el-button :disabled="disabled" @click="form.appid = generateRandomString()">
+              随机生成
+            </el-button>
+          </template>
+        </el-input>
       </template>
-    </el-dialog>
-
-    <el-dialog title="编辑" v-model="editVisible">
-      <el-form ref="edit_form" :model="editForm">
-        <el-form-item label="账号" label-width="80px">
-          <el-input v-model="editForm.username" autocomplete="off" placeholder="请输入账号" />
-        </el-form-item>
-        <el-form-item label="APPID" label-width="80px">
-          <el-input placeholder="32个字符以内" v-model="editForm.appid">
-            <template #append>
-              <el-button
-                @click="
-                  () => {
-                    editForm.appid = generateRandomString();
-                  }
-                "
-                >随机生成</el-button
-              >
-            </template>
-          </el-input>
-        </el-form-item>
-        <el-form-item label="SECRET" label-width="80px">
-          <el-input placeholder="32个字符以内" v-model="editForm.secret">
-            <template #append>
-              <el-button
-                @click="
-                  () => {
-                    editForm.secret = generateRandomString();
-                  }
-                "
-                >随机生成</el-button
-              >
-            </template>
-          </el-input>
-        </el-form-item>
-        <el-form-item label="状态" label-width="80px">
-          <el-select v-model="editForm.status" placeholder="请选择">
-            <el-option label="启用" :value="1" />
-            <el-option label="停用" :value="-1" />
-          </el-select>
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <el-button @click="editVisible = false">取 消</el-button>
-        <el-button type="primary" @click="onEdit" v-loading="loading">确 定</el-button>
+      <template #secret="{ disabled }">
+        <el-input v-model="form.secret" :disabled="disabled" placeholder="32个字符以内">
+          <template #append>
+            <el-button :disabled="disabled" @click="form.secret = generateRandomString()">
+              随机生成
+            </el-button>
+          </template>
+        </el-input>
       </template>
-    </el-dialog>
+    </FormDialog>
   </div>
 </template>
 <script setup>
-import { ref, onMounted } from "vue";
+import { computed, ref, onMounted } from "vue";
 import appList from "@/api/admin/appList";
+import FormDialog from "@/components/FormDialog/index.vue";
 
 const loading = ref(false);
 
@@ -181,22 +119,28 @@ const searchForm = ref({
 const total = ref(0);
 const items = ref([]);
 
-const addVisible = ref(false);
-const addForm = ref({
-  username: "",
-  appid: "",
-  secret: "",
-  status: 1,
-});
+const dialogVisible = ref(false);
+const mode = ref("add");
+const form = ref({});
+const dialogTitle = computed(() => (mode.value === "add" ? "添加" : "编辑"));
 
-const editVisible = ref(false);
-const editForm = ref({
-  id: "",
-  username: "",
-  appid: "",
-  secret: "",
-  status: 1,
-});
+// 添加与编辑共用同一份字段配置；disabledInEdit 的字段在编辑时不可修改
+const formFields = [
+  { prop: "username", label: "账号", placeholder: "请输入账号" },
+  { prop: "appid", label: "APPID", slot: "appid", disabledInEdit: true },
+  { prop: "secret", label: "SECRET", slot: "secret" },
+  {
+    prop: "status",
+    label: "状态",
+    type: "select",
+    placeholder: "请选择",
+    options: [
+      { label: "启用", value: 1 },
+      { label: "停用", value: -1 },
+    ],
+  },
+];
+
 const multipleSelection = ref([]);
 
 const onSearch = () => {
@@ -225,32 +169,30 @@ const onSizeChange = (size) => {
   getItems();
 };
 
-const onAdd = async () => {
-  loading.value = true;
-  try {
-    await appList.add(addForm.value);
-    addVisible.value = false;
-    ElMessage.success("添加成功");
-    getItems();
-  } catch (error) {
-    console.error("获取列表失败:", error);
-  } finally {
-    loading.value = false;
-  }
+const onAdd = () => {
+  mode.value = "add";
+  form.value = { username: "", appid: "", secret: "", status: 1 };
+  dialogVisible.value = true;
 };
 const onItemEdit = (item) => {
-  editForm.value = { ...item };
-  editVisible.value = true;
+  mode.value = "edit";
+  form.value = { ...item };
+  dialogVisible.value = true;
 };
-const onEdit = async () => {
+const onSubmit = async () => {
   loading.value = true;
   try {
-    await appList.edit(editForm.value);
-    editVisible.value = false;
-    ElMessage.success("编辑成功");
+    if (mode.value === "add") {
+      await appList.add(form.value);
+      ElMessage.success("添加成功");
+    } else {
+      await appList.edit(form.value);
+      ElMessage.success("编辑成功");
+    }
+    dialogVisible.value = false;
     getItems();
   } catch (error) {
-    console.error("获取列表失败:", error);
+    console.error("保存失败:", error);
   } finally {
     loading.value = false;
   }

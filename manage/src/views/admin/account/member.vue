@@ -18,7 +18,7 @@
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="onSearch">查询</el-button>
-          <el-button @click="addVisible = true">新增</el-button>
+          <el-button @click="onAdd">新增</el-button>
           <el-button type="danger" @click="onDelete">删除</el-button>
         </el-form-item>
       </el-form>
@@ -69,65 +69,15 @@
         @current-change="onCurrentChange"
       />
     </div>
-    <el-dialog title="添加" v-model="addVisible">
-      <el-form ref="add_form" :model="addForm">
-        <el-form-item label="角色" label-width="80px">
-          <el-select v-model="addForm.type" placeholder="选择角色">
-            <el-option v-for="(val, key) in roles" :key="key" :label="val.name" :value="val.type" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="账号名称" label-width="80px" prop="username">
-          <el-input v-model="addForm.username" autocomplete="off" placeholder="请输入账号名称" />
-        </el-form-item>
-        <el-form-item label="账号密码" label-width="80px" prop="password">
-          <el-input
-            v-model="addForm.password"
-            autocomplete="off"
-            placeholder="密码长度不可小于6个字符"
-          />
-        </el-form-item>
-        <el-form-item label="状态" label-width="80px">
-          <el-select v-model="addForm.status" placeholder="请选择">
-            <el-option label="启用" :value="1" />
-            <el-option label="停用" :value="-1" />
-          </el-select>
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <el-button @click="addVisible = false">取 消</el-button>
-        <el-button type="primary" @click="onAdd" v-loading="loading">确 定</el-button>
-      </template>
-    </el-dialog>
-
-    <el-dialog title="编辑" v-model="editVisible">
-      <el-form ref="edit_form" :model="editForm">
-        <el-form-item label="角色" label-width="80px">
-          <el-select v-model="editForm.type" placeholder="选择角色">
-            <el-option v-for="(val, key) in roles" :key="key" :label="val.name" :value="val.type" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="账号名称" label-width="80px" prop="username">
-          <el-input v-model="editForm.username" autocomplete="off" placeholder="请输入账号名称" />
-        </el-form-item>
-        <el-form-item label="账号密码" label-width="80px" prop="password">
-          <el-input
-            v-model="editForm.password"
-            autocomplete="off"
-            placeholder="密码长度不可小于6个字符"
-          />
-        </el-form-item>
-        <el-form-item label="状态" label-width="80px">
-          <el-select v-model="editForm.status" placeholder="请选择">
-            <el-option label="启用" :value="1" />
-            <el-option label="停用" :value="-1" />
-          </el-select>
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <el-button @click="editVisible = false">取 消</el-button>
-        <el-button type="primary" @click="onEdit" v-loading="loading">确 定</el-button>
-      </template>
-    </el-dialog>
+    <FormDialog
+      v-model="dialogVisible"
+      :title="dialogTitle"
+      :mode="mode"
+      v-model:model="form"
+      :fields="formFields"
+      :loading="loading"
+      @submit="onSubmit"
+    />
 
     <el-dialog title="调整余额" v-model="adjustVisible">
       <el-form ref="adjustFormRef" :model="adjustForm" :rules="adjustRules">
@@ -162,9 +112,10 @@
   </div>
 </template>
 <script setup>
-import { ref, onMounted } from "vue";
+import { computed, ref, onMounted } from "vue";
 import member from "@/api/admin/member";
 import rolesApi from "@/api/admin/roles";
+import FormDialog from "@/components/FormDialog/index.vue";
 
 const loading = ref(false);
 
@@ -177,23 +128,39 @@ const searchForm = ref({
 const total = ref(0);
 const items = ref([]);
 
-const addVisible = ref(false);
-const addForm = ref({
-  type: "",
-  username: "",
-  password: "",
-  status: 1,
-});
+const dialogVisible = ref(false);
+const mode = ref("add");
+const form = ref({});
+const dialogTitle = computed(() => (mode.value === "add" ? "添加" : "编辑"));
 
-const editVisible = ref(false);
-const editForm = ref({
-  id: "",
-  type: "",
-  username: "",
-  password: "",
-  status: 1,
-});
 const roles = ref([]);
+const roleOptions = computed(() =>
+  roles.value.map((item) => ({ label: item.name, value: item.type }))
+);
+
+// 添加与编辑共用同一份字段配置；disabledInEdit 的字段在编辑时不可修改
+const formFields = computed(() => [
+  {
+    prop: "type",
+    label: "角色",
+    type: "select",
+    placeholder: "选择角色",
+    options: roleOptions.value,
+  },
+  { prop: "username", label: "账号名称", placeholder: "请输入账号名称" },
+  { prop: "password", label: "账号密码", placeholder: "密码长度不可小于6个字符" },
+  {
+    prop: "status",
+    label: "状态",
+    type: "select",
+    placeholder: "请选择",
+    options: [
+      { label: "启用", value: 1 },
+      { label: "停用", value: -1 },
+    ],
+  },
+]);
+
 const multipleSelection = ref([]);
 
 const typeOptions = [
@@ -254,22 +221,33 @@ const onSizeChange = (size) => {
   getItems();
 };
 
-const onAdd = async () => {
+const onAdd = () => {
+  mode.value = "add";
+  form.value = { type: "", username: "", password: "", status: 1 };
+  dialogVisible.value = true;
+};
+const onItemEdit = (item) => {
+  mode.value = "edit";
+  form.value = { ...item };
+  dialogVisible.value = true;
+};
+const onSubmit = async () => {
   loading.value = true;
   try {
-    await member.add(addForm.value);
-    addVisible.value = false;
-    ElMessage.success("添加成功");
+    if (mode.value === "add") {
+      await member.add(form.value);
+      ElMessage.success("添加成功");
+    } else {
+      await member.edit(form.value);
+      ElMessage.success("编辑成功");
+    }
+    dialogVisible.value = false;
     getItems();
   } catch (error) {
-    console.error("获取列表失败:", error);
+    console.error("保存失败:", error);
   } finally {
     loading.value = false;
   }
-};
-const onItemEdit = (item) => {
-  editForm.value = { ...item };
-  editVisible.value = true;
 };
 
 const onItemAdjust = (item) => {
@@ -307,19 +285,6 @@ const onAdjust = async () => {
     getItems();
   } catch (error) {
     console.error("调整失败:", error);
-  } finally {
-    loading.value = false;
-  }
-};
-const onEdit = async () => {
-  loading.value = true;
-  try {
-    await member.edit(editForm.value);
-    editVisible.value = false;
-    ElMessage.success("编辑成功");
-    getItems();
-  } catch (error) {
-    console.error("获取列表失败:", error);
   } finally {
     loading.value = false;
   }

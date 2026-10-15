@@ -18,7 +18,7 @@
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="onSearch">查询</el-button>
-          <el-button @click="addVisible = true">新增</el-button>
+          <el-button @click="onAdd">新增</el-button>
           <el-button type="danger" @click="onDelete">删除</el-button>
         </el-form-item>
       </el-form>
@@ -61,60 +61,21 @@
         @current-change="onCurrentChange"
       />
     </div>
-    <el-dialog title="添加" v-model="addVisible">
-      <el-form ref="add_form" :model="addForm">
-        <el-form-item label="名称" label-width="80px">
-          <el-input v-model="addForm.name" autocomplete="off" placeholder="请输入名称" />
-        </el-form-item>
-        <el-form-item label="排序" label-width="80px">
-          <el-input
-            v-model="addForm.sort"
-            autocomplete="off"
-            placeholder="请输入排序,数字越大越靠前"
-          />
-        </el-form-item>
-        <el-form-item label="状态" label-width="80px">
-          <el-select v-model="addForm.status" placeholder="请选择">
-            <el-option label="启用" :value="1" />
-            <el-option label="停用" :value="-1" />
-          </el-select>
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <el-button @click="addVisible = false">取 消</el-button>
-        <el-button type="primary" @click="onAdd" v-loading="loading">确 定</el-button>
-      </template>
-    </el-dialog>
-
-    <el-dialog title="编辑" v-model="editVisible">
-      <el-form ref="edit_form" :model="editForm">
-        <el-form-item label="名称" label-width="80px">
-          <el-input v-model="editForm.name" autocomplete="off" placeholder="请输入名称" />
-        </el-form-item>
-        <el-form-item label="排序" label-width="80px">
-          <el-input
-            v-model="editForm.sort"
-            autocomplete="off"
-            placeholder="请输入排序,数字越大越靠前"
-          />
-        </el-form-item>
-        <el-form-item label="状态" label-width="80px">
-          <el-select v-model="editForm.status" placeholder="请选择">
-            <el-option label="启用" :value="1" />
-            <el-option label="停用" :value="-1" />
-          </el-select>
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <el-button @click="editVisible = false">取 消</el-button>
-        <el-button type="primary" @click="onEdit" v-loading="loading">确 定</el-button>
-      </template>
-    </el-dialog>
+    <FormDialog
+      v-model="dialogVisible"
+      :title="dialogTitle"
+      :mode="mode"
+      v-model:model="form"
+      :fields="formFields"
+      :loading="loading"
+      @submit="onSubmit"
+    />
   </div>
 </template>
 <script setup>
-import { ref, onMounted } from "vue";
+import { computed, ref, onMounted } from "vue";
 import configGroup from "@/api/admin/configGroup";
+import FormDialog from "@/components/FormDialog/index.vue";
 
 const loading = ref(false);
 
@@ -127,20 +88,27 @@ const searchForm = ref({
 const total = ref(0);
 const items = ref([]);
 
-const addVisible = ref(false);
-const addForm = ref({
-  name: "",
-  sort: "",
-  status: 1,
-});
+const dialogVisible = ref(false);
+const mode = ref("add");
+const form = ref({});
+const dialogTitle = computed(() => (mode.value === "add" ? "添加" : "编辑"));
 
-const editVisible = ref(false);
-const editForm = ref({
-  id: "",
-  name: "",
-  sort: "",
-  status: 1,
-});
+// 添加与编辑共用同一份字段配置；disabledInEdit 的字段在编辑时不可修改
+const formFields = [
+  { prop: "name", label: "名称", placeholder: "请输入名称" },
+  { prop: "sort", label: "排序", placeholder: "请输入排序,数字越大越靠前" },
+  {
+    prop: "status",
+    label: "状态",
+    type: "select",
+    placeholder: "请选择",
+    options: [
+      { label: "启用", value: 1 },
+      { label: "停用", value: -1 },
+    ],
+  },
+];
+
 const multipleSelection = ref([]);
 
 const onSearch = () => {
@@ -169,32 +137,30 @@ const onSizeChange = (size) => {
   getItems();
 };
 
-const onAdd = async () => {
-  loading.value = true;
-  try {
-    await configGroup.add(addForm.value);
-    addVisible.value = false;
-    ElMessage.success("添加成功");
-    getItems();
-  } catch (error) {
-    console.error("获取列表失败:", error);
-  } finally {
-    loading.value = false;
-  }
+const onAdd = () => {
+  mode.value = "add";
+  form.value = { name: "", sort: "", status: 1 };
+  dialogVisible.value = true;
 };
 const onItemEdit = (item) => {
-  editForm.value = { ...item };
-  editVisible.value = true;
+  mode.value = "edit";
+  form.value = { ...item };
+  dialogVisible.value = true;
 };
-const onEdit = async () => {
+const onSubmit = async () => {
   loading.value = true;
   try {
-    await configGroup.edit(editForm.value);
-    editVisible.value = false;
-    ElMessage.success("编辑成功");
+    if (mode.value === "add") {
+      await configGroup.add(form.value);
+      ElMessage.success("添加成功");
+    } else {
+      await configGroup.edit(form.value);
+      ElMessage.success("编辑成功");
+    }
+    dialogVisible.value = false;
     getItems();
   } catch (error) {
-    console.error("获取列表失败:", error);
+    console.error("保存失败:", error);
   } finally {
     loading.value = false;
   }

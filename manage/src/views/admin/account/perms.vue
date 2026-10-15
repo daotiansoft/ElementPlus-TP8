@@ -63,122 +63,107 @@
       </el-tree>
     </el-card>
 
-    <el-dialog v-model="dialogVisible" :title="dialogTitle" width="600px" destroy-on-close>
-      <el-form ref="formRef" :model="formData" :rules="formRules" label-width="auto">
-        <el-row :gutter="24">
-          <el-col :span="12">
-            <el-form-item label="上级节点" prop="parent_id">
-              <el-tree-select
-                v-model="formData.parent_id"
-                :data="treeData"
-                :props="treeProps"
-                check-strictly
-                clearable
-                placeholder="请选择上级节点（留空为根节点）"
-                style="width: 100%"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="节点名称" prop="name">
-              <el-input v-model="formData.name" placeholder="请输入节点名称" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-
-        <el-form-item label="所属模块" prop="module">
-          <el-input v-model="formData.module" placeholder="请输入所属模块" />
-        </el-form-item>
-
-        <el-form-item label="控制器" prop="controller">
-          <el-input v-model="formData.controller" placeholder="请输入控制器" />
-        </el-form-item>
-
-        <el-form-item label="操作方法" prop="action">
-          <el-input v-model="formData.action" placeholder="请输入操作方法" />
-        </el-form-item>
-
-        <el-row :gutter="24">
-          <el-col :span="12">
-            <el-form-item label="排序" prop="sort">
-              <el-input-number
-                v-model="formData.sort"
-                :min="0"
-                :max="9999"
-                controls-position="right"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="状态" prop="status">
-              <el-switch
-                v-model="formData.status"
-                :active-value="1"
-                :inactive-value="0"
-                active-text="启用"
-                inactive-text="禁用"
-              />
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="24">
-          <el-col :span="12">
-            <el-form-item label="仅API" prop="status">
-              <el-switch
-                v-model="formData.only_api"
-                :active-value="1"
-                :inactive-value="0"
-                active-text="是"
-                inactive-text="否"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="前端路由" prop="status" v-if="formData.only_api == 0">
-              <el-switch
-                v-model="formData.route_status"
-                :active-value="1"
-                :inactive-value="0"
-                active-text="是"
-                inactive-text="否"
-              />
-            </el-form-item>
-          </el-col>
-        </el-row>
-
-        <el-row :gutter="24" v-if="formData.only_api == 0 && formData.route_status == 1">
-          <el-col :span="12">
-            <el-form-item label="路由名称" prop="sort">
-              <el-input v-model="formData.route_name" placeholder="" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-      </el-form>
-      <template #footer>
-        <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="handleSubmit">确定</el-button>
-      </template>
-    </el-dialog>
+    <FormDialog
+      v-model="dialogVisible"
+      :title="dialogTitle"
+      :mode="mode"
+      v-model:model="formData"
+      :fields="formFields"
+      :rules="formRules"
+      label-width="auto"
+      :gutter="24"
+      :loading="loading"
+      destroy-on-close
+      @submit="onSubmit"
+    />
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from "vue";
+import { computed, ref, onMounted } from "vue";
 import { House, Plus, Edit, Delete } from "@element-plus/icons-vue";
 import perms from "@/api/admin/perms";
+import FormDialog from "@/components/FormDialog/index.vue";
 
 const dialogVisible = ref(false);
-const dialogTitle = ref("添加节点");
-const formRef = ref(null);
+const mode = ref("add");
+const dialogTitle = computed(() => (mode.value === "add" ? "添加节点" : "编辑节点"));
 const loading = ref(false);
 
 const formRules = {
   name: [{ required: true, message: "请输入节点名称", trigger: "blur" }],
 };
 
-const formData = ref();
+const treeData = ref([]);
+
+const treeProps = {
+  children: "children",
+  label: "name",
+  value: "id",
+};
+
+const formData = ref({});
+
+// 添加与编辑共用同一份字段配置；hidden 控制条件显示，disabledInEdit 控制编辑时不可修改
+const formFields = computed(() => [
+  {
+    prop: "parent_id",
+    label: "上级节点",
+    type: "tree-select",
+    span: 12,
+    placeholder: "请选择上级节点（留空为根节点）",
+    props: {
+      data: treeData.value,
+      props: treeProps,
+      checkStrictly: true,
+      clearable: true,
+      style: "width: 100%",
+    },
+  },
+  { prop: "name", label: "节点名称", span: 12, placeholder: "请输入节点名称" },
+  { prop: "module", label: "所属模块", placeholder: "请输入所属模块" },
+  { prop: "controller", label: "控制器", placeholder: "请输入控制器" },
+  { prop: "action", label: "操作方法", placeholder: "请输入操作方法" },
+  {
+    prop: "sort",
+    label: "排序",
+    type: "number",
+    span: 12,
+    props: { min: 0, max: 9999, controlsPosition: "right" },
+  },
+  {
+    prop: "status",
+    label: "状态",
+    type: "switch",
+    span: 12,
+    props: { activeValue: 1, inactiveValue: 0, activeText: "启用", inactiveText: "禁用" },
+  },
+  {
+    prop: "only_api",
+    label: "仅API",
+    type: "switch",
+    span: 12,
+    props: { activeValue: 1, inactiveValue: 0, activeText: "是", inactiveText: "否" },
+  },
+  {
+    prop: "route_status",
+    label: "前端路由",
+    type: "switch",
+    span: 12,
+    props: { activeValue: 1, inactiveValue: 0, activeText: "是", inactiveText: "否" },
+    hidden: (mode, model) => model.only_api != 0,
+  },
+  {
+    prop: "route_name",
+    label: "路由名称",
+    span: 12,
+    placeholder: "",
+    hidden: (mode, model) => model.only_api != 0 || model.route_status != 1,
+  },
+]);
+
 const onVisibleAdd = (item) => {
-  dialogTitle.value = "添加节点";
+  mode.value = "add";
   formData.value = {
     id: 0,
     parent_id: item.id,
@@ -195,7 +180,7 @@ const onVisibleAdd = (item) => {
   dialogVisible.value = true;
 };
 const onVisibleEdit = (item) => {
-  dialogTitle.value = "编辑节点";
+  mode.value = "edit";
   formData.value = {
     id: item.id,
     parent_id: item.parent_id,
@@ -212,17 +197,10 @@ const onVisibleEdit = (item) => {
   dialogVisible.value = true;
 };
 
-const handleSubmit = async () => {
-  await formRef.value?.validate((valid) => {
-    if (valid) {
-      onAdd();
-    }
-  });
-};
-const onAdd = async () => {
+const onSubmit = async () => {
   loading.value = true;
   try {
-    if (formData.value.id == 0) {
+    if (mode.value === "add") {
       await perms.add(formData.value);
       ElMessage.success("添加成功");
     } else {
@@ -236,14 +214,6 @@ const onAdd = async () => {
     loading.value = false;
   }
 };
-const treeData = ref([]);
-
-const treeProps = {
-  children: "children",
-  label: "name",
-  value: "id",
-};
-
 const treeRef = ref(null);
 
 // 过滤节点
