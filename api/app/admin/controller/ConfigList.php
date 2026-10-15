@@ -2,13 +2,13 @@
 //下级
 namespace app\admin\controller;
 
-use app\common\basics\BaseController;
+use app\common\basics\CrudController;
 use app\admin\service\ConfigService;
 use app\admin\validate\ConfigValidate;
 use think\App;
 
 
-class ConfigList extends BaseController
+class ConfigList extends CrudController
 {
     public function __construct(App $app)
     {

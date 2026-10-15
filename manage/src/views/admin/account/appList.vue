@@ -62,39 +62,35 @@
         </el-table-column>
       </el-table>
     </div>
-    <div class="page-block" style="text-align: center; margin: 10px 0">
-      <el-pagination
-        :current-page="searchForm.page"
-        :page-size="searchForm.pagesize"
-        :page-sizes="[20, 50, 100, 200, 300, 400]"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="total"
-        @size-change="onSizeChange"
-        @current-change="onCurrentChange"
-      />
-    </div>
+    <CrudPagination
+      :current-page="searchForm.page"
+      :page-size="searchForm.pagesize"
+      :total="total"
+      @size-change="onSizeChange"
+      @current-change="onCurrentChange"
+    />
     <FormDialog
       v-model="dialogVisible"
       :title="dialogTitle"
       :mode="mode"
-      v-model:model="form"
+      :model="form"
       :fields="formFields"
       :loading="loading"
       @submit="onSubmit"
     >
-      <template #appid="{ disabled }">
-        <el-input v-model="form.appid" :disabled="disabled" placeholder="32个字符以内">
+      <template #appid="{ disabled, model }">
+        <el-input v-model="model.appid" :disabled="disabled" placeholder="32个字符以内">
           <template #append>
-            <el-button :disabled="disabled" @click="form.appid = generateRandomString()">
+            <el-button :disabled="disabled" @click="model.appid = generateRandomString()">
               随机生成
             </el-button>
           </template>
         </el-input>
       </template>
-      <template #secret="{ disabled }">
-        <el-input v-model="form.secret" :disabled="disabled" placeholder="32个字符以内">
+      <template #secret="{ disabled, model }">
+        <el-input v-model="model.secret" :disabled="disabled" placeholder="32个字符以内">
           <template #append>
-            <el-button :disabled="disabled" @click="form.secret = generateRandomString()">
+            <el-button :disabled="disabled" @click="model.secret = generateRandomString()">
               随机生成
             </el-button>
           </template>
@@ -104,20 +100,28 @@
   </div>
 </template>
 <script setup>
-import { computed, ref, onMounted } from "vue";
+import { computed, ref } from "vue";
 import appList from "@/api/admin/appList";
 import FormDialog from "@/components/FormDialog/index.vue";
+import CrudPagination from "@/components/CrudPagination/index.vue";
+import { useTableList } from "@/composables/useTableList";
 
-const loading = ref(false);
-
-const searchForm = ref({
-  keyword: "",
-  time: "",
-  page: 1,
-  pagesize: 20,
+const {
+  loading,
+  items,
+  total,
+  searchForm,
+  getItems,
+  onSearch,
+  onCurrentChange,
+  onSizeChange,
+  handleSelectionChange,
+  onDelete,
+} = useTableList({
+  fetchList: (params) => appList.getItems(params),
+  deleteApi: (data) => appList.del(data),
+  initialSearch: { username: "", appid: "", time: "" },
 });
-const total = ref(0);
-const items = ref([]);
 
 const dialogVisible = ref(false);
 const mode = ref("add");
@@ -141,34 +145,6 @@ const formFields = [
   },
 ];
 
-const multipleSelection = ref([]);
-
-const onSearch = () => {
-  searchForm.value.page = 1;
-  getItems();
-};
-const getItems = async () => {
-  loading.value = true;
-  try {
-    const response = await appList.getItems(searchForm.value);
-    items.value = response.items;
-    total.value = response.count;
-  } catch (error) {
-    console.error("获取列表失败:", error);
-  } finally {
-    loading.value = false;
-  }
-};
-
-const onCurrentChange = (page) => {
-  searchForm.value.page = page;
-  getItems();
-};
-const onSizeChange = (size) => {
-  searchForm.value.pagesize = size;
-  getItems();
-};
-
 const onAdd = () => {
   mode.value = "add";
   form.value = { username: "", appid: "", secret: "", status: 1 };
@@ -179,14 +155,14 @@ const onItemEdit = (item) => {
   form.value = { ...item };
   dialogVisible.value = true;
 };
-const onSubmit = async () => {
+const onSubmit = async (data) => {
   loading.value = true;
   try {
     if (mode.value === "add") {
-      await appList.add(form.value);
+      await appList.add(data);
       ElMessage.success("添加成功");
     } else {
-      await appList.edit(form.value);
+      await appList.edit(data);
       ElMessage.success("编辑成功");
     }
     dialogVisible.value = false;
@@ -197,42 +173,7 @@ const onSubmit = async () => {
     loading.value = false;
   }
 };
-const onDelete = () => {
-  if (multipleSelection.value.length === 0) {
-    ElMessage.warning("请先选择要删除的项");
-    return;
-  }
-  ElMessageBox.confirm("此操作将永久删除选中数据, 是否继续?", "提示", {
-    confirmButtonText: "确定",
-    cancelButtonText: "取消",
-    type: "warning",
-  })
-    .then(async () => {
-      const loadingInstance = ElLoading.service({ fullscreen: true });
-      try {
-        const ids = multipleSelection.value.map((item) => item.id);
-        await appList.del({ ids: ids });
-        ElMessage.success("删除成功");
-        getItems();
-      } catch (error) {
-      } finally {
-        loadingInstance.close();
-      }
-    })
-    .catch(() => {
-      // catch error
-    });
-};
-
-const handleSelectionChange = (val) => {
-  multipleSelection.value = val;
-};
-
-const generateRandomString = (length = 32) => {
+const generateRandomString = () => {
   return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 };
-
-onMounted(() => {
-  getItems();
-});
 </script>

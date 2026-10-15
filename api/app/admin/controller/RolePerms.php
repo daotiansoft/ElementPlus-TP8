@@ -2,13 +2,13 @@
 //下级
 namespace app\admin\controller;
 
-use app\common\basics\BaseController;
+use app\common\basics\CrudController;
 use app\admin\service\RolePermsService;
 use app\common\utils\AjaxUtils;
 use think\App;
 
 
-class RolePerms extends BaseController
+class RolePerms extends CrudController
 {
     public function __construct(App $app)
     {

@@ -69,10 +69,14 @@
 </template>
 <script setup>
 import { ref, reactive, onMounted } from "vue";
+import { useRouter } from "vue-router";
 import { User, Lock, Stamp } from "@element-plus/icons-vue";
 
 import overt from "@/api/overt";
-import router from "../router";
+import { useUserStore } from "@/store/modules/user";
+
+const router = useRouter();
+const userStore = useUserStore();
 
 const formRef = ref();
 const form = ref({
@@ -112,31 +116,34 @@ const submitForm = async (formEl) => {
 const login = async () => {
   loading.value = true;
   try {
-    await overt.postLogin(form.value).then((data) => {
-      localStorage.setItem("token", data.token);
-      ElMessage.success("登录成功");
-      setTimeout(() => {
-        loading.value = false;
-        router.push({ path: "/" });
-      }, 1000);
-    });
+    const data = await overt.postLogin(form.value);
+    userStore.signIn(data.token);
+    ElMessage.success("登录成功");
+    router.push({ path: "/" });
   } catch (err) {
     console.error("登录失败", err);
+    // 验证码通常一次性有效，登录失败后需要换一张
+    if (website.value.captcha_status === 1) {
+      onCaptcha();
+    }
+  } finally {
     loading.value = false;
-    onCaptcha();
   }
 };
 
-onMounted(() => {
-  overt.init().then((data) => {
-    website.value = data;
-  });
-  onCaptcha();
+onMounted(async () => {
+  try {
+    website.value = await overt.init();
+  } catch (error) {
+    console.error("获取站点信息失败", error);
+  }
+  // 未开启验证码时不请求验证码图片
+  if (website.value.captcha_status === 1) {
+    onCaptcha();
+  }
 });
 </script>
 <style scoped lang="scss">
-$bg: #2d3a4b;
-$dark_gray: #889aa4;
 $light_gray: #eee;
 
 .login-container {
@@ -158,51 +165,6 @@ $light_gray: #eee;
     text-align: center;
     font-weight: bold;
   }
-}
-
-.login-card {
-  width: 420px;
-  padding: 40px 35px;
-  background: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  animation: fadeInUp 0.6s ease;
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.login-header {
-  text-align: center;
-  margin-bottom: 30px;
-}
-
-.login-header .logo {
-  width: 60px;
-  height: 60px;
-  margin-bottom: 12px;
-}
-
-.login-header h2 {
-  font-size: 24px;
-  font-weight: 600;
-  color: #333;
-  margin: 0 0 6px 0;
-}
-
-.login-header p {
-  font-size: 14px;
-  color: #909399;
-  margin: 0;
 }
 
 .login-form {
@@ -267,13 +229,6 @@ $light_gray: #eee;
   width: 200px;
   height: 50px;
   object-fit: cover;
-}
-
-.form-options {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
 }
 
 .login-btn {

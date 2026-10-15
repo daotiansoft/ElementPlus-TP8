@@ -6,7 +6,7 @@ use app\common\basics\Validate;
 class RolesValidate extends Validate
 {
     protected $rule =   [
-        'type'  => 'require|max:10',
+        'type'  => 'require|max:10|unique:roles',
         'name'  => 'require'
     ];
     public function __construct()
@@ -17,8 +17,4 @@ class RolesValidate extends Validate
         ];
         parent::__construct();
     }
-    protected $scene = [
-        'add'  =>  ['type','name'],
-    ];
-
 }

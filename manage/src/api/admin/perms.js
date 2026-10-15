@@ -1,18 +1,5 @@
-import { BaseApi } from "@/utils/baseApi";
+import { createApi } from "@/utils/baseApi";
 
-class Api extends BaseApi {
-  constructor() {
-    super("/admin/perms/");
-  }
-  createCurd(data) {
-    return this.request({
-      url: "createCurd",
-      method: "post",
-      data,
-    });
-  }
-}
-
-const api = new Api();
-
-export default api;
+export default createApi("/admin/perms/", (request) => ({
+  createCurd: (data) => request({ url: "createCurd", method: "post", data }),
+}));

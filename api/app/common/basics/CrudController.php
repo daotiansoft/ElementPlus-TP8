@@ -7,7 +7,7 @@ use think\App;
 use think\response\Json;
 
 
-class BaseController extends Auth
+class CrudController extends Auth
 {
     protected $model;
     protected $validate;
@@ -26,15 +26,31 @@ class BaseController extends Auth
         return AjaxUtils::success($list);
     }
 
+    /**
+     * 新增前的数据处理（子类可覆盖：补全派生字段、做前置校验）
+     */
+    protected function beforeAdd(array $params): array
+    {
+        return $params;
+    }
+
+    /**
+     * 编辑前的数据处理（子类可覆盖）
+     */
+    protected function beforeEdit(array $params): array
+    {
+        return $params;
+    }
+
     public function add(){
-        $params = $this->request->param();
+        $params = $this->beforeAdd($this->request->param());
         $this->validate->addCheck($params);
         $this->service::add($params,$this->userItem);
         return AjaxUtils::success();
     }
 
     public function edit(){
-        $params = $this->request->param();
+        $params = $this->beforeEdit($this->request->param());
         $this->validate->editCheck($params);
         $this->service::edit($params,$this->userItem);
         return AjaxUtils::success();

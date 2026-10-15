@@ -11,7 +11,7 @@
  Target Server Version : 50726
  File Encoding         : 65001
 
- Date: 14/10/2026 09:23:54
+ Date: 16/10/2026 00:13:08
 */
 
 SET NAMES utf8mb4;
@@ -38,7 +38,7 @@ CREATE TABLE `dt_app_list`  (
 -- ----------------------------
 -- Records of dt_app_list
 -- ----------------------------
-INSERT INTO `dt_app_list` VALUES (1, 1, 'admin', '1d3gweoqpnqyjponpzovna', 1, '', 1782270416, 1791098588);
+INSERT INTO `dt_app_list` VALUES (1, 1, 'admin', '1d3gweoqpnqyjponpzovna', 1, '', 1782270416, 1792075267);
 
 -- ----------------------------
 -- Table structure for dt_balance_log
@@ -54,15 +54,16 @@ CREATE TABLE `dt_balance_log`  (
   `operator` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '操作员',
   `create_time` int(10) NOT NULL DEFAULT 0 COMMENT '时间',
   PRIMARY KEY (`id`) USING BTREE,
-  INDEX `idx_user_id`(`user_id`) USING BTREE COMMENT '用户索引',
-  INDEX `idx_create_time`(`create_time`) USING BTREE COMMENT '时间索引'
-) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '余额变动记录表' ROW_FORMAT = Dynamic;
+  INDEX `idx_create_time`(`create_time`) USING BTREE COMMENT '时间索引',
+  INDEX `idx_user_time`(`user_id`, `create_time`) USING BTREE COMMENT '用户+时间组合索引(按用户查流水并排序)'
+) ENGINE = InnoDB AUTO_INCREMENT = 11 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '余额变动记录表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of dt_balance_log
 -- ----------------------------
 INSERT INTO `dt_balance_log` VALUES (1, 1, 10000, 10000, 'adjust', 'test', 'admin', 1791908719);
 INSERT INTO `dt_balance_log` VALUES (4, 3, 10000, 10000, 'recharge', '', 'admin', 1791909561);
+INSERT INTO `dt_balance_log` VALUES (5, 3, -2000, 8000, 'adjust', '', 'admin', 1791981103);
 
 -- ----------------------------
 -- Table structure for dt_config
@@ -109,7 +110,7 @@ CREATE TABLE `dt_config_group`  (
   `update_time` int(10) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_status_sort`(`status`, `sort`) USING BTREE COMMENT '按状态筛选并排序'
-) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '配置分组' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '配置分组' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of dt_config_group
@@ -148,8 +149,9 @@ CREATE TABLE `dt_login_log`  (
   `status` tinyint(1) NOT NULL DEFAULT 1 COMMENT '状态 1成功 -1失败',
   `desc` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '',
   `ip` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT 'IPv4/IPv6',
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 63 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '登录记录' ROW_FORMAT = Dynamic;
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `idx_uid_time`(`uid`, `time`) USING BTREE COMMENT '按用户+时间查登录记录'
+) ENGINE = InnoDB AUTO_INCREMENT = 157 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '登录记录' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of dt_login_log
@@ -216,6 +218,91 @@ INSERT INTO `dt_login_log` VALUES (59, 1, '', 1791910768, 1, '', '127.0.0.1');
 INSERT INTO `dt_login_log` VALUES (60, 3, '', 1791938387, 1, '', '127.0.0.1');
 INSERT INTO `dt_login_log` VALUES (61, 2, '', 1791938601, 1, '', '127.0.0.1');
 INSERT INTO `dt_login_log` VALUES (62, 2, '', 1791938616, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (63, 1, '', 1791981052, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (64, 1, '', 1792046481, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (65, 1, '', 1792046516, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (66, 1, '', 1792067221, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (67, 1, '', 1792067958, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (68, 1, '', 1792074057, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (69, 1, '', 1792074057, -1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (70, 1, '', 1792074057, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (71, 1, '', 1792074058, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (72, 2, '', 1792074060, -1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (73, 2, '', 1792074060, -1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (74, 2, '', 1792074060, -1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (75, 2, '', 1792074060, -1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (76, 2, '', 1792074060, -1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (77, 1, '', 1792074060, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (78, 1, '', 1792074061, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (79, 1, '', 1792074136, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (80, 1, '', 1792074136, -1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (81, 1, '', 1792074137, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (82, 1, '', 1792074138, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (83, 2, '', 1792074139, -1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (84, 2, '', 1792074139, -1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (85, 2, '', 1792074139, -1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (86, 2, '', 1792074139, -1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (87, 2, '', 1792074139, -1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (88, 1, '', 1792074139, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (89, 1, '', 1792074140, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (90, 1, '', 1792074174, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (91, 1, '', 1792074175, -1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (92, 1, '', 1792074175, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (93, 1, '', 1792074175, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (94, 2, '', 1792074177, -1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (95, 2, '', 1792074177, -1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (96, 2, '', 1792074177, -1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (97, 2, '', 1792074177, -1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (98, 2, '', 1792074177, -1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (99, 1, '', 1792074177, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (100, 1, '', 1792074177, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (101, 1, '', 1792074200, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (102, 1, '', 1792074207, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (103, 1, '', 1792074208, -1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (104, 1, '', 1792074208, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (105, 1, '', 1792074208, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (106, 2, '', 1792074209, -1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (107, 2, '', 1792074210, -1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (108, 2, '', 1792074210, -1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (109, 2, '', 1792074210, -1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (110, 2, '', 1792074210, -1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (111, 1, '', 1792074210, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (112, 1, '', 1792074210, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (113, 1, '', 1792074255, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (114, 1, '', 1792074271, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (115, 1, '', 1792074277, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (116, 1, '', 1792074382, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (117, 1, '', 1792074726, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (118, 1, '', 1792075267, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (119, 1, '', 1792075305, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (121, 1, '', 1792075410, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (123, 1, '', 1792075412, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (124, 1, '', 1792075412, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (125, 2, '', 1792075412, -1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (126, 2, '', 1792075412, -1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (127, 2, '', 1792075412, -1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (128, 2, '', 1792075413, -1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (129, 2, '', 1792075413, -1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (130, 1, '', 1792075413, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (131, 1, '', 1792075455, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (132, 1, '', 1792075499, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (133, 1, '', 1792075505, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (134, 1, '', 1792075571, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (135, 1, '', 1792075603, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (137, 1, '', 1792075624, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (138, 1, '', 1792075634, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (139, 1, '', 1792076114, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (143, 1, '', 1792076852, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (144, 1, '', 1792076899, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (145, 1, '', 1792076977, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (146, 1, '', 1792077780, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (147, 1, '', 1792078791, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (149, 1, '', 1792078968, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (150, 1, '', 1792079428, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (152, 1, '', 1792079433, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (154, 1, '', 1792079931, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (155, 1, '', 1792079967, 1, '', '127.0.0.1');
+INSERT INTO `dt_login_log` VALUES (156, 1, '', 1792080445, 1, '', '127.0.0.1');
 
 -- ----------------------------
 -- Table structure for dt_perms
@@ -238,7 +325,7 @@ CREATE TABLE `dt_perms`  (
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_module_controller_action`(`module`, `controller`, `action`) USING BTREE COMMENT '模块控制器方法组合索引',
   INDEX `idx_parent_sort`(`parent_id`, `sort`) USING BTREE COMMENT '父级+排序(菜单树/级联删除)'
-) ENGINE = InnoDB AUTO_INCREMENT = 59 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '权限节点表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 71 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '权限节点表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of dt_perms
@@ -310,7 +397,7 @@ CREATE TABLE `dt_role_perms`  (
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `uk_type_perms_id`(`type`, `perms_id`) USING BTREE COMMENT '角色类型+权限ID唯一索引',
   INDEX `idx_perms_id`(`perms_id`) USING BTREE COMMENT '权限ID索引'
-) ENGINE = InnoDB AUTO_INCREMENT = 830 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '角色-权限关联表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 832 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '角色-权限关联表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of dt_role_perms
@@ -381,14 +468,14 @@ CREATE TABLE `dt_roles`  (
   `update_time` int(10) NOT NULL DEFAULT 0 COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `uk_type`(`type`) USING BTREE COMMENT '角色类型唯一索引'
-) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '角色表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 12 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '角色表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of dt_roles
 -- ----------------------------
 INSERT INTO `dt_roles` VALUES (1, 'super', '超管', 1, '', 1783564275, 1783579631);
 INSERT INTO `dt_roles` VALUES (2, 'admin', '管理员', 1, '', 1783564283, 1783576767);
-INSERT INTO `dt_roles` VALUES (3, 'user', '用户', 1, '', 1783578101, 1789613950);
+INSERT INTO `dt_roles` VALUES (3, 'user', '用户', 1, '', 1783578101, 1792075410);
 
 -- ----------------------------
 -- Table structure for dt_upload
@@ -402,7 +489,8 @@ CREATE TABLE `dt_upload`  (
   `type` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT 'image/video/file',
   `path` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '',
   `time` int(10) NOT NULL DEFAULT 0,
-  PRIMARY KEY (`id`) USING BTREE
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `idx_type_time`(`type`, `time`) USING BTREE COMMENT '按类型+时间分页查附件'
 ) ENGINE = InnoDB AUTO_INCREMENT = 39 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
@@ -464,15 +552,14 @@ CREATE TABLE `dt_user`  (
   `update_time` int(10) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `username`(`username`) USING BTREE,
-  INDEX `idx_type`(`type`) USING BTREE COMMENT '角色JOIN/按角色筛选',
   INDEX `idx_create_time`(`create_time`) USING BTREE COMMENT '注册时间区间筛选'
-) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '账号表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 17 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '账号表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of dt_user
 -- ----------------------------
-INSERT INTO `dt_user` VALUES (1, 'super', 'admin', '', '$2y$10$6dR9T0STRVOgBKrPkVpoNuPn8QCITYhux2RyMA4nMNNd6/R0B/vk.', '', 10000, 1, 1652500366, 1791905409);
+INSERT INTO `dt_user` VALUES (1, 'super', 'admin', '', '$2y$10$x0lw5xHph1Y/7t735FE1Se4O.0ZTR5ayKkJDmzryf8bL243yLCqqm', '', 10000, 1, 1652500366, 1791905409);
 INSERT INTO `dt_user` VALUES (2, 'admin', 'super', '', '$2y$10$qaVPRbXHo3/OXxLKgXviiuHwEJny28/nlvJpEl3Iegpt07YNzM3Tm', '', 0, 1, 1652506679, 1791905395);
-INSERT INTO `dt_user` VALUES (3, 'user', '张三', '', '$2y$10$.ypfEnribqVwP41oRiddiO2qIHaAAjOQDjHxg5RROWika0/TuJT6a', '', 10000, 1, 1791908658, 1791940193);
+INSERT INTO `dt_user` VALUES (3, 'user', '张三', '', '$2y$10$.ypfEnribqVwP41oRiddiO2qIHaAAjOQDjHxg5RROWika0/TuJT6a', '', 8000, 1, 1791908658, 1792075267);
 
 SET FOREIGN_KEY_CHECKS = 1;

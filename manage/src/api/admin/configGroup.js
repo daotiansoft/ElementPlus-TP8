@@ -1,23 +1,6 @@
-import { BaseApi } from "@/utils/baseApi";
+import { createApi } from "@/utils/baseApi";
 
-class Api extends BaseApi {
-  constructor() {
-    super("/admin/configGroup/");
-  }
-  getItems() {
-    return this.request({
-      url: "items",
-    });
-  }
-  postItems(data) {
-    return this.request({
-      url: "save",
-      method: "post",
-      data,
-    });
-  }
-}
-
-const api = new Api();
-
-export default api;
+export default createApi("/admin/configGroup/", (request) => ({
+  getItems: () => request({ url: "items" }),
+  postItems: (data) => request({ url: "save", method: "post", data }),
+}));

@@ -56,22 +56,18 @@
         </el-table-column>
       </el-table>
     </div>
-    <div class="page-block" style="text-align: center; margin: 10px 0">
-      <el-pagination
-        :current-page="searchForm.page"
-        :page-size="searchForm.pagesize"
-        :page-sizes="[20, 50, 100, 200, 300, 400]"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="total"
-        @size-change="onSizeChange"
-        @current-change="onCurrentChange"
-      />
-    </div>
+    <CrudPagination
+      :current-page="searchForm.page"
+      :page-size="searchForm.pagesize"
+      :total="total"
+      @size-change="onSizeChange"
+      @current-change="onCurrentChange"
+    />
     <FormDialog
       v-model="dialogVisible"
       :title="dialogTitle"
       :mode="mode"
-      v-model:model="form"
+      :model="form"
       :fields="formFields"
       :loading="loading"
       @submit="onSubmit"
@@ -83,17 +79,26 @@ import { computed, ref, onMounted } from "vue";
 import configList from "@/api/admin/configList";
 import configGroup from "@/api/admin/configGroup";
 import FormDialog from "@/components/FormDialog/index.vue";
+import CrudPagination from "@/components/CrudPagination/index.vue";
+import { useTableList } from "@/composables/useTableList";
 
-const loading = ref(false);
-
-const searchForm = ref({
-  keyword: "",
-  time: "",
-  page: 1,
-  pagesize: 20,
+const {
+  loading,
+  items,
+  total,
+  searchForm,
+  getItems,
+  onSearch,
+  onCurrentChange,
+  onSizeChange,
+  handleSelectionChange,
+  onDelete,
+} = useTableList({
+  fetchList: (params) => configList.getItems(params),
+  deleteApi: (data) => configList.del(data),
+  initialSearch: { keyword: "", time: "" },
 });
-const total = ref(0);
-const items = ref([]);
+
 const groupOptions = ref([]);
 
 const dialogVisible = ref(false);
@@ -139,34 +144,6 @@ const formFields = computed(() => [
   },
 ]);
 
-const multipleSelection = ref([]);
-
-const onSearch = () => {
-  searchForm.value.page = 1;
-  getItems();
-};
-const getItems = async () => {
-  loading.value = true;
-  try {
-    const response = await configList.getItems(searchForm.value);
-    items.value = response.items;
-    total.value = response.count;
-  } catch (error) {
-    console.error("获取列表失败:", error);
-  } finally {
-    loading.value = false;
-  }
-};
-
-const onCurrentChange = (page) => {
-  searchForm.value.page = page;
-  getItems();
-};
-const onSizeChange = (size) => {
-  searchForm.value.pagesize = size;
-  getItems();
-};
-
 const onAdd = () => {
   mode.value = "add";
   form.value = {
@@ -187,14 +164,14 @@ const onItemEdit = (item) => {
   form.value = { ...item };
   dialogVisible.value = true;
 };
-const onSubmit = async () => {
+const onSubmit = async (data) => {
   loading.value = true;
   try {
     if (mode.value === "add") {
-      await configList.add(form.value);
+      await configList.add(data);
       ElMessage.success("添加成功");
     } else {
-      await configList.edit(form.value);
+      await configList.edit(data);
       ElMessage.success("编辑成功");
     }
     dialogVisible.value = false;
@@ -205,44 +182,12 @@ const onSubmit = async () => {
     loading.value = false;
   }
 };
-const onDelete = () => {
-  if (multipleSelection.value.length === 0) {
-    ElMessage.warning("请先选择要删除的项");
-    return;
-  }
-  ElMessageBox.confirm("此操作将永久删除选中数据, 是否继续?", "提示", {
-    confirmButtonText: "确定",
-    cancelButtonText: "取消",
-    type: "warning",
-  })
-    .then(async () => {
-      const loadingInstance = ElLoading.service({ fullscreen: true });
-      try {
-        const ids = multipleSelection.value.map((item) => item.id);
-        await configList.del({ ids: ids });
-        ElMessage.success("删除成功");
-        getItems();
-      } catch (error) {
-      } finally {
-        loadingInstance.close();
-      }
-    })
-    .catch(() => {
-      // catch error
-    });
-};
-
-const handleSelectionChange = (val) => {
-  multipleSelection.value = val;
-};
-
 const getGroupOptione = async () => {
   const response = await configGroup.getOptions();
   groupOptions.value = response;
 };
 
 onMounted(() => {
-  getItems();
   getGroupOptione();
 });
 </script>

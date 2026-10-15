@@ -10,7 +10,7 @@ use app\common\enums\StatusEnum;
 use app\common\exception\RequestException;
 use app\common\model\AppListModel;
 
-class AppListService extends Service
+class AppSignService extends Service
 {
     /**
      * 签名有效期（秒）：请求时间戳与服务器时间的最大允许偏差

@@ -11,7 +11,7 @@ use app\common\model\PermsModel;
 use app\common\model\RolePermsModel;
 use app\common\utils\CacheUtils;
 
-class PermsService extends Service
+class PermsAccessService extends Service
 {
     /**
      * 权限缓存标签

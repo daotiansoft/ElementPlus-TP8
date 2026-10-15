@@ -5,35 +5,84 @@ on:
     branches: [main, master]
   pull_request:
 
-jobs:
-  lint:
-    name: Lint
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: manage
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-          cache-dependency-path: manage/package-lock.json
-      - run: npm ci
-      - run: npm run lint
+# 同一分支的重复推送只保留最新一次运行
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
-  build:
-    name: Build
+permissions:
+  contents: read
+
+jobs:
+  frontend:
+    name: 前端 (lint / format / build)
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: manage
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
           cache-dependency-path: manage/package-lock.json
-      - run: npm ci
-      - run: npm run build
+
+      - name: 安装依赖
+        run: npm ci
+
+      - name: ESLint
+        run: npm run lint
+
+      - name: Prettier 校验
+        run: npm run format:check
+
+      - name: 构建
+        run: npm run build
+
+      - name: 上传构建产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: manage-dist
+          path: manage/dist
+          retention-days: 7
+
+  backend:
+    name: 后端 (PHP 语法 / composer 校验)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "7.4"
+          extensions: mbstring, pdo_mysql, curl
+          coverage: none
+
+      - name: 校验 composer.json / composer.lock
+        working-directory: api
+        run: composer validate --no-check-publish
+
+      # 不安装 vendor 也能做语法检查，CI 更快
+      - name: PHP 语法检查
+        run: find api/app api/config -name '*.php' -print0 | xargs -0 -n1 -P4 php -l
+
+  openapi:
+    name: openapi (依赖与语法)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: openapi
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.9"
+
+      - name: 安装依赖
+        run: python -m pip install -r requirements.txt
+
+      - name: 语法检查
+        run: python -m compileall -q modules test_order.py

@@ -14,6 +14,19 @@ use app\common\utils\AjaxUtils;
 class Balance extends Auth
 {
     /**
+     * 只读静态参考数据，任何已登录账号都可获取（如交易类型下拉项）
+     */
+    protected $notNeedPower = ['types'];
+
+    /**
+     * 交易类型选项（来源：BalanceService::$typeMap 静态配置）
+     */
+    public function types()
+    {
+        return AjaxUtils::success(BalanceService::getTypeOptions());
+    }
+
+    /**
      * 当前用户的余额（分）
      */
     public function info()

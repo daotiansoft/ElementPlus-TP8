@@ -3,7 +3,7 @@ import request from "@/utils/request";
 
 export class BaseApi {
   /**
-   * @param {string} urlPre 接口前缀，子类通过 super(urlPre) 传入
+   * @param {string} urlPre 接口前缀，如 /admin/roles/
    */
   constructor(urlPre) {
     this.urlPre = urlPre;
@@ -43,4 +43,29 @@ export class BaseApi {
   getOptions() {
     return this.request({ url: "getOptions", method: "get" });
   }
+}
+
+/**
+ * 创建接口实例
+ *
+ * 只有公共 CRUD 的模块：createApi("/admin/roles/")
+ * 需要额外接口时通过第二个参数声明，无需再写 class：
+ *
+ *   createApi("/admin/config/", (request) => ({
+ *     getItems: () => request({ url: "items" }),
+ *     postItems: (data) => request({ url: "save", method: "post", data }),
+ *   }))
+ *
+ * @param {string} urlPre 接口前缀
+ * @param {(request: Function) => object} [extend] 额外方法，参数为已绑定前缀的 request
+ * @returns {BaseApi}
+ */
+export function createApi(urlPre, extend) {
+  const api = new BaseApi(urlPre);
+
+  if (typeof extend === "function") {
+    Object.assign(api, extend(api.request.bind(api)));
+  }
+
+  return api;
 }

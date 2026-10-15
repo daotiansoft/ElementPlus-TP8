@@ -80,19 +80,31 @@ const routesMap = {
   },
 };
 
-const transformRoutes = (paths) => {
-  return paths.map((path) => {
-    let routeCopy = routesMap[path.name];
-    if (routeCopy) {
-      routeCopy["path"] = path.name;
-      if (path.children && path.children.length > 0) {
-        routeCopy["children"] = transformRoutes(path.children);
-      }
-      return routeCopy;
-    } else {
-      return false;
+/**
+ * 把后端返回的权限路由转换成 vue-router 可注册的路由配置
+ *
+ * 两点注意：
+ * 1. 不能直接改动 routesMap 中的对象，否则「注册路由」与「渲染菜单」两次调用会互相污染
+ *    （例如上一次的 children 残留到下一次）；
+ * 2. 未在 routesMap 中登记的路径直接跳过，不再返回 false，
+ *    避免调用方访问 route.component 时抛错。
+ */
+const transformRoutes = (paths = []) => {
+  return paths.reduce((routes, path) => {
+    const routeConfig = routesMap[path.name];
+    if (!routeConfig) {
+      console.warn(`[router] routesMap 未登记该路径，已跳过: ${path.name}`);
+      return routes;
     }
-  });
+
+    const route = { ...routeConfig, path: path.name };
+    if (Array.isArray(path.children) && path.children.length > 0) {
+      route.children = transformRoutes(path.children);
+    }
+    routes.push(route);
+
+    return routes;
+  }, []);
 };
 
 export default transformRoutes;

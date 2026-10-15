@@ -6,7 +6,7 @@ use app\common\model\EditorModel;
 use app\common\model\UploadModel;
 use app\common\model\UserModel;
 use app\common\service\LoginService;
-use app\common\service\PermsService;
+use app\common\service\PermsAccessService;
 use app\common\utils\AjaxUtils;
 use think\App;
 
@@ -25,9 +25,7 @@ class Account extends Auth
         if(empty($userinfo['nickname'])){
             $userinfo['nickname'] = $userinfo['username'];
         }
-        if(empty($userinfo['avatar'])){
-            $userinfo['avatar'] = 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif?imageView2/1/w/80/h/80';
-        }
+        // 头像为空时由前端使用默认占位，不依赖第三方图床
         return AjaxUtils::success("SUCCESS",$userinfo);
     }
 
@@ -82,7 +80,9 @@ class Account extends Auth
         $data['password'] = make_password($password_new);
         $req=$user_model->where('id','=',$this->userItem['id'])->update($data);
         if($req){
-            return AjaxUtils::success("修改成功");
+            // 密码已变更，立即作废此前签发的 token
+            LoginService::invalidateUserTokens((int) $this->userItem['id']);
+            return AjaxUtils::success("修改成功，请重新登录");
         }else{
             return AjaxUtils::error("修改失败");
         }
@@ -138,7 +138,7 @@ class Account extends Auth
     }
 
     public function getRoutes(){
-        $data = PermsService::getRoutes($this->userItem['type']);
+        $data = PermsAccessService::getRoutes($this->userItem['type']);
         return AjaxUtils::success($this->userItem['type'],$data);
     }
 }

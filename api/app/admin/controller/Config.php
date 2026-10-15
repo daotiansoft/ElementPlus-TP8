@@ -2,7 +2,7 @@
 //下级
 namespace app\admin\controller;
 
-use app\common\basics\BaseController;
+use app\common\basics\CrudController;
 use app\common\enums\StatusEnum;
 use app\common\exception\NotPermsException;
 use app\common\model\ConfigGroupModel;
@@ -15,7 +15,7 @@ use think\facade\Cache;
 use think\response\Json;
 
 
-class Config extends BaseController
+class Config extends CrudController
 {
     public function __construct(App $app)
     {

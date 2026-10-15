@@ -1,13 +1,13 @@
 <?php
 namespace app\admin\controller;
 
-use app\common\basics\BaseController;
+use app\common\basics\CrudController;
 use app\admin\service\ConfigGroupService;
 use app\admin\validate\ConfigGroupValidate;
 use think\App;
 
 
-class ConfigGroup extends BaseController
+class ConfigGroup extends CrudController
 {
     public function __construct(App $app)
     {

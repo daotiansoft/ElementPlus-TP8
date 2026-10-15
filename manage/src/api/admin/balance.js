@@ -1,11 +1,6 @@
-import { BaseApi } from "@/utils/baseApi";
+import { createApi } from "@/utils/baseApi";
 
-class Api extends BaseApi {
-  constructor() {
-    super("/admin/balance/");
-  }
-}
-
-const api = new Api();
-
-export default api;
+export default createApi("/admin/balance/", (request) => ({
+  // 交易类型选项（后端静态配置 BalanceService::$typeMap）
+  getTypes: () => request({ url: "types" }),
+}));

@@ -67,7 +67,7 @@
       v-model="dialogVisible"
       :title="dialogTitle"
       :mode="mode"
-      v-model:model="formData"
+      :model="formData"
       :fields="formFields"
       :rules="formRules"
       label-width="auto"
@@ -197,14 +197,14 @@ const onVisibleEdit = (item) => {
   dialogVisible.value = true;
 };
 
-const onSubmit = async () => {
+const onSubmit = async (data) => {
   loading.value = true;
   try {
     if (mode.value === "add") {
-      await perms.add(formData.value);
+      await perms.add(data);
       ElMessage.success("添加成功");
     } else {
-      await perms.edit(formData.value);
+      await perms.edit(data);
       ElMessage.success("编辑成功");
     }
     dialogVisible.value = false;

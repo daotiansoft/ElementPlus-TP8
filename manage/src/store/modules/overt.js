@@ -1,10 +1,10 @@
-import { defineStore } from 'pinia'
-import overt from '@/api/overt'
-import { useFetchCache } from '@/composables/useFetchCache'
+import { defineStore } from "pinia";
+import overt from "@/api/overt";
+import { useFetchCache } from "@/composables/useFetchCache";
 
-export const useOvertStore = defineStore('overt', () => {
+export const useOvertStore = defineStore("overt", () => {
   // ========== State & 通用请求缓存 ==========
-  const { cache, loading, fetchData, clearCache, getCache } = useFetchCache()
+  const { cache, loading, fetchData, clearCache, getCache } = useFetchCache();
 
   // ========== Actions ==========
 
@@ -14,8 +14,8 @@ export const useOvertStore = defineStore('overt', () => {
    * @returns {Promise<any>}
    */
   const getWebsite = async (useCache = true) => {
-    return fetchData('website', () => overt.init(), useCache)
-  }
+    return fetchData("website", () => overt.init(), useCache);
+  };
 
   return {
     cache,
@@ -23,6 +23,6 @@ export const useOvertStore = defineStore('overt', () => {
     getWebsite,
     clearCache,
     getCache,
-    fetchData
-  }
-})
+    fetchData,
+  };
+});

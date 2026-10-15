@@ -21,10 +21,8 @@ class UserValidate extends Validate
         parent::__construct();
     }
     protected $scene = [
-        'add'  =>  ['type','username','password'],
+        // 编辑场景由 Member::edit 显式指定，仅校验角色与账号名
         'edit'  =>  ['type','username'],
-        'password'  =>  ['password'],
-        'login'  =>  ['username','password'],
     ];
 
 }

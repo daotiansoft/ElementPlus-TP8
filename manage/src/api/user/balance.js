@@ -1,16 +1,8 @@
-import { BaseApi } from "@/utils/baseApi";
+import { createApi } from "@/utils/baseApi";
 
-class Api extends BaseApi {
-  constructor() {
-    super("/user/balance/");
-  }
-
+export default createApi("/user/balance/", (request) => ({
   // 当前用户余额
-  getInfo() {
-    return this.request({ url: "info", method: "get" });
-  }
-}
-
-const api = new Api();
-
-export default api;
+  getInfo: () => request({ url: "info", method: "get" }),
+  // 交易类型选项（后端静态配置 BalanceService::$typeMap）
+  getTypes: () => request({ url: "types" }),
+}));

@@ -13,7 +13,7 @@ class FormFieldService extends Service
 {
     public static function lists(array $get,array $userItem): array
     {
-        self::setSearch([
+        $where = self::setSearch([
             '%like%'   => ['name'],
             '='        => ['key'],
             'datetime' => ['create_time'],
@@ -21,7 +21,7 @@ class FormFieldService extends Service
 
         $model = new FormFieldModel();
         $lists = $model
-            ->where(self::$searchWhere)
+            ->where($where)
             ->order('id desc')
             ->paginate([
                 'page'      => $get['page']  ?? 1,

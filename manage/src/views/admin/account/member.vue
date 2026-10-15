@@ -38,7 +38,7 @@
         <el-table-column prop="username" label="账号" />
         <el-table-column label="余额(元)" width="120" align="right">
           <template #default="scope">
-            {{ formatAmount(scope.row.balance) }}
+            {{ formatFen(scope.row.balance) }}
           </template>
         </el-table-column>
         <el-table-column prop="create_time" label="创建时间" width="160" />
@@ -58,22 +58,18 @@
         </el-table-column>
       </el-table>
     </div>
-    <div class="page-block" style="text-align: center; margin: 10px 0">
-      <el-pagination
-        :current-page="searchForm.page"
-        :page-size="searchForm.pagesize"
-        :page-sizes="[20, 50, 100, 200, 300, 400]"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="total"
-        @size-change="onSizeChange"
-        @current-change="onCurrentChange"
-      />
-    </div>
+    <CrudPagination
+      :current-page="searchForm.page"
+      :page-size="searchForm.pagesize"
+      :total="total"
+      @size-change="onSizeChange"
+      @current-change="onCurrentChange"
+    />
     <FormDialog
       v-model="dialogVisible"
       :title="dialogTitle"
       :mode="mode"
-      v-model:model="form"
+      :model="form"
       :fields="formFields"
       :loading="loading"
       @submit="onSubmit"
@@ -116,17 +112,27 @@ import { computed, ref, onMounted } from "vue";
 import member from "@/api/admin/member";
 import rolesApi from "@/api/admin/roles";
 import FormDialog from "@/components/FormDialog/index.vue";
+import CrudPagination from "@/components/CrudPagination/index.vue";
+import { useTableList } from "@/composables/useTableList";
+import { useBalanceTypes } from "@/composables/useBalanceTypes";
+import { formatFen } from "@/utils/format";
 
-const loading = ref(false);
-
-const searchForm = ref({
-  keyword: "",
-  time: "",
-  page: 1,
-  pagesize: 20,
+const {
+  loading,
+  items,
+  total,
+  searchForm,
+  getItems,
+  onSearch,
+  onCurrentChange,
+  onSizeChange,
+  handleSelectionChange,
+  onDelete,
+} = useTableList({
+  fetchList: (params) => member.getItems(params),
+  deleteApi: (data) => member.del(data),
+  initialSearch: { keyword: "", time: "" },
 });
-const total = ref(0);
-const items = ref([]);
 
 const dialogVisible = ref(false);
 const mode = ref("add");
@@ -134,6 +140,8 @@ const form = ref({});
 const dialogTitle = computed(() => (mode.value === "add" ? "添加" : "编辑"));
 
 const roles = ref([]);
+// 交易类型来自后端静态配置，见 composables/useBalanceTypes.js
+const { typeOptions } = useBalanceTypes();
 const roleOptions = computed(() =>
   roles.value.map((item) => ({ label: item.name, value: item.type }))
 );
@@ -161,16 +169,6 @@ const formFields = computed(() => [
   },
 ]);
 
-const multipleSelection = ref([]);
-
-const typeOptions = [
-  { value: "recharge", label: "充值" },
-  { value: "deduct", label: "扣减" },
-  { value: "refund", label: "退款" },
-  { value: "adjust", label: "调整" },
-  { value: "consume", label: "消费" },
-];
-
 const adjustVisible = ref(false);
 const adjustFormRef = ref(null);
 const adjustForm = ref({
@@ -184,25 +182,6 @@ const adjustRules = {
   amount: [{ required: true, message: "请输入变动金额", trigger: "blur" }],
 };
 
-// 分 -> 元
-const formatAmount = (fen) => (Number(fen) / 100).toFixed(2);
-
-const onSearch = () => {
-  searchForm.value.page = 1;
-  getItems();
-};
-const getItems = async () => {
-  loading.value = true;
-  try {
-    const response = await member.getItems(searchForm.value);
-    items.value = response.items;
-    total.value = response.count;
-  } catch (error) {
-    console.error("获取列表失败:", error);
-  } finally {
-    loading.value = false;
-  }
-};
 const getRoles = async () => {
   try {
     const response = await rolesApi.getOptions();
@@ -210,15 +189,6 @@ const getRoles = async () => {
   } catch (error) {
     console.error("获取列表失败:", error);
   }
-};
-
-const onCurrentChange = (page) => {
-  searchForm.value.page = page;
-  getItems();
-};
-const onSizeChange = (size) => {
-  searchForm.value.pagesize = size;
-  getItems();
 };
 
 const onAdd = () => {
@@ -231,14 +201,14 @@ const onItemEdit = (item) => {
   form.value = { ...item };
   dialogVisible.value = true;
 };
-const onSubmit = async () => {
+const onSubmit = async (data) => {
   loading.value = true;
   try {
     if (mode.value === "add") {
-      await member.add(form.value);
+      await member.add(data);
       ElMessage.success("添加成功");
     } else {
-      await member.edit(form.value);
+      await member.edit(data);
       ElMessage.success("编辑成功");
     }
     dialogVisible.value = false;
@@ -289,39 +259,7 @@ const onAdjust = async () => {
     loading.value = false;
   }
 };
-const onDelete = () => {
-  if (multipleSelection.value.length === 0) {
-    ElMessage.warning("请先选择要删除的项");
-    return;
-  }
-  ElMessageBox.confirm("此操作将永久删除选中数据, 是否继续?", "提示", {
-    confirmButtonText: "确定",
-    cancelButtonText: "取消",
-    type: "warning",
-  })
-    .then(async () => {
-      const loadingInstance = ElLoading.service({ fullscreen: true });
-      try {
-        const ids = multipleSelection.value.map((item) => item.id);
-        await member.del({ ids: ids });
-        ElMessage.success("删除成功");
-        getItems();
-      } catch (error) {
-      } finally {
-        loadingInstance.close();
-      }
-    })
-    .catch(() => {
-      // catch error
-    });
-};
-
-const handleSelectionChange = (val) => {
-  multipleSelection.value = val;
-};
-
 onMounted(() => {
-  getItems();
   getRoles();
 });
 </script>

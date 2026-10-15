@@ -15,7 +15,6 @@ class PermsValidate extends Validate
     public function __construct()
     {
         $this->field = [
-            'type'        => '角色代码',
             'name'        => '名称',
             'module'        => '模块',
             'controller'   => '控制器',

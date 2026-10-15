@@ -32,8 +32,8 @@ return [
             'hostport'        => env('database.hostport', '3306'),
             // 数据库连接参数
             'params'          => [],
-            // 数据库编码默认采用utf8
-            'charset'         => env('database.charset', 'utf8'),
+            // 数据库编码（表结构为 utf8mb4，连接也需保持一致，否则 4 字节字符无法写入）
+            'charset'         => env('database.charset', 'utf8mb4'),
             // 数据库表前缀
             'prefix'          => env('database.prefix', 'dt_'),
 

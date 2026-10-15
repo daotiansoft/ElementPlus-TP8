@@ -6,6 +6,7 @@ namespace app\admin\service;
 
 
 use app\common\basics\Service;
+use app\common\enums\StatusEnum;
 use app\common\model\AppListModel;
 use app\common\utils\TimeUtils;
 
@@ -13,7 +14,7 @@ class AppListService extends Service
 {
     public static function lists(array $get,array $userItem): array
     {
-        self::setSearch([
+        $where = self::setSearch([
             '%like%'   => ['keyword@app_list_model.remark'],
             '='        => ['status@app_list_model.status','appid@app_list_model.appid','username@user.username'],
             'datetime' => ['time@app_list_model.create_time'],
@@ -22,7 +23,7 @@ class AppListService extends Service
         $model = new AppListModel();
         $lists = $model
             ->withJoin('user')
-            ->where(self::$searchWhere)
+            ->where($where)
             ->order('id desc')
             ->paginate([
                 'page'      => $get['page']  ?? 1,
@@ -45,7 +46,7 @@ class AppListService extends Service
             'uid'          => $post['uid'],
             'appid'        => $post['appid'],
             'secret'        => $post['secret'],
-            'status'        => $post['status'] ?? '',
+            'status'        => $post['status'] ?? StatusEnum::STATUS_1,
             'remark'        => $post['remark'] ?? '',
             'create_time'  => time(),
             'update_time'  => time()
@@ -58,7 +59,7 @@ class AppListService extends Service
             'uid'          => $post['uid'],
             'appid'        => $post['appid'],
             'secret'        => $post['secret'],
-            'status'        => $post['status'] ?? '',
+            'status'        => $post['status'] ?? StatusEnum::STATUS_1,
             'remark'        => $post['remark'] ?? '',
             'update_time'  => time()
         ], ['id'=>intval($post['id'])]);

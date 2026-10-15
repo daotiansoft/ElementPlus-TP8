@@ -6,9 +6,12 @@ namespace app\admin\service;
 
 use app\common\basics\Service;
 use app\common\enums\StatusEnum;
+use app\common\exception\RequestException;
+use app\common\model\AppListModel;
 use app\common\model\UserModel;
+use app\common\service\LoginService;
 use app\common\utils\TimeUtils;
-use think\facade\Cache;
+use think\facade\Db;
 
 class UserService extends Service
 {
@@ -19,7 +22,7 @@ class UserService extends Service
 
     public static function lists(array $get,array $userItem): array
     {
-        self::setSearch([
+        $where = self::setSearch([
             '%like%'   => ['username@user_model.username'],
             'datetime' => ['time@user_model.create_time'],
         ],$get);
@@ -27,7 +30,7 @@ class UserService extends Service
         $lists = $model
             ->withoutField(['password'])
             ->withJoin(['role'],'LEFT')
-            ->where(self::$searchWhere)
+            ->where($where)
             ->order('id desc')
             ->paginate([
                 'page'      => $get['page']  ?? 1,
@@ -70,15 +73,44 @@ class UserService extends Service
         }
         UserModel::update($data, ['id'=>intval($post['id'])]);
 
-        //重置登录次数限制
-        $cacke_key = 'login_fail_' . $data['username'];
-        Cache::delete($cacke_key);
+        // 管理员改过账号后：解除登录锁定、清空失败计数
+        LoginService::clearLoginFail((string) $data['username']);
+        // 重置了密码：此前的登录态立即失效
+        if (!empty($post['password'])) {
+            LoginService::invalidateUserTokens(intval($post['id']));
+        }
     }
 
     public static function del(array $ids,array $userItem): void
     {
-        if(!in_array(1,$ids)){
-            UserModel::destroy($ids,true);
+        $ids = array_values(array_unique(array_filter(array_map('intval', $ids))));
+        if (empty($ids)) {
+            throw new RequestException('请选择要删除的账号');
+        }
+        // 身份类校验：超管与当前登录账号不允许删除
+        if (in_array(1, $ids, true)) {
+            throw new RequestException('超级管理员账号不允许删除');
+        }
+        if (in_array((int) ($userItem['id'] ?? 0), $ids, true)) {
+            throw new RequestException('不能删除当前登录账号');
+        }
+
+        $usernames = UserModel::whereIn('id', $ids)->column('username');
+        if (empty($usernames)) {
+            return;
+        }
+
+        // 数据引用校验走钩子，新增判断项只需在 UserDeleteGuard 中扩展
+        UserDeleteGuard::check($ids);
+
+        Db::transaction(function () use ($ids) {
+            // 级联清理账号绑定的开放接口应用
+            AppListModel::whereIn('uid', $ids)->delete();
+            UserModel::destroy($ids, true);
+        });
+
+        foreach ($usernames as $username) {
+            LoginService::clearLoginFail((string) $username);
         }
     }
 

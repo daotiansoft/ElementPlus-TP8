@@ -6,24 +6,23 @@
     :destroy-on-close="destroyOnClose"
     @update:model-value="emit('update:modelValue', $event)"
   >
-    <el-form ref="formRef" :model="model" :rules="rules" :label-width="labelWidth">
+    <el-form ref="formRef" :model="form" :rules="rules" :label-width="labelWidth">
       <el-row :gutter="gutter">
         <el-col v-for="field in visibleFields" :key="field.prop" :span="field.span ?? 24">
           <el-form-item :label="field.label" :prop="field.prop">
             <slot
               :name="field.slot || field.prop"
               :field="field"
-              :model="model"
+              :model="form"
               :mode="mode"
               :disabled="isDisabled(field)"
             >
               <el-select
                 v-if="field.type === 'select'"
                 v-bind="field.props"
-                :model-value="model[field.prop]"
+                v-model="form[field.prop]"
                 :disabled="isDisabled(field)"
                 :placeholder="field.placeholder"
-                @update:model-value="onFieldUpdate(field.prop, $event)"
               >
                 <el-option
                   v-for="option in field.options || []"
@@ -35,33 +34,29 @@
               <el-input-number
                 v-else-if="field.type === 'number'"
                 v-bind="field.props"
-                :model-value="model[field.prop]"
+                v-model="form[field.prop]"
                 :disabled="isDisabled(field)"
-                @update:model-value="onFieldUpdate(field.prop, $event)"
               />
               <el-switch
                 v-else-if="field.type === 'switch'"
                 v-bind="field.props"
-                :model-value="model[field.prop]"
+                v-model="form[field.prop]"
                 :disabled="isDisabled(field)"
-                @update:model-value="onFieldUpdate(field.prop, $event)"
               />
               <el-tree-select
                 v-else-if="field.type === 'tree-select'"
                 v-bind="field.props"
-                :model-value="model[field.prop]"
+                v-model="form[field.prop]"
                 :disabled="isDisabled(field)"
                 :placeholder="field.placeholder"
-                @update:model-value="onFieldUpdate(field.prop, $event)"
               />
               <el-input
                 v-else
                 v-bind="field.props"
-                :model-value="model[field.prop]"
+                v-model="form[field.prop]"
                 :type="field.type === 'textarea' ? 'textarea' : 'text'"
                 :disabled="isDisabled(field)"
                 :placeholder="field.placeholder"
-                @update:model-value="onFieldUpdate(field.prop, $event)"
               />
             </slot>
           </el-form-item>
@@ -78,7 +73,7 @@
 </template>
 
 <script setup>
-import { computed, ref } from "vue";
+import { computed, nextTick, ref, watch } from "vue";
 
 const props = defineProps({
   // 弹窗显隐，配合 v-model 使用
@@ -86,7 +81,7 @@ const props = defineProps({
   title: { type: String, default: "" },
   // add / edit，编辑态下 disabledInEdit 的字段会禁用
   mode: { type: String, default: "add" },
-  // 表单数据，配合 v-model:model 使用
+  // 表单初始值：弹窗打开时快照到内部副本，编辑过程不改动父组件数据
   model: { type: Object, required: true },
   // 字段配置：[{ prop, label, type, options, props, span, hidden, disabled, disabledInEdit, slot }]
   fields: { type: Array, default: () => [] },
@@ -98,13 +93,16 @@ const props = defineProps({
   destroyOnClose: { type: Boolean, default: false },
 });
 
-const emit = defineEmits(["update:modelValue", "update:model", "submit"]);
+// 提交时回传编辑结果：emit('submit', data)
+const emit = defineEmits(["update:modelValue", "submit"]);
 
 const formRef = ref(null);
+// 弹窗内部的编辑副本（自身可写，无需对 props 做双向绑定）
+const form = ref({});
 
 const isHidden = (field) => {
   if (typeof field.hidden === "function") {
-    return field.hidden(props.mode, props.model);
+    return field.hidden(props.mode, form.value);
   }
   return field.hidden === true;
 };
@@ -114,17 +112,29 @@ const visibleFields = computed(() => props.fields.filter((field) => !isHidden(fi
 const isDisabled = (field) =>
   field.disabled ?? (props.mode === "edit" && Boolean(field.disabledInEdit));
 
-// 单向数据流：不直接修改 model prop，而是回传新对象
-const onFieldUpdate = (prop, value) => emit("update:model", { ...props.model, [prop]: value });
+// 每次打开都以最新的 model 作为初始值，并清掉上一次的校验残留
+watch(
+  () => props.modelValue,
+  (visible) => {
+    if (!visible) {
+      return;
+    }
+    form.value = { ...props.model };
+    nextTick(() => formRef.value?.clearValidate());
+  },
+  { immediate: true }
+);
 
 const onClose = () => emit("update:modelValue", false);
 
 const onSubmit = async () => {
   if (formRef.value) {
     const valid = await formRef.value.validate().catch(() => false);
-    if (!valid) return;
+    if (!valid) {
+      return;
+    }
   }
-  emit("submit");
+  emit("submit", { ...form.value });
 };
 
 defineExpose({ formRef });

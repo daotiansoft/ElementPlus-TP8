@@ -1,16 +1,6 @@
-import { BaseApi } from "@/utils/baseApi";
+import { createApi } from "@/utils/baseApi";
 
-class Api extends BaseApi {
-  constructor() {
-    super("/admin/member/");
-  }
-
+export default createApi("/admin/member/", (request) => ({
   // 调整账号余额
-  adjust(data) {
-    return this.request({ url: "adjust", method: "post", data });
-  }
-}
-
-const api = new Api();
-
-export default api;
+  adjust: (data) => request({ url: "adjust", method: "post", data }),
+}));

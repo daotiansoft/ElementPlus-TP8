@@ -7,9 +7,12 @@ namespace app\admin\service;
 
 use app\common\basics\Service;
 use app\common\enums\StatusEnum;
+use app\common\exception\RequestException;
 use app\common\model\PermsModel;
+use app\common\model\RolePermsModel;
 use app\common\utils\CacheUtils;
 use app\common\utils\TimeUtils;
+use think\facade\Db;
 
 class PermsService extends Service
 {
@@ -69,8 +72,38 @@ class PermsService extends Service
 
     public static function del(array $ids,array $userItem): void
     {
-        PermsModel::destroy($ids,true);
-        PermsModel::where('parent_id','in',$ids)->delete();
+        $ids = array_values(array_unique(array_filter(array_map('intval', $ids))));
+        if (empty($ids)) {
+            throw new RequestException('请选择要删除的节点');
+        }
+
+        // 一次取出全部节点，收集被删节点的整棵子树
+        // （界面提示的是「删除该节点及其所有子节点」，必须真的递归删除）
+        $childMap = [];
+        foreach (PermsModel::field('id,parent_id')->select()->toArray() as $node) {
+            $childMap[(int) $node['parent_id']][] = (int) $node['id'];
+        }
+
+        $deleteIds = [];
+        $stack = $ids;
+        while (!empty($stack)) {
+            $id = (int) array_pop($stack);
+            if (isset($deleteIds[$id])) {
+                continue;
+            }
+            $deleteIds[$id] = true;
+            foreach ($childMap[$id] ?? [] as $childId) {
+                $stack[] = $childId;
+            }
+        }
+        $deleteIds = array_keys($deleteIds);
+
+        Db::transaction(function () use ($deleteIds) {
+            // 同步清理角色授权引用，避免残留无效授权
+            RolePermsModel::whereIn('perms_id', $deleteIds)->delete();
+            PermsModel::whereIn('id', $deleteIds)->delete();
+        });
+
         CacheUtils::clearTag('perms');
     }
 

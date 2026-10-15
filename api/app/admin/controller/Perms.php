@@ -2,7 +2,7 @@
 //下级
 namespace app\admin\controller;
 
-use app\common\basics\BaseController;
+use app\common\basics\CrudController;
 use app\common\enums\StatusEnum;
 use app\common\exception\RequestException;
 use app\common\model\PermsModel;
@@ -13,7 +13,7 @@ use think\App;
 use think\response\Json;
 
 
-class Perms extends BaseController
+class Perms extends CrudController
 {
     public function __construct(App $app)
     {

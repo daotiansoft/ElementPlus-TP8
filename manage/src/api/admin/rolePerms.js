@@ -1,18 +1,5 @@
-import { BaseApi } from "@/utils/baseApi";
+import { createApi } from "@/utils/baseApi";
 
-class Api extends BaseApi {
-  constructor() {
-    super("/admin/rolePerms/");
-  }
-  save(data) {
-    return this.request({
-      url: "save",
-      method: "post",
-      data,
-    });
-  }
-}
-
-const api = new Api();
-
-export default api;
+export default createApi("/admin/rolePerms/", (request) => ({
+  save: (data) => request({ url: "save", method: "post", data }),
+}));

@@ -2,7 +2,7 @@
 //下级
 namespace app\admin\controller;
 
-use app\common\basics\BaseController;
+use app\common\basics\CrudController;
 use app\admin\service\UserService;
 use app\common\service\BalanceService;
 use app\common\utils\AjaxUtils;
@@ -10,7 +10,7 @@ use app\admin\validate\UserValidate;
 use think\App;
 
 
-class Member extends BaseController
+class Member extends CrudController
 {
     public function __construct(App $app)
     {

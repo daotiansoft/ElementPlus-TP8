@@ -1,6 +1,7 @@
 // vite.config.js
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
+import fs from "fs";
 import path from "path";
 import AutoImport from "unplugin-auto-import/vite";
 import Components from "unplugin-vue-components/vite";
@@ -9,6 +10,31 @@ import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+/**
+ * Element Plus 的按需样式（组件用 style/index 引入 SCSS，指令用 style/css）是
+ * unplugin-vue-components 在编译期注入的深层导入，预扫描只看源码、看不到它们，
+ * 于是运行期每加载到一个新组件就重新预构建并整页刷新：
+ *   [vite] optimized dependencies changed. reloading
+ * 这里在启动时把全部组件样式一次性登记进预构建，之后不再触发重载。
+ * 这些入口里的 .scss/.css 会被预构建排除（external），仍走 Vite 正常样式管线。
+ */
+const elementPlusStyleEntries = (() => {
+  const componentsDir = path.resolve(__dirname, "node_modules/element-plus/es/components");
+  if (!fs.existsSync(componentsDir)) {
+    return [];
+  }
+  const entries = [];
+  for (const name of fs.readdirSync(componentsDir)) {
+    for (const variant of ["index", "css"]) {
+      if (fs.existsSync(path.join(componentsDir, name, "style", `${variant}.mjs`))) {
+        entries.push(`element-plus/es/components/${name}/style/${variant}`);
+      }
+    }
+  }
+  return entries;
+})();
+
 export default defineConfig({
   base: "./",
   // 插件配置
@@ -27,6 +53,10 @@ export default defineConfig({
     }),
   ],
   publicDir: "public",
+  // 依赖预构建：见 elementPlusStyleEntries 注释
+  optimizeDeps: {
+    include: elementPlusStyleEntries,
+  },
   // 路径别名
   resolve: {
     alias: {
@@ -56,11 +86,7 @@ export default defineConfig({
         manualChunks(id) {
           if (id.includes("node_modules")) {
             // Vue 生态
-            if (
-              id.includes("vue") ||
-              id.includes("pinia") ||
-              id.includes("vue-router")
-            ) {
+            if (id.includes("vue") || id.includes("pinia") || id.includes("vue-router")) {
               return "vue-core";
             }
 

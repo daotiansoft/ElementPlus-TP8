@@ -1,8 +1,5 @@
 // src/router/index.js
-import {
-  createRouter,
-  createWebHashHistory,
-} from "vue-router";
+import { createRouter, createWebHashHistory } from "vue-router";
 import Layout from "@/layouts/index.vue";
 import { useUserStore } from "@/store/modules/user";
 import transformRoutes from "@/router/routes";
@@ -29,7 +26,7 @@ export const commonRoutes = [
   },
   {
     path: "/center",
-	name: "个人中心",
+    name: "个人中心",
     component: Layout,
     children: [
       {
@@ -69,7 +66,8 @@ const addRoutes = async () => {
   const userStore = useUserStore();
   const items = transformRoutes(await userStore.getRoutesItems());
   items.forEach((item) => {
-    if (item.component == undefined || item.component == "") {
+    // 目录级路由没有 component，统一挂到布局下
+    if (!item.component) {
       item.component = Layout;
     }
     router.addRoute(item);

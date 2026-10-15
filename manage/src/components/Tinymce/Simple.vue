@@ -16,11 +16,30 @@ const emit = defineEmits(["update:modelValue"]);
 
 // TinyMCE 8 使用的开源插件（同时用于动态加载与 init 配置）
 const plugins = [
-  "advlist", "anchor", "autolink", "autoresize", "charmap", "code",
-  "codesample", "directionality", "emoticons", "fullscreen", "help",
-  "image", "insertdatetime", "link", "lists", "media", "nonbreaking",
-  "pagebreak", "preview", "searchreplace", "table", "visualblocks",
-  "visualchars", "wordcount",
+  "advlist",
+  "anchor",
+  "autolink",
+  "autoresize",
+  "charmap",
+  "code",
+  "codesample",
+  "directionality",
+  "emoticons",
+  "fullscreen",
+  "help",
+  "image",
+  "insertdatetime",
+  "link",
+  "lists",
+  "media",
+  "nonbreaking",
+  "pagebreak",
+  "preview",
+  "searchreplace",
+  "table",
+  "visualblocks",
+  "visualchars",
+  "wordcount",
 ];
 
 const editorId = ref(`mce-${Math.random().toString().slice(2)}`);
@@ -95,7 +114,7 @@ watch(
     if (editor && val !== editor.getContent()) {
       editor.setContent(val || "");
     }
-  },
+  }
 );
 
 onBeforeUnmount(() => {
@@ -104,7 +123,6 @@ onBeforeUnmount(() => {
     editor = null;
   }
 });
-
 
 defineExpose({
   getContent: () => editor?.getContent() || "",

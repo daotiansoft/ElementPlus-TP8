@@ -2,15 +2,15 @@
 //下级
 namespace app\admin\controller;
 
-use app\common\basics\BaseController;
+use app\common\basics\CrudController;
 use app\admin\service\AppListService;
 use app\admin\service\UserService;
-use app\common\utils\AjaxUtils;
+use app\common\exception\RequestException;
 use app\admin\validate\AppListValidate;
 use think\App;
 
 
-class AppList extends BaseController
+class AppList extends CrudController
 {
     public function __construct(App $app)
     {
@@ -19,31 +19,32 @@ class AppList extends BaseController
         $this->validate = new AppListValidate();
     }
 
-    public function add(){
-        $data = $this->request->param();
-        if(isset($data['username']) && !empty($data['username'])){
-            $userItem = UserService::getItemByUsername($data['username']);
-            if(!$userItem){
-                return AjaxUtils::error("账号不存在");
-            }
-            $data['uid'] = $userItem['id'];
-        }
-        $this->validate->addCheck($data);
-        $this->service::add($data,$this->userItem);
-        return AjaxUtils::success();
+    protected function beforeAdd(array $params): array
+    {
+        return $this->resolveUid($params);
     }
 
-    public function edit(){
-        $data = $this->request->param();
-        if(isset($data['username']) && !empty($data['username'])){
-            $userItem = UserService::getItemByUsername($data['username']);
-            if(!$userItem){
-                return AjaxUtils::error("账号不存在");
-            }
-            $data['uid'] = $userItem['id'];
+    protected function beforeEdit(array $params): array
+    {
+        return $this->resolveUid($params);
+    }
+
+    /**
+     * 账号名 -> uid，账号不存在时交由统一异常处理返回错误
+     */
+    private function resolveUid(array $params): array
+    {
+        $username = $params['username'] ?? '';
+        if ($username === '') {
+            return $params;
         }
-        $this->validate->editCheck($data);
-        $this->service::edit($data,$this->userItem);
-        return AjaxUtils::success();
+
+        $userItem = UserService::getItemByUsername($username);
+        if (empty($userItem)) {
+            throw new RequestException('账号不存在');
+        }
+        $params['uid'] = $userItem['id'];
+
+        return $params;
     }
 }

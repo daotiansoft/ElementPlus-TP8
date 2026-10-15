@@ -13,7 +13,7 @@ class ConfigGroupService extends Service
 {
     public static function lists(array $get,array $userItem): array
     {
-        self::setSearch([
+        $where = self::setSearch([
             '%like%'   => ['keyword@name'],
             '='        => ['status@status'],
             'datetime' => ['time@create_time'],
@@ -21,7 +21,7 @@ class ConfigGroupService extends Service
 
         $model = new ConfigGroupModel();
         $lists = $model
-            ->where(self::$searchWhere)
+            ->where($where)
             ->order('sort desc')
             ->paginate([
                 'page'      => $get['page']  ?? 1,

@@ -31,7 +31,7 @@ class Validate extends \think\Validate
         if (!($scene ? $this->scene($scene)->check($params) : $this->check($params))) {
             $exception = is_array($this->error) ? implode(';', $this->error) : $this->error;
             $data = array('code'=>CodeEnum::ERROR, 'msg'=>$exception, 'data'=>[]);
-            $response = Response::create($data, 'json');
+            $response = Response::create($data, 'json', 422);
             throw new HttpResponseException($response);
         }
     }

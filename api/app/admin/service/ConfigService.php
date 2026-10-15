@@ -14,7 +14,7 @@ class ConfigService extends Service
 {
     public static function lists(array $get,array $userItem): array
     {
-        self::setSearch([
+        $where = self::setSearch([
             '%like%'   => ['keyword@config_model.name'],
             '='        => ['key@config_model.key','group_id@config_model.group_id'],
             'datetime' => ['time@config_model.create_time'],
@@ -22,7 +22,7 @@ class ConfigService extends Service
         $model = new ConfigModel();
         $lists = $model
             ->withJoin(['group'],'LEFT')
-            ->where(self::$searchWhere)
+            ->where($where)
             ->order('sort desc')
             ->paginate([
                 'page'      => $get['page']  ?? 1,
