@@ -54,8 +54,8 @@
     </div>
     <div class="page-block" style="text-align: center; margin: 10px 0">
       <el-pagination
-        v-model:current-page="searchForm.page"
-        v-model:page-size="searchForm.pagesize"
+        :current-page="searchForm.page"
+        :page-size="searchForm.pagesize"
         :page-sizes="[20, 50, 100, 200, 300, 400]"
         layout="total, sizes, prev, pager, next, jumper"
         :total="total"

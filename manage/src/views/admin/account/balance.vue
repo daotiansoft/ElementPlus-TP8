@@ -19,13 +19,13 @@
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-select v-model="searchForm.type" placeholder="交易类型" clearable style="width: 140px">
-            <el-option
-              v-for="t in typeOptions"
-              :key="t.value"
-              :label="t.label"
-              :value="t.value"
-            />
+          <el-select
+            v-model="searchForm.type"
+            placeholder="交易类型"
+            clearable
+            style="width: 140px"
+          >
+            <el-option v-for="t in typeOptions" :key="t.value" :label="t.label" :value="t.value" />
           </el-select>
         </el-form-item>
         <el-form-item>
@@ -78,8 +78,8 @@
 
     <div class="page-block" style="text-align: center; margin: 10px 0">
       <el-pagination
-        v-model:current-page="searchForm.page"
-        v-model:page-size="searchForm.pagesize"
+        :current-page="searchForm.page"
+        :page-size="searchForm.pagesize"
         :page-sizes="[20, 50, 100, 200, 300, 400]"
         layout="total, sizes, prev, pager, next, jumper"
         :total="total"

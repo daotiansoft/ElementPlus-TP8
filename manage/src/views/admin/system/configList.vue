@@ -9,11 +9,7 @@
           <el-input v-model="searchForm.key" placeholder="唯一标识" />
         </el-form-item>
         <el-form-item>
-          <el-select
-            v-model="searchForm.group_id"
-            placeholder="筛选分组"
-            style="width: 150px"
-          >
+          <el-select v-model="searchForm.group_id" placeholder="筛选分组" style="width: 150px">
             <el-option
               v-for="val in groupOptions"
               :key="val.id"
@@ -50,27 +46,20 @@
         <el-table-column label="是否显示" width="80" align="center">
           <template #default="scope">
             <el-tag v-if="scope.row.show === 1" disable-transitions>是</el-tag>
-            <el-tag v-if="scope.row.show === -1" disable-transitions type="info"
-              >否</el-tag
-            >
+            <el-tag v-if="scope.row.show === -1" disable-transitions type="info">否</el-tag>
           </template>
         </el-table-column>
         <el-table-column label="操作" width="80" fixed="right">
           <template #default="scope">
-            <el-button
-              type="primary"
-              size="small"
-              @click="onItemEdit(scope.row)"
-              >编辑</el-button
-            >
+            <el-button type="primary" size="small" @click="onItemEdit(scope.row)">编辑</el-button>
           </template>
         </el-table-column>
       </el-table>
     </div>
     <div class="page-block" style="text-align: center; margin: 10px 0">
       <el-pagination
-        v-model:current-page="searchForm.page"
-        v-model:page-size="searchForm.pagesize"
+        :current-page="searchForm.page"
+        :page-size="searchForm.pagesize"
         :page-sizes="[20, 50, 100, 200, 300, 400]"
         layout="total, sizes, prev, pager, next, jumper"
         :total="total"
@@ -91,18 +80,10 @@
           </el-select>
         </el-form-item>
         <el-form-item label="名称" label-width="80px">
-          <el-input
-            v-model="addForm.name"
-            autocomplete="off"
-            placeholder="请输入名称"
-          />
+          <el-input v-model="addForm.name" autocomplete="off" placeholder="请输入名称" />
         </el-form-item>
         <el-form-item label="唯一标识" label-width="80px">
-          <el-input
-            v-model="addForm.key"
-            autocomplete="off"
-            placeholder="请输入唯一标识"
-          />
+          <el-input v-model="addForm.key" autocomplete="off" placeholder="请输入唯一标识" />
         </el-form-item>
         <el-form-item label="类型" label-width="80px">
           <el-select v-model="addForm.type" placeholder="请选择">
@@ -112,18 +93,10 @@
           </el-select>
         </el-form-item>
         <el-form-item label="描述内容" label-width="80px">
-          <el-input
-            v-model="addForm.placeholder"
-            autocomplete="off"
-            placeholder="可空，提示消息"
-          />
+          <el-input v-model="addForm.placeholder" autocomplete="off" placeholder="可空，提示消息" />
         </el-form-item>
         <el-form-item label="附加参数" label-width="80px">
-          <el-input
-            v-model="addForm.params"
-            autocomplete="off"
-            placeholder="可空，长度小于255"
-          />
+          <el-input v-model="addForm.params" autocomplete="off" placeholder="可空，长度小于255" />
         </el-form-item>
         <el-form-item label="配置内容" label-width="80px">
           <el-input
@@ -148,9 +121,7 @@
       </el-form>
       <template #footer>
         <el-button @click="addVisible = false">取 消</el-button>
-        <el-button type="primary" @click="onAdd" v-loading="loading"
-          >确 定</el-button
-        >
+        <el-button type="primary" @click="onAdd" v-loading="loading">确 定</el-button>
       </template>
     </el-dialog>
 
@@ -167,18 +138,10 @@
           </el-select>
         </el-form-item>
         <el-form-item label="名称" label-width="80px">
-          <el-input
-            v-model="editForm.name"
-            autocomplete="off"
-            placeholder="请输入名称"
-          />
+          <el-input v-model="editForm.name" autocomplete="off" placeholder="请输入名称" />
         </el-form-item>
         <el-form-item label="唯一标识" label-width="80px">
-          <el-input
-            v-model="editForm.key"
-            autocomplete="off"
-            placeholder="请输入唯一标识"
-          />
+          <el-input v-model="editForm.key" autocomplete="off" placeholder="请输入唯一标识" />
         </el-form-item>
         <el-form-item label="类型" label-width="80px">
           <el-select v-model="editForm.type" placeholder="请选择">
@@ -195,11 +158,7 @@
           />
         </el-form-item>
         <el-form-item label="附加参数" label-width="80px">
-          <el-input
-            v-model="editForm.params"
-            autocomplete="off"
-            placeholder="可空，长度小于255"
-          />
+          <el-input v-model="editForm.params" autocomplete="off" placeholder="可空，长度小于255" />
         </el-form-item>
         <el-form-item label="配置内容" label-width="80px">
           <el-input
@@ -224,9 +183,7 @@
       </el-form>
       <template #footer>
         <el-button @click="editVisible = false">取 消</el-button>
-        <el-button type="primary" @click="onEdit" v-loading="loading"
-          >确 定</el-button
-        >
+        <el-button type="primary" @click="onEdit" v-loading="loading">确 定</el-button>
       </template>
     </el-dialog>
   </div>

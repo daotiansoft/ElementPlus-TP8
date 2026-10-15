@@ -8,13 +8,13 @@
     <div class="search-block">
       <el-form :inline="true" :model="searchForm">
         <el-form-item>
-          <el-select v-model="searchForm.type" placeholder="交易类型" clearable style="width: 140px">
-            <el-option
-              v-for="t in typeOptions"
-              :key="t.value"
-              :label="t.label"
-              :value="t.value"
-            />
+          <el-select
+            v-model="searchForm.type"
+            placeholder="交易类型"
+            clearable
+            style="width: 140px"
+          >
+            <el-option v-for="t in typeOptions" :key="t.value" :label="t.label" :value="t.value" />
           </el-select>
         </el-form-item>
         <el-form-item>
@@ -35,12 +35,7 @@
     </div>
 
     <div class="data-list">
-      <el-table
-        v-loading="loading"
-        :data="items"
-        style="width: 100%"
-        empty-text="暂无数据"
-      >
+      <el-table v-loading="loading" :data="items" style="width: 100%" empty-text="暂无数据">
         <el-table-column prop="id" label="ID" width="80" />
         <el-table-column label="变动金额(元)" width="140" align="right">
           <template #default="scope">
@@ -63,8 +58,8 @@
 
     <div class="page-block" style="text-align: center; margin: 10px 0">
       <el-pagination
-        v-model:current-page="searchForm.page"
-        v-model:page-size="searchForm.pagesize"
+        :current-page="searchForm.page"
+        :page-size="searchForm.pagesize"
         :page-sizes="[20, 50, 100, 200]"
         layout="total, sizes, prev, pager, next, jumper"
         :total="total"

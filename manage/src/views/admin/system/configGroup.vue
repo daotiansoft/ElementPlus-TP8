@@ -39,33 +39,21 @@
         <el-table-column prop="create_time" label="创建时间" width="160" />
         <el-table-column label="状态" width="80" align="center">
           <template #default="scope">
-            <el-tag v-if="scope.row.status === 1" disable-transitions
-              >正常</el-tag
-            >
-            <el-tag
-              v-if="scope.row.status === -1"
-              disable-transitions
-              type="info"
-              >禁用</el-tag
-            >
+            <el-tag v-if="scope.row.status === 1" disable-transitions>正常</el-tag>
+            <el-tag v-if="scope.row.status === -1" disable-transitions type="info">禁用</el-tag>
           </template>
         </el-table-column>
         <el-table-column label="操作" width="80" fixed="right">
           <template #default="scope">
-            <el-button
-              type="primary"
-              size="small"
-              @click="onItemEdit(scope.row)"
-              >编辑</el-button
-            >
+            <el-button type="primary" size="small" @click="onItemEdit(scope.row)">编辑</el-button>
           </template>
         </el-table-column>
       </el-table>
     </div>
     <div class="page-block" style="text-align: center; margin: 10px 0">
       <el-pagination
-        v-model:current-page="searchForm.page"
-        v-model:page-size="searchForm.pagesize"
+        :current-page="searchForm.page"
+        :page-size="searchForm.pagesize"
         :page-sizes="[20, 50, 100, 200, 300, 400]"
         layout="total, sizes, prev, pager, next, jumper"
         :total="total"
@@ -76,11 +64,7 @@
     <el-dialog title="添加" v-model="addVisible">
       <el-form ref="add_form" :model="addForm">
         <el-form-item label="名称" label-width="80px">
-          <el-input
-            v-model="addForm.name"
-            autocomplete="off"
-            placeholder="请输入名称"
-          />
+          <el-input v-model="addForm.name" autocomplete="off" placeholder="请输入名称" />
         </el-form-item>
         <el-form-item label="排序" label-width="80px">
           <el-input
@@ -98,20 +82,14 @@
       </el-form>
       <template #footer>
         <el-button @click="addVisible = false">取 消</el-button>
-        <el-button type="primary" @click="onAdd" v-loading="loading"
-          >确 定</el-button
-        >
+        <el-button type="primary" @click="onAdd" v-loading="loading">确 定</el-button>
       </template>
     </el-dialog>
 
     <el-dialog title="编辑" v-model="editVisible">
       <el-form ref="edit_form" :model="editForm">
         <el-form-item label="名称" label-width="80px">
-          <el-input
-            v-model="editForm.name"
-            autocomplete="off"
-            placeholder="请输入名称"
-          />
+          <el-input v-model="editForm.name" autocomplete="off" placeholder="请输入名称" />
         </el-form-item>
         <el-form-item label="排序" label-width="80px">
           <el-input
@@ -129,9 +107,7 @@
       </el-form>
       <template #footer>
         <el-button @click="editVisible = false">取 消</el-button>
-        <el-button type="primary" @click="onEdit" v-loading="loading"
-          >确 定</el-button
-        >
+        <el-button type="primary" @click="onEdit" v-loading="loading">确 定</el-button>
       </template>
     </el-dialog>
   </div>
@@ -255,10 +231,7 @@ const handleSelectionChange = (val) => {
 };
 
 const generateRandomString = (length = 32) => {
-  return (
-    Math.random().toString(36).substring(2, 15) +
-    Math.random().toString(36).substring(2, 15)
-  );
+  return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 };
 
 onMounted(() => {
