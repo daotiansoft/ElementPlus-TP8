@@ -13,7 +13,7 @@
     </el-sub-menu>
 
     <!-- 没有子路由时，渲染为 el-menu-item -->
-    <el-menu-item v-else-if="!hasVisibleChildren" :index="route.path">
+    <el-menu-item v-else-if="route.node_type !== 'group'" :index="route.path">
       <el-icon v-if="route.meta?.icon">
         <component :is="menuIcons[route.meta.icon]" />
       </el-icon>

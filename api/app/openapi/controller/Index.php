@@ -1,9 +1,9 @@
 <?php
 namespace app\openapi\controller;
 
-use app\BaseController;
+use app\common\basics\Api;
 
-class Index extends BaseController
+class Index extends Api
 {
 
     public function index(){

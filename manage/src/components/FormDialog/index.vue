@@ -25,7 +25,7 @@
                 :placeholder="field.placeholder"
               >
                 <el-option
-                  v-for="option in field.options || []"
+                  v-for="option in getOptions(field)"
                   :key="option.value"
                   :label="option.label"
                   :value="option.value"
@@ -83,7 +83,7 @@ const props = defineProps({
   mode: { type: String, default: "add" },
   // 表单初始值：弹窗打开时快照到内部副本，编辑过程不改动父组件数据
   model: { type: Object, required: true },
-  // 字段配置：[{ prop, label, type, options, props, span, hidden, disabled, disabledInEdit, slot }]
+  // 字段配置支持 options 数组或接收当前表单的 options 函数。
   fields: { type: Array, default: () => [] },
   rules: { type: Object, default: () => ({}) },
   labelWidth: { type: String, default: "80px" },
@@ -106,6 +106,9 @@ const isHidden = (field) => {
   }
   return field.hidden === true;
 };
+
+const getOptions = (field) =>
+  typeof field.options === "function" ? field.options(props.mode, form.value) : field.options || [];
 
 const visibleFields = computed(() => props.fields.filter((field) => !isHidden(field)));
 

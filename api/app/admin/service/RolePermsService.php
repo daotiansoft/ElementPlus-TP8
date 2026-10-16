@@ -6,14 +6,11 @@ namespace app\admin\service;
 
 
 use app\common\basics\Service;
-use app\common\enums\CodeEnum;
-use app\common\enums\StatusEnum;
 use app\common\exception\RequestException;
 use app\common\model\PermsModel;
 use app\common\model\RolePermsModel;
 use app\common\model\RolesModel;
 use app\common\utils\CacheUtils;
-use app\common\utils\TimeUtils;
 use think\facade\Db;
 
 class RolePermsService extends Service
@@ -21,29 +18,41 @@ class RolePermsService extends Service
     public static function save(array $post): void
     {
         $type = trim((string) ($post['type'] ?? ''));
-        $perms_ids = array_values(array_unique(array_filter(array_map('intval', (array) ($post['perms_ids'] ?? [])))));
+        $rawPermsIds = (array) ($post['perms_ids'] ?? []);
+        $permsIds = [];
+        foreach ($rawPermsIds as $rawId) {
+            if (!is_scalar($rawId) || !preg_match('/^[1-9][0-9]*$/', (string) $rawId)) {
+                throw new RequestException('授权列表包含无效的权限节点 ID');
+            }
+            $permsIds[] = (int) $rawId;
+        }
+        $permsIds = array_values(array_unique($permsIds));
         if ($type === '') {
             throw new RequestException('缺少角色标识');
         }
+        if (!RolesModel::where('type', '=', $type)->find()) {
+            throw new RequestException('角色不存在');
+        }
 
-        $items = [];
-        if (!empty($perms_ids)) {
-            $permModel = new PermsModel();
-            $permsItems = $permModel->where('id','in',$perms_ids)->select();
-            foreach($permsItems as $permsItem){
-                if($permsItem['route_status'] == StatusEnum::STATUS_0){
-                    $items[]=[
-                        'type'=>$type,
-                        'perms_id'=>$permsItem['id'],
-                        'create_time'=>time(),
-                        'update_time'=>time(),
-                    ];
-                }
-
+        $existingIds = [];
+        if (!empty($permsIds)) {
+            $existingIds = array_map('intval', (new PermsModel())->whereIn('id', $permsIds)->column('id'));
+            if (count($existingIds) !== count($permsIds)) {
+                throw new RequestException('授权列表包含不存在的权限节点');
             }
         }
 
-        // 先删后插必须在事务内，否则中途失败会让该角色的权限全部丢失
+        $items = [];
+        $now = time();
+        foreach ($permsIds as $permsId) {
+            $items[] = [
+                'type' => $type,
+                'perms_id' => $permsId,
+                'create_time' => $now,
+                'update_time' => $now,
+            ];
+        }
+
         $model = new RolePermsModel();
         Db::transaction(function () use ($model, $type, $items) {
             $model->where('type','=',$type)->delete();

@@ -130,8 +130,9 @@ abstract class AbstractAuth extends BaseController
             return true;
         }
 
+        $endpoint = strtolower($module . '.' . $controller . '.' . $action);
         $permsSet = PermsAccessService::getPowerSet($this->userItem['type']);
-        if (isset($permsSet[$module . '/' . $controller . '/' . $action])) {
+        if (isset($permsSet[$endpoint])) {
             return true;
         }
 

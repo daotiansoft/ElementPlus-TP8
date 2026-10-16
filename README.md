@@ -48,9 +48,16 @@ cp .example.env .env
 mysql -uroot -p -e "CREATE DATABASE dbdata DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"
 mysql -uroot -p dbdata < dbdata.sql
 
-# 如库是早期导入的，按需执行增量脚本
-mysql -uroot -p dbdata < db/migrations/2026-10-15-index-optimization.sql
+# 尚未升级过的旧数据库：先备份，再按顺序执行：
+mysql -uroot -p dbdata < db/migrations/2026-10-16-permission-model.sql
+mysql -uroot -p dbdata < db/migrations/2026-10-16-permission-handler.sql
+mysql -uroot -p dbdata < db/migrations/2026-10-16-openapi-permissions.sql
 ```
+
+如果已执行过 `permission-model.sql`，不要重跑第一个脚本；按实际状态执行后续脚本。
+如果此前还执行过旧版 `permission-handler.sql`（把三列合并成 `handler` 的版本），新版第二个脚本会把处理器数据恢复到模块、控制器、方法列。
+最后的 `openapi-permissions.sql` 会移除旧版 APPID 独立授权表并补齐开放接口权限节点；全新安装时，`dbdata.sql` 已包含最终权限模型与接口节点。
+权限节点现在区分目录、页面、操作和 API，页面路由只能选择前端已登记的路径，角色授权采用独立勾选。
 
 把站点根目录指向 `api/public`。本地开发习惯用 `admin.test.com`，可在 hosts 中加：
 
@@ -121,10 +128,12 @@ cp .env.example .env   # 填写 OPENAPI_BASE_URL / OPENAPI_APPID / OPENAPI_SECRE
 鉴权方式有两种：
 
 - 后台接口：请求头 `Api-Token`（JWT）
-- 开放接口（`/task/api/*` 等）：`appid + time + sign` 签名，见 `openapi/`
+- 开放接口（仅 `openapi`、`task` 模块）：`appid + time + sign` 签名，见 `openapi/`
 
-权限按「权限节点 → 角色 → 账号」三级控制，路径形如 `admin/member/items`，
-新增接口后需在后台「账号管理 → 权限节点」登记并授权给角色，否则会返回 403。
+权限按「权限节点 → 角色 → 账号」三级控制。目录仅组织树形结构；页面绑定前端已登记路由；
+操作/API 节点分别配置模块、控制器、方法，并用 `permission_key` 保存稳定权限标识；页面可选配置模块和控制器作为 CURD 生成依据。
+新增页面需先登记在 `manage/src/router/routes.js`，新增后端方法需在「账号管理 → 权限节点」登记并授权给角色，否则接口返回 403。
+开放接口仅开放 `openapi` 和 `task` 两个模块；在「账号管理 → 权限节点」登记 API 节点，再到「角色管理」勾选对应权限。APPID 只负责签名识别和绑定账号，接口权限完全跟随该账号的角色。迁移会删除此前实验版的 `dt_app_perms` 表，其授权不再使用。
 
 ## 开发约定
 

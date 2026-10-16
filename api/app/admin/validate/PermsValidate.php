@@ -7,25 +7,21 @@ class PermsValidate extends Validate
 {
     protected $rule =   [
         'name'  => 'require',
-        'module'  => 'require',
-        'controller'  => 'require',
-        'action'  => 'require'
+        'node_type' => 'require|in:group,page,action,api',
     ];
 
     public function __construct()
     {
         $this->field = [
             'name'        => '名称',
-            'module'        => '模块',
-            'controller'   => '控制器',
-            'action'   => '方法名',
+            'node_type'   => '节点类型',
         ];
         parent::__construct();
     }
 
     protected $scene = [
-        'add'  =>  ['name'],
-        'edit'  =>  ['name'],
+        'add'  =>  ['name', 'node_type'],
+        'edit'  =>  ['name', 'node_type'],
     ];
 
 }

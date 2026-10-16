@@ -1,62 +1,95 @@
 <template>
   <div class="perms-manage">
     <el-card class="tree-card">
+      <div class="toolbar">
+        <el-input
+          v-model="filterText"
+          clearable
+          placeholder="搜索名称、权限标识、模块、控制器、方法或路由"
+          :prefix-icon="Search"
+          style="width: 320px"
+        />
+        <el-button type="primary" :icon="Plus" @click="onVisibleAdd(rootNode)"
+          >新增根节点</el-button
+        >
+      </div>
       <el-tree
         ref="treeRef"
+        v-loading="loading"
         :data="treeData"
         :props="treeProps"
         node-key="id"
         highlight-current
         :filter-node-method="filterNode"
         :expand-on-click-node="false"
+        default-expand-all
       >
-        <template #default="{ node, data }">
+        <template #default="{ data }">
           <div class="menu">
             <div class="menu-left">
-              <el-icon v-if="data.parent_id == 0">
+              <el-icon v-if="data.parent_id === 0 || data.node_type === 'group'">
                 <House />
               </el-icon>
-              {{ data.name }}
+              <span>{{ data.name }}</span>
+              <el-tag size="small" effect="plain" :type="nodeTypeTag(data.node_type)">
+                {{ nodeTypeLabel(data.node_type) }}
+              </el-tag>
+              <el-tag v-if="data.route_path" size="small" type="success" effect="plain">
+                {{ data.route_path }}
+              </el-tag>
+              <el-tag v-if="data.permission_key" size="small" type="primary" effect="plain">
+                {{ data.permission_key }}
+              </el-tag>
               <el-tag
-                v-if="data.module != '' && data.controller != '' && data.action != ''"
-                effect="plain"
-                style="margin-left: 10px"
+                v-if="data.module && data.controller && data.action"
                 size="small"
-                type="primary"
+                type="warning"
+                effect="plain"
               >
                 {{ data.module }}/{{ data.controller }}/{{ data.action }}
               </el-tag>
-              <el-tag type="info" size="small" v-if="data.only_api == 1">API</el-tag>
-              <el-tag type="info" size="small" v-if="data.status != 1">禁用</el-tag>
+              <el-tag
+                v-else-if="data.module && data.controller"
+                size="small"
+                type="warning"
+                effect="plain"
+              >
+                CURD: {{ data.module }}/{{ data.controller }}
+              </el-tag>
+              <el-tag v-if="data.status !== 1" size="small" type="info">禁用</el-tag>
             </div>
             <div class="menu-right">
               <el-button
-                type="danger"
+                v-if="data.node_type === 'page' && data.module && data.controller"
+                type="warning"
                 size="small"
-                v-if="data.module != '' && data.controller != '' && data.action == ''"
                 @click="onCurd(data)"
-                >CURD</el-button
               >
+                生成操作权限
+              </el-button>
               <el-button
                 type="primary"
                 size="small"
                 :icon="Plus"
+                aria-label="添加子节点"
                 @click="onVisibleAdd(data)"
-              ></el-button>
+              />
               <el-button
+                v-if="data.id > 0"
                 type="primary"
                 size="small"
                 :icon="Edit"
-                v-if="data.id > 0"
+                aria-label="编辑节点"
                 @click="onVisibleEdit(data)"
-              ></el-button>
+              />
               <el-button
+                v-if="data.id > 0"
                 type="danger"
                 size="small"
                 :icon="Delete"
-                v-if="data.id > 0"
+                aria-label="删除节点"
                 @click="onDelete(data)"
-              ></el-button>
+              />
             </div>
           </div>
         </template>
@@ -74,27 +107,44 @@
       :gutter="24"
       :loading="loading"
       destroy-on-close
+      width="720px"
       @submit="onSubmit"
     />
   </div>
 </template>
 
 <script setup>
-import { computed, ref, onMounted } from "vue";
-import { House, Plus, Edit, Delete } from "@element-plus/icons-vue";
+import { computed, ref, onMounted, watch } from "vue";
+import { House, Plus, Edit, Delete, Search } from "@element-plus/icons-vue";
 import perms from "@/api/admin/perms";
 import FormDialog from "@/components/FormDialog/index.vue";
+import { routeOptions } from "@/router/routes";
 
 const dialogVisible = ref(false);
 const mode = ref("add");
-const dialogTitle = computed(() => (mode.value === "add" ? "添加节点" : "编辑节点"));
 const loading = ref(false);
+const filterText = ref("");
+const treeRef = ref(null);
+const treeData = ref([]);
+const formData = ref({});
+const dialogTitle = computed(() => (mode.value === "add" ? "添加权限节点" : "编辑权限节点"));
+
+const rootNode = computed(() => ({
+  id: 0,
+  parent_id: 0,
+  name: "根节点",
+  node_type: "group",
+  module: "",
+  controller: "",
+  action: "",
+  status: 1,
+  children: treeData.value,
+}));
 
 const formRules = {
   name: [{ required: true, message: "请输入节点名称", trigger: "blur" }],
+  node_type: [{ required: true, message: "请选择节点类型", trigger: "change" }],
 };
-
-const treeData = ref([]);
 
 const treeProps = {
   children: "children",
@@ -102,28 +152,123 @@ const treeProps = {
   value: "id",
 };
 
-const formData = ref({});
+const nodeTypeOptions = [
+  { label: "目录", value: "group" },
+  { label: "页面", value: "page" },
+  { label: "操作权限", value: "action" },
+  { label: "API 权限", value: "api" },
+];
 
-// 添加与编辑共用同一份字段配置；hidden 控制条件显示，disabledInEdit 控制编辑时不可修改
+const collectDescendants = (node, ids = new Set()) => {
+  ids.add(node.id);
+  (node.children || []).forEach((child) => collectDescendants(child, ids));
+  return ids;
+};
+
+const filterParentOptions = (nodes, excludedIds) =>
+  nodes
+    .filter((node) => !excludedIds.has(node.id) && ["group", "page"].includes(node.node_type))
+    .map((node) => ({
+      ...node,
+      children: filterParentOptions(node.children || [], excludedIds),
+    }));
+
+const getParentOptions = () => {
+  const excludedIds =
+    mode.value === "edit" && formData.value.id > 0
+      ? collectDescendants(
+          findNode(treeData.value, formData.value.id) || { id: formData.value.id, children: [] }
+        )
+      : new Set();
+  return filterParentOptions([rootNode.value], excludedIds);
+};
+
+const findNode = (nodes, id) => {
+  for (const node of nodes) {
+    if (node.id === id) return node;
+    const found = findNode(node.children || [], id);
+    if (found) return found;
+  }
+  return null;
+};
+
 const formFields = computed(() => [
   {
     prop: "parent_id",
     label: "上级节点",
     type: "tree-select",
     span: 12,
-    placeholder: "请选择上级节点（留空为根节点）",
+    placeholder: "请选择上级节点",
     props: {
-      data: treeData.value,
+      data: getParentOptions(),
       props: treeProps,
       checkStrictly: true,
-      clearable: true,
+      clearable: false,
       style: "width: 100%",
     },
   },
+  {
+    prop: "node_type",
+    label: "节点类型",
+    type: "select",
+    span: 12,
+    options: nodeTypeOptions,
+    placeholder: "请选择节点类型",
+  },
   { prop: "name", label: "节点名称", span: 12, placeholder: "请输入节点名称" },
-  { prop: "module", label: "所属模块", placeholder: "请输入所属模块" },
-  { prop: "controller", label: "控制器", placeholder: "请输入控制器" },
-  { prop: "action", label: "操作方法", placeholder: "请输入操作方法" },
+  {
+    prop: "route_path",
+    label: "绑定前端路由",
+    type: "select",
+    span: 24,
+    placeholder: "请选择已登记的路由",
+    options: (_mode, model) =>
+      routeOptions.filter((option) => option.node_type === model.node_type),
+    props: { clearable: true, filterable: true, style: "width: 100%" },
+    hidden: (_mode, model) => !["group", "page"].includes(model.node_type),
+  },
+  {
+    prop: "module",
+    label: "CURD 模块",
+    span: 12,
+    placeholder: "可选，例如 admin",
+    hidden: (_mode, model) => model.node_type !== "page",
+  },
+  {
+    prop: "controller",
+    label: "CURD 控制器",
+    span: 12,
+    placeholder: "可选，例如 member",
+    hidden: (_mode, model) => model.node_type !== "page",
+  },
+  {
+    prop: "module",
+    label: "所属模块",
+    span: 12,
+    placeholder: "例如 admin",
+    hidden: (_mode, model) => !["action", "api"].includes(model.node_type),
+  },
+  {
+    prop: "controller",
+    label: "控制器",
+    span: 12,
+    placeholder: "例如 member",
+    hidden: (_mode, model) => !["action", "api"].includes(model.node_type),
+  },
+  {
+    prop: "action",
+    label: "操作方法",
+    span: 12,
+    placeholder: "例如 items",
+    hidden: (_mode, model) => !["action", "api"].includes(model.node_type),
+  },
+  {
+    prop: "permission_key",
+    label: "稳定权限标识",
+    span: 12,
+    placeholder: "例如 account.member.list",
+    hidden: (_mode, model) => !["action", "api"].includes(model.node_type),
+  },
   {
     prop: "sort",
     label: "排序",
@@ -138,61 +283,46 @@ const formFields = computed(() => [
     span: 12,
     props: { activeValue: 1, inactiveValue: 0, activeText: "启用", inactiveText: "禁用" },
   },
-  {
-    prop: "only_api",
-    label: "仅API",
-    type: "switch",
-    span: 12,
-    props: { activeValue: 1, inactiveValue: 0, activeText: "是", inactiveText: "否" },
-  },
-  {
-    prop: "route_status",
-    label: "前端路由",
-    type: "switch",
-    span: 12,
-    props: { activeValue: 1, inactiveValue: 0, activeText: "是", inactiveText: "否" },
-    hidden: (mode, model) => model.only_api != 0,
-  },
-  {
-    prop: "route_name",
-    label: "路由名称",
-    span: 12,
-    placeholder: "",
-    hidden: (mode, model) => model.only_api != 0 || model.route_status != 1,
-  },
 ]);
+
+const nodeTypeLabel = (type) =>
+  nodeTypeOptions.find((option) => option.value === type)?.label || "未知类型";
+const nodeTypeTag = (type) =>
+  ({ group: "info", page: "success", action: "warning", api: "primary" })[type] || "info";
 
 const onVisibleAdd = (item) => {
   mode.value = "add";
+  const defaultType = item.node_type === "page" ? "action" : "group";
   formData.value = {
     id: 0,
     parent_id: item.id,
     name: "",
-    module: item.module,
-    controller: item.controller,
-    action: item.action,
+    node_type: defaultType,
+    route_path: "",
+    module: ["action", "api"].includes(defaultType) ? item.module || "" : "",
+    controller: ["action", "api"].includes(defaultType) ? item.controller || "" : "",
+    action: "",
+    permission_key: "",
     sort: 0,
     status: 1,
-    route_status: 0,
-    route_name: "",
-    only_api: 0,
   };
   dialogVisible.value = true;
 };
+
 const onVisibleEdit = (item) => {
   mode.value = "edit";
   formData.value = {
     id: item.id,
     parent_id: item.parent_id,
     name: item.name,
-    module: item.module,
-    controller: item.controller,
-    action: item.action,
+    node_type: item.node_type,
+    route_path: item.route_path || "",
+    module: item.module || "",
+    controller: item.controller || "",
+    action: item.action || "",
+    permission_key: item.permission_key || "",
     sort: item.sort,
     status: item.status,
-    route_status: item.route_status,
-    route_name: item.route_name,
-    only_api: item.only_api,
   };
   dialogVisible.value = true;
 };
@@ -208,23 +338,33 @@ const onSubmit = async (data) => {
       ElMessage.success("编辑成功");
     }
     dialogVisible.value = false;
-    getItems();
+    await getItems();
   } catch (error) {
+    console.error("保存权限节点失败:", error);
   } finally {
     loading.value = false;
   }
 };
-const treeRef = ref(null);
 
-// 过滤节点
 const filterNode = (value, data) => {
   if (!value) return true;
-  return data.name.includes(value);
+  const keyword = value.toLowerCase();
+  return [
+    data.name,
+    data.permission_key,
+    data.route_path,
+    data.module,
+    data.controller,
+    data.action,
+  ]
+    .filter(Boolean)
+    .some((field) => String(field).toLowerCase().includes(keyword));
 };
 
-// 删除节点
+watch(filterText, (value) => treeRef.value?.filter(value));
+
 const onDelete = (data) => {
-  ElMessageBox.confirm(`确定要删除节点 "${data.name}" 及其所有子节点吗？`, "删除确认", {
+  ElMessageBox.confirm(`确定删除“${data.name}”及其所有子节点吗？`, "删除确认", {
     confirmButtonText: "确定",
     cancelButtonText: "取消",
     type: "warning",
@@ -234,16 +374,18 @@ const onDelete = (data) => {
       try {
         await perms.del({ ids: [data.id] });
         ElMessage.success("删除成功");
-        getItems();
+        await getItems();
       } catch (error) {
+        console.error("删除权限节点失败:", error);
       } finally {
         loading.value = false;
       }
     })
     .catch(() => {});
 };
+
 const onCurd = (data) => {
-  ElMessageBox.confirm(`生成 "${data.name}" CURD？`, "！！！非开发人员，请勿操作！！！", {
+  ElMessageBox.confirm(`为“${data.name}”生成 CRUD 操作权限？`, "生成确认", {
     confirmButtonText: "确定",
     cancelButtonText: "取消",
     type: "warning",
@@ -252,9 +394,10 @@ const onCurd = (data) => {
       loading.value = true;
       try {
         await perms.createCurd({ id: data.id });
-        ElMessage.success("操作成功，当前仅生成后端curd");
-        getItems();
+        ElMessage.success("操作权限已生成");
+        await getItems();
       } catch (error) {
+        console.error("生成操作权限失败:", error);
       } finally {
         loading.value = false;
       }
@@ -262,35 +405,42 @@ const onCurd = (data) => {
     .catch(() => {});
 };
 
-const getItems = () => {
-  const rootTree = [
-    {
-      id: 0,
-      parent_id: 0,
-      name: "根节点",
-      module: "",
-      controller: "",
-      action: "",
-      status: 1,
-    },
-  ];
-  perms.getItems().then((data) => {
-    treeData.value = [...rootTree, ...data];
-  });
+const getItems = async () => {
+  loading.value = true;
+  try {
+    treeData.value = await perms.getItems();
+  } catch (error) {
+    console.error("获取权限节点失败:", error);
+  } finally {
+    loading.value = false;
+  }
 };
 
-onMounted(() => {
-  getItems();
-});
+onMounted(getItems);
 </script>
 
 <style scoped lang="scss">
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
 .menu {
   display: flex;
   width: 100%;
+  align-items: center;
 
   &-left {
+    display: flex;
     flex: 1;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &-right {
+    display: flex;
+    align-items: center;
   }
 }
 </style>

@@ -80,6 +80,12 @@ const routesMap = {
   },
 };
 
+export const routeOptions = Object.entries(routesMap).map(([path, route]) => ({
+  value: path,
+  label: `${route.meta?.title || route.name || path} (${path})`,
+  node_type: route.component ? "page" : "group",
+}));
+
 /**
  * 把后端返回的权限路由转换成 vue-router 可注册的路由配置
  *
@@ -97,7 +103,7 @@ const transformRoutes = (paths = []) => {
       return routes;
     }
 
-    const route = { ...routeConfig, path: path.name };
+    const route = { ...routeConfig, path: path.name, node_type: path.node_type };
     if (Array.isArray(path.children) && path.children.length > 0) {
       route.children = transformRoutes(path.children);
     }

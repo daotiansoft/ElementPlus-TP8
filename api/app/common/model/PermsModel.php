@@ -1,7 +1,7 @@
 <?php
 namespace app\common\model;
 
-use think\model\relation\HasOne;
+use think\model\relation\HasMany;
 
 class PermsModel extends CommonModel
 {
@@ -11,21 +11,20 @@ class PermsModel extends CommonModel
         'id'=>'int',
         'parent_id'=>'int',
         'name'=>'string',
+        'node_type'=>'string',
+        'permission_key'=>'string',
+        'route_path'=>'string',
         'module'=>'string',
         'controller'=>'string',
         'action'=>'string',
         'sort'=>'int',
         'status'=>'int',
-        'route_status'=>'int',
-        'route_name'=>'string',
-        'only_api'=>'int',
-
         'create_time'=>'int',
         'update_time'=>'int',
     ];
 
-    public function roleperms(): HasOne
+    public function roleperms(): HasMany
     {
-        return $this->hasOne(RolePermsModel::class, 'perms_id', 'id');
+        return $this->hasMany(RolePermsModel::class, 'perms_id', 'id');
     }
 }

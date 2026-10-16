@@ -70,34 +70,50 @@
     />
 
     <el-dialog title="权限" v-model="permsVisible">
-      <el-form ref="permsFormRef" :model="permsForm">
+      <p class="permission-hint">
+        目录仅用于组织；页面、操作和 API 独立授权，勾选页面不会自动授予操作/API 权限。
+      </p>
+      <el-input
+        v-model="permsFilter"
+        clearable
+        placeholder="搜索名称、权限标识或路由"
+        style="margin-bottom: 12px"
+      />
+      <el-form :model="permsForm">
         <el-tree
           ref="treeRef"
           :data="treeData"
           :props="treeProps"
           node-key="id"
           show-checkbox
+          check-strictly
           highlight-current
           :filter-node-method="filterNode"
           :expand-on-click-node="false"
         >
-          <template #default="{ node, data }">
-            <el-icon v-if="data.parent_id == 0">
+          <template #default="{ data }">
+            <el-icon v-if="data.node_type === 'group'">
               <House />
             </el-icon>
             {{ data.name }}
-
+            <el-tag size="small" effect="plain" :type="nodeTypeTag(data.node_type)">
+              {{ nodeTypeLabel(data.node_type) }}
+            </el-tag>
+            <el-tag v-if="data.route_path" size="small" type="success" effect="plain">
+              {{ data.route_path }}
+            </el-tag>
+            <el-tag v-if="data.permission_key" size="small" type="primary" effect="plain">
+              {{ data.permission_key }}
+            </el-tag>
             <el-tag
-              v-if="data.module != '' && data.controller != '' && data.action != ''"
-              effect="plain"
-              style="margin-left: 10px"
+              v-if="data.module && data.controller && data.action"
               size="small"
-              type="primary"
+              type="warning"
+              effect="plain"
             >
               {{ data.module }}/{{ data.controller }}/{{ data.action }}
             </el-tag>
-            <el-tag type="info" size="small" v-if="data.only_api == 1">API</el-tag>
-            <el-tag type="info" size="small" v-if="data.status != 1">禁用</el-tag>
+            <el-tag v-if="data.status !== 1" type="info" size="small">禁用</el-tag>
           </template>
         </el-tree>
       </el-form>
@@ -109,7 +125,7 @@
   </div>
 </template>
 <script setup>
-import { computed, ref, onMounted, nextTick } from "vue";
+import { computed, ref, onMounted, nextTick, watch } from "vue";
 import { House } from "@element-plus/icons-vue";
 import roles from "@/api/admin/roles";
 import perms from "@/api/admin/perms";
@@ -188,37 +204,54 @@ const onSubmit = async (data) => {
 //权限设置
 
 const permsVisible = ref(false);
-const permsFormRef = ref(null);
 const permsForm = ref({
   type: "",
   perms_ids: [],
 });
+const permsFilter = ref("");
 const treeData = ref([]);
 const treeProps = {
   children: "children",
   label: "name",
   value: "id",
+  disabled: "disabled",
 };
 const treeRef = ref(null);
 const filterNode = (value, data) => {
   if (!value) return true;
-  return data.name.includes(value);
+  const keyword = value.toLowerCase();
+  return [
+    data.name,
+    data.permission_key,
+    data.route_path,
+    data.module,
+    data.controller,
+    data.action,
+  ]
+    .filter(Boolean)
+    .some((field) => String(field).toLowerCase().includes(keyword));
 };
 const onItemPerms = (item) => {
   permsForm.value.type = item.type;
-  permsForm.value.perms_ids = item.perms_ids;
+  permsForm.value.perms_ids = item.perms_ids || [];
+  permsFilter.value = "";
   permsVisible.value = true;
   nextTick(() => {
     if (treeRef.value) {
-      console.log(treeRef.value);
       treeRef.value.setCheckedKeys([]);
-      treeRef.value.setCheckedKeys(item.perms_ids);
+      treeRef.value.setCheckedKeys(permsForm.value.perms_ids);
     }
   });
 };
 const getTreeItems = async () => {
   const data = await perms.getItems();
-  treeData.value = data;
+  const markDisabled = (nodes) =>
+    nodes.map((node) => ({
+      ...node,
+      disabled: node.node_type === "group" || Number(node.status) !== 1,
+      children: markDisabled(node.children || []),
+    }));
+  treeData.value = markDisabled(data);
 };
 const onPerms = async () => {
   const data = treeRef.value.getCheckedKeys();
@@ -229,14 +262,31 @@ const onPerms = async () => {
     await rolePerms.save(permsForm.value);
     ElMessage.success("编辑成功");
     permsVisible.value = false;
-    getItems();
+    await getItems();
   } catch (error) {
+    console.error("保存角色权限失败:", error);
   } finally {
     loading.value = false;
   }
 };
 
 onMounted(async () => {
-  await getTreeItems();
+  try {
+    await getTreeItems();
+  } catch (error) {
+    console.error("获取权限节点失败:", error);
+  }
 });
+
+watch(permsFilter, (value) => treeRef.value?.filter(value));
+
+const nodeTypeLabels = {
+  group: "目录",
+  page: "页面",
+  action: "操作权限",
+  api: "API 权限",
+};
+const nodeTypeLabel = (type) => nodeTypeLabels[type] || "未知类型";
+const nodeTypeTag = (type) =>
+  ({ group: "info", page: "success", action: "warning", api: "primary" })[type] || "info";
 </script>
