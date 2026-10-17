@@ -6,18 +6,13 @@
     </div>
 
     <div class="search-block">
-      <el-form :inline="true" :model="searchForm">
-        <el-form-item>
-          <el-select
-            v-model="searchForm.type"
-            placeholder="交易类型"
-            clearable
-            style="width: 140px"
-          >
+      <el-form class="search-form" :inline="true" @submit.prevent="onSearch" :model="searchForm">
+        <el-form-item class="search-field">
+          <el-select v-model="searchForm.type" placeholder="交易类型" clearable>
             <el-option v-for="t in typeOptions" :key="t.value" :label="t.label" :value="t.value" />
           </el-select>
         </el-form-item>
-        <el-form-item>
+        <el-form-item class="search-field search-field--date">
           <el-date-picker
             v-model="searchForm.time"
             type="datetimerange"
@@ -28,7 +23,7 @@
             end-placeholder="结束日期"
           />
         </el-form-item>
-        <el-form-item>
+        <el-form-item class="search-actions">
           <el-button type="primary" @click="onSearch">查询</el-button>
         </el-form-item>
       </el-form>

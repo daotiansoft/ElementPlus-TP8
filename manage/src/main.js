@@ -5,6 +5,7 @@ import router from "./router"; // 导入路由
 import "./router/routes"; // 导入路由
 
 import "@/styles/reset.css"; // ✅ 引入重置样式
+import "@/styles/search.css";
 
 // 标签页标题：优先使用环境变量中的站点名
 const appTitle = import.meta.env.VITE_APP_TITLE;

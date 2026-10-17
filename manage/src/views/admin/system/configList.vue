@@ -1,15 +1,15 @@
 <template>
   <div class="dashboard-container">
     <div class="search-block">
-      <el-form :inline="true" :model="searchForm">
-        <el-form-item>
+      <el-form class="search-form" :inline="true" @submit.prevent="onSearch" :model="searchForm">
+        <el-form-item class="search-field">
           <el-input v-model="searchForm.keyword" placeholder="搜索名称" />
         </el-form-item>
-        <el-form-item>
+        <el-form-item class="search-field">
           <el-input v-model="searchForm.key" placeholder="唯一标识" />
         </el-form-item>
-        <el-form-item>
-          <el-select v-model="searchForm.group_id" placeholder="筛选分组" style="width: 150px">
+        <el-form-item class="search-field">
+          <el-select v-model="searchForm.group_id" placeholder="筛选分组">
             <el-option
               v-for="val in groupOptions"
               :key="val.id"
@@ -18,7 +18,7 @@
             />
           </el-select>
         </el-form-item>
-        <el-form-item>
+        <el-form-item class="search-actions">
           <el-button type="primary" @click="onSearch">查询</el-button>
           <el-button @click="onAdd">新增</el-button>
           <el-button type="danger" @click="onDelete">删除</el-button>

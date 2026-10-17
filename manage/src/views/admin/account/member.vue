@@ -1,8 +1,8 @@
 <template>
   <div class="dashboard-container">
     <div class="search-block">
-      <el-form :inline="true" :model="searchForm">
-        <el-form-item>
+      <el-form class="search-form" :inline="true" @submit.prevent="onSearch" :model="searchForm">
+        <el-form-item class="search-field search-field--date">
           <el-date-picker
             v-model="searchForm.time"
             type="datetimerange"
@@ -13,10 +13,10 @@
             end-placeholder="结束日期"
           />
         </el-form-item>
-        <el-form-item>
+        <el-form-item class="search-field">
           <el-input v-model="searchForm.username" placeholder="搜索账号" />
         </el-form-item>
-        <el-form-item>
+        <el-form-item class="search-actions">
           <el-button type="primary" @click="onSearch">查询</el-button>
           <el-button @click="onAdd">新增</el-button>
           <el-button type="danger" @click="onDelete">删除</el-button>
