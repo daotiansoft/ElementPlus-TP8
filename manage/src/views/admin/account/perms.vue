@@ -238,7 +238,7 @@ const formFields = computed(() => [
     prop: "controller",
     label: "CURD 控制器",
     span: 12,
-    placeholder: "可选，例如 member",
+    placeholder: "可选，例如 Member",
     hidden: (_mode, model) => model.node_type !== "page",
   },
   {
@@ -252,7 +252,7 @@ const formFields = computed(() => [
     prop: "controller",
     label: "控制器",
     span: 12,
-    placeholder: "例如 member",
+    placeholder: "例如 Member",
     hidden: (_mode, model) => !["action", "api"].includes(model.node_type),
   },
   {

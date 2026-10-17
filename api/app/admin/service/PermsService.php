@@ -173,7 +173,7 @@ class PermsService extends Service
 
     public static function buildPermissionKey(string $module, string $controller, string $action): string
     {
-        return strtolower(trim($module) . '.' . trim($controller) . '.' . trim($action));
+        return trim($module) . '.' . trim($controller) . '.' . trim($action);
     }
 
     private static function isIdentifierPartValid(string $part): bool
@@ -203,7 +203,7 @@ class PermsService extends Service
         ) {
             throw new RequestException('包含子节点的目录/页面不能改为操作或 API 权限');
         }
-        if ($parentId < 0 || $parentId === $id) {
+        if ($parentId < 0 || ($parentId === $id && $parentId > 0)) {
             throw new RequestException('上级节点无效');
         }
         if (!in_array($status, [0, 1], true) || $sort < 0) {
@@ -254,9 +254,6 @@ class PermsService extends Service
             if (!check_action_exists($module, $controller, $action)) {
                 throw new RequestException('控制器方法不存在');
             }
-            $module = strtolower($module);
-            $controller = strtolower($controller);
-            $action = strtolower($action);
             $routePath = null;
             if (strlen($permissionKey) > 191) {
                 throw new RequestException('权限标识过长');

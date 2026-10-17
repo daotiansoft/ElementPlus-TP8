@@ -135,7 +135,16 @@ function check_action_exists($module, $controller, $action)
 {
     try {
         $controllerClass = 'app\\' . $module . '\\controller\\' . $controller;
-        return class_exists($controllerClass) && method_exists($controllerClass, $action);
+        if (!class_exists($controllerClass)) {
+            return false;
+        }
+
+        $reflection = new \ReflectionClass($controllerClass);
+        if ($reflection->getShortName() !== $controller || !$reflection->hasMethod($action)) {
+            return false;
+        }
+
+        return $reflection->getMethod($action)->getName() === $action;
     } catch (\Throwable $e) {
         return false;
     }
@@ -199,4 +208,3 @@ function getClientIp() {
     
     return $ip;
 }
-

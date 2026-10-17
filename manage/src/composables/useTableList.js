@@ -29,19 +29,26 @@ export function useTableList(options) {
   const loading = ref(false);
   const items = ref([]);
   const total = ref(0);
+  const extend = ref(null);
   const multipleSelection = ref([]);
   const searchForm = ref({ page: 1, pagesize: 20, ...initialSearch });
+  let latestRequestId = 0;
 
   const getItems = async () => {
+    const requestId = ++latestRequestId;
     loading.value = true;
     try {
-      const response = await fetchList(searchForm.value);
+      const response = await fetchList({ ...searchForm.value });
+      if (requestId !== latestRequestId) return;
       items.value = response?.items ?? [];
       total.value = response?.count ?? 0;
+      extend.value = response?.extend ?? null;
     } catch (error) {
-      console.error("获取列表失败:", error);
+      if (requestId === latestRequestId) {
+        console.error("获取列表失败:", error);
+      }
     } finally {
-      loading.value = false;
+      if (requestId === latestRequestId) loading.value = false;
     }
   };
 
@@ -82,9 +89,10 @@ export function useTableList(options) {
         const loadingInstance = ElLoading.service({ fullscreen: true });
         try {
           await deleteApi({ ids: multipleSelection.value.map((item) => item.id) });
+          multipleSelection.value = [];
           ElMessage.success("删除成功");
-          getItems();
-          afterDelete?.();
+          await getItems();
+          await afterDelete?.();
         } catch (error) {
           console.error("删除失败:", error);
         } finally {
@@ -104,6 +112,7 @@ export function useTableList(options) {
     loading,
     items,
     total,
+    extend,
     multipleSelection,
     searchForm,
     getItems,

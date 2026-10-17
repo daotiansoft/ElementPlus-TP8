@@ -116,9 +116,9 @@ abstract class AbstractAuth extends BaseController
      */
     protected function checkPower(): bool
     {
-        $module = strtolower(app('http')->getName());
-        $controller = strtolower($this->request->controller());
-        $action = strtolower($this->request->action());
+        $module = app('http')->getName();
+        $controller = $this->request->controller();
+        $action = $this->request->action();
         // 免登录的方法没有登录身份，也就无从校验权限，直接放行
         if ($this->isWithoutLogin() || $this->isSkip($this->notNeedPower, $action)) {
             return true;
@@ -130,7 +130,7 @@ abstract class AbstractAuth extends BaseController
             return true;
         }
 
-        $endpoint = strtolower($module . '.' . $controller . '.' . $action);
+        $endpoint = $module . '.' . $controller . '.' . $action;
         $permsSet = PermsAccessService::getPowerSet($this->userItem['type']);
         if (isset($permsSet[$endpoint])) {
             return true;

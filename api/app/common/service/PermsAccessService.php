@@ -18,7 +18,7 @@ class PermsAccessService extends Service
      */
     public static function getRoutes(string $type, int $parentId = 0): array
     {
-        $cacheKey = 'perms_routes_v2_' . $type;
+        $cacheKey = 'perms_routes_v2_' . $type . '_' . $parentId;
         $cached = CacheUtils::get($cacheKey);
         if (is_array($cached)) {
             return $cached;
@@ -28,6 +28,7 @@ class PermsAccessService extends Service
             ->where('type', '=', $type)
             ->column('perms_id');
         if (empty($grantedIds)) {
+            CacheUtils::set(self::CACHE_TAG, $cacheKey, []);
             return [];
         }
 
@@ -103,7 +104,7 @@ class PermsAccessService extends Service
      */
     public static function getPowerSet(string $type): array
     {
-        $cacheKey = 'perms_power_v2_' . $type;
+        $cacheKey = 'perms_power_v3_' . $type;
         $cached = CacheUtils::get($cacheKey);
         if (is_array($cached)) {
             return $cached;
@@ -113,6 +114,7 @@ class PermsAccessService extends Service
             ->where('type', '=', $type)
             ->column('perms_id');
         if (empty($grantedIds)) {
+            CacheUtils::set(self::CACHE_TAG, $cacheKey, []);
             return [];
         }
 
@@ -125,6 +127,7 @@ class PermsAccessService extends Service
             $indexed[(int) $row['id']] = $row;
         }
 
+        $enabledById = [];
         $set = [];
         foreach ($grantedIds as $grantedId) {
             $id = (int) $grantedId;
@@ -141,30 +144,51 @@ class PermsAccessService extends Service
                 continue;
             }
 
-            $visited = [];
-            $enabled = true;
-            while (isset($indexed[$id]) && !isset($visited[$id])) {
-                $visited[$id] = true;
-                if ((int) $indexed[$id]['status'] !== 1) {
-                    $enabled = false;
-                    break;
-                }
-                $id = (int) $indexed[$id]['parent_id'];
-                if ($id <= 0) {
-                    break;
-                }
-            }
-            if ($id > 0) {
-                $enabled = false;
-            }
-
-            if ($enabled) {
-                $set[strtolower($node['module'] . '.' . $node['controller'] . '.' . $node['action'])] = true;
+            if (self::hasEnabledAncestors($id, $indexed, $enabledById)) {
+                $set[$node['module'] . '.' . $node['controller'] . '.' . $node['action']] = true;
             }
         }
 
         CacheUtils::set(self::CACHE_TAG, $cacheKey, $set);
         return $set;
+    }
+
+    /**
+     * Resolve each node's active ancestry once, including malformed cycles.
+     */
+    private static function hasEnabledAncestors(int $id, array $indexed, array &$memo): bool
+    {
+        if (isset($memo[$id])) {
+            return $memo[$id];
+        }
+
+        $path = [];
+        $visited = [];
+        $cursor = $id;
+        $enabled = true;
+        while ($cursor > 0) {
+            if (isset($memo[$cursor])) {
+                $enabled = $memo[$cursor];
+                break;
+            }
+            if (!isset($indexed[$cursor]) || isset($visited[$cursor])) {
+                $enabled = false;
+                break;
+            }
+
+            $visited[$cursor] = true;
+            $path[] = $cursor;
+            if ((int) $indexed[$cursor]['status'] !== 1) {
+                $enabled = false;
+                break;
+            }
+            $cursor = (int) $indexed[$cursor]['parent_id'];
+        }
+
+        foreach ($path as $nodeId) {
+            $memo[$nodeId] = $enabled;
+        }
+        return $enabled;
     }
 
     private static function buildTree(array $nodes, int $parentId): array

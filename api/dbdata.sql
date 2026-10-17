@@ -11,7 +11,7 @@
  Target Server Version : 50726
  File Encoding         : 65001
 
- Date: 16/10/2026 09:48:55
+ Date: 16/10/2026 12:04:54
 */
 
 SET NAMES utf8mb4;
@@ -313,11 +313,11 @@ CREATE TABLE `dt_perms`  (
   `parent_id` int(11) NOT NULL DEFAULT 0 COMMENT '父级ID',
   `name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '权限名称',
   `node_type` varchar(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'group' COMMENT 'group/page/action/api',
-  `permission_key` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT 'Stable backend permission key',
+  `permission_key` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL COMMENT 'Stable backend permission key',
   `route_path` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL COMMENT 'Registered frontend route path',
-  `module` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '所属模块',
-  `controller` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '控制器',
-  `action` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '操作方法',
+  `module` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '' COMMENT '所属模块',
+  `controller` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '' COMMENT '控制器',
+  `action` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '' COMMENT '操作方法',
   `sort` int(11) NOT NULL DEFAULT 0 COMMENT '排序(升序)',
   `status` tinyint(1) NOT NULL DEFAULT 1 COMMENT '状态：0禁用 1启用',
   `create_time` int(10) NOT NULL DEFAULT 0 COMMENT '创建时间',
@@ -333,62 +333,62 @@ CREATE TABLE `dt_perms`  (
 -- Records of dt_perms
 -- ----------------------------
 INSERT INTO `dt_perms` VALUES (1, 0, '设置', 'group', NULL, '/admin/system', 'admin', '', '', 0, 1, 0, 0);
-INSERT INTO `dt_perms` VALUES (2, 1, '系统设置', 'page', NULL, '/admin/system/config', 'admin', 'system', '', 0, 1, 0, 0);
-INSERT INTO `dt_perms` VALUES (3, 1, '富文本', 'page', NULL, '/admin/system/editor', 'admin', 'editor', '', 0, 1, 0, 0);
-INSERT INTO `dt_perms` VALUES (5, 3, '保存', 'action', 'admin.editor.save', NULL, 'admin', 'editor', 'save', 0, 1, 0, 0);
-INSERT INTO `dt_perms` VALUES (6, 3, '列表', 'action', 'admin.editor.items', NULL, 'admin', 'editor', 'items', 0, 1, 0, 0);
-INSERT INTO `dt_perms` VALUES (7, 2, '列表', 'action', 'admin.config.items', NULL, 'admin', 'config', 'items', 0, 1, 0, 0);
-INSERT INTO `dt_perms` VALUES (8, 2, '保存', 'action', 'admin.config.save', NULL, 'admin', 'config', 'save', 0, 1, 0, 0);
+INSERT INTO `dt_perms` VALUES (2, 1, '系统设置', 'page', NULL, '/admin/system/config', 'admin', 'Config', '', 0, 1, 0, 0);
+INSERT INTO `dt_perms` VALUES (3, 1, '富文本', 'page', NULL, '/admin/system/editor', 'admin', 'Editor', '', 0, 1, 0, 0);
+INSERT INTO `dt_perms` VALUES (5, 3, '保存', 'action', 'admin.editor.save', NULL, 'admin', 'Editor', 'save', 0, 1, 0, 0);
+INSERT INTO `dt_perms` VALUES (6, 3, '列表', 'action', 'admin.editor.items', NULL, 'admin', 'Editor', 'items', 0, 1, 0, 0);
+INSERT INTO `dt_perms` VALUES (7, 2, '列表', 'action', 'admin.config.items', NULL, 'admin', 'Config', 'items', 0, 1, 0, 0);
+INSERT INTO `dt_perms` VALUES (8, 2, '保存', 'action', 'admin.config.save', NULL, 'admin', 'Config', 'save', 0, 1, 0, 0);
 INSERT INTO `dt_perms` VALUES (9, 0, '账号管理', 'group', NULL, '/admin/account', 'admin', '', '', 0, 1, 0, 0);
-INSERT INTO `dt_perms` VALUES (10, 9, 'API管理', 'page', NULL, '/admin/account/appList', 'admin', 'appList', '', 0, 1, 0, 0);
-INSERT INTO `dt_perms` VALUES (11, 10, '列表', 'action', 'admin.applist.items', NULL, 'admin', 'appList', 'items', 0, 1, 0, 0);
-INSERT INTO `dt_perms` VALUES (12, 10, '新增', 'action', 'admin.applist.add', NULL, 'admin', 'appList', 'add', 0, 1, 0, 0);
-INSERT INTO `dt_perms` VALUES (13, 10, '编辑', 'action', 'admin.applist.edit', NULL, 'admin', 'appList', 'edit', 0, 1, 0, 0);
-INSERT INTO `dt_perms` VALUES (14, 10, '删除', 'action', 'admin.applist.del', NULL, 'admin', 'appList', 'del', 0, 1, 0, 0);
-INSERT INTO `dt_perms` VALUES (15, 9, '角色管理', 'page', NULL, '/admin/account/roles', 'admin', 'roles', '', 0, 1, 0, 0);
-INSERT INTO `dt_perms` VALUES (16, 15, '列表', 'action', 'admin.roles.items', NULL, 'admin', 'roles', 'items', 0, 1, 0, 0);
-INSERT INTO `dt_perms` VALUES (17, 15, 'getOptions', 'api', 'admin.roles.getoptions', NULL, 'admin', 'roles', 'getOptions', 0, 1, 0, 0);
-INSERT INTO `dt_perms` VALUES (18, 15, '新增', 'action', 'admin.roles.add', NULL, 'admin', 'roles', 'add', 0, 1, 0, 0);
-INSERT INTO `dt_perms` VALUES (19, 15, '编辑', 'action', 'admin.roles.edit', NULL, 'admin', 'roles', 'edit', 0, 1, 0, 0);
-INSERT INTO `dt_perms` VALUES (20, 15, '删除', 'action', 'admin.roles.del', NULL, 'admin', 'roles', 'del', 0, 1, 0, 0);
+INSERT INTO `dt_perms` VALUES (10, 9, 'API管理', 'page', NULL, '/admin/account/appList', 'admin', 'AppList', '', 0, 1, 0, 0);
+INSERT INTO `dt_perms` VALUES (11, 10, '列表', 'action', 'admin.applist.items', NULL, 'admin', 'AppList', 'items', 0, 1, 0, 0);
+INSERT INTO `dt_perms` VALUES (12, 10, '新增', 'action', 'admin.applist.add', NULL, 'admin', 'AppList', 'add', 0, 1, 0, 0);
+INSERT INTO `dt_perms` VALUES (13, 10, '编辑', 'action', 'admin.applist.edit', NULL, 'admin', 'AppList', 'edit', 0, 1, 0, 0);
+INSERT INTO `dt_perms` VALUES (14, 10, '删除', 'action', 'admin.applist.del', NULL, 'admin', 'AppList', 'del', 0, 1, 0, 0);
+INSERT INTO `dt_perms` VALUES (15, 9, '角色管理', 'page', NULL, '/admin/account/roles', 'admin', 'Roles', '', 0, 1, 0, 0);
+INSERT INTO `dt_perms` VALUES (16, 15, '列表', 'action', 'admin.roles.items', NULL, 'admin', 'Roles', 'items', 0, 1, 0, 0);
+INSERT INTO `dt_perms` VALUES (17, 15, 'getOptions', 'api', 'admin.roles.getoptions', NULL, 'admin', 'Roles', 'getOptions', 0, 1, 0, 0);
+INSERT INTO `dt_perms` VALUES (18, 15, '新增', 'action', 'admin.roles.add', NULL, 'admin', 'Roles', 'add', 0, 1, 0, 0);
+INSERT INTO `dt_perms` VALUES (19, 15, '编辑', 'action', 'admin.roles.edit', NULL, 'admin', 'Roles', 'edit', 0, 1, 0, 0);
+INSERT INTO `dt_perms` VALUES (20, 15, '删除', 'action', 'admin.roles.del', NULL, 'admin', 'Roles', 'del', 0, 1, 0, 0);
 INSERT INTO `dt_perms` VALUES (21, 9, '权限关联', 'group', NULL, NULL, 'admin', 'RolePerms', '', 0, 1, 0, 0);
 INSERT INTO `dt_perms` VALUES (22, 21, '保存', 'action', 'admin.roleperms.save', NULL, 'admin', 'RolePerms', 'save', 0, 1, 0, 0);
-INSERT INTO `dt_perms` VALUES (23, 9, '权限节点', 'page', NULL, '/admin/account/perms', 'admin', 'perms', '', 0, 1, 0, 0);
-INSERT INTO `dt_perms` VALUES (24, 23, '列表', 'action', 'admin.perms.items', NULL, 'admin', 'perms', 'items', 0, 1, 0, 0);
-INSERT INTO `dt_perms` VALUES (26, 23, '新增', 'action', 'admin.perms.add', NULL, 'admin', 'perms', 'add', 0, 1, 0, 0);
-INSERT INTO `dt_perms` VALUES (27, 23, '编辑', 'action', 'admin.perms.edit', NULL, 'admin', 'perms', 'edit', 0, 1, 0, 0);
-INSERT INTO `dt_perms` VALUES (28, 23, '删除', 'action', 'admin.perms.del', NULL, 'admin', 'perms', 'del', 0, 1, 0, 0);
-INSERT INTO `dt_perms` VALUES (29, 9, '账号列表', 'page', NULL, '/admin/account/member', 'admin', 'member', '', 0, 1, 0, 0);
-INSERT INTO `dt_perms` VALUES (30, 29, '列表', 'action', 'admin.member.items', NULL, 'admin', 'member', 'items', 0, 1, 0, 0);
-INSERT INTO `dt_perms` VALUES (31, 29, '新增', 'action', 'admin.member.add', NULL, 'admin', 'member', 'add', 0, 1, 0, 0);
-INSERT INTO `dt_perms` VALUES (32, 29, '编辑', 'action', 'admin.member.edit', NULL, 'admin', 'member', 'edit', 0, 1, 0, 0);
-INSERT INTO `dt_perms` VALUES (33, 29, '删除', 'action', 'admin.member.del', NULL, 'admin', 'member', 'del', 0, 1, 0, 0);
-INSERT INTO `dt_perms` VALUES (34, 1, '设置分组', 'page', NULL, '/admin/system/configGroup', 'admin', 'configGroup', '', 0, 1, 0, 0);
-INSERT INTO `dt_perms` VALUES (35, 34, '列表', 'action', 'admin.configgroup.items', NULL, 'admin', 'configGroup', 'items', 0, 1, 0, 0);
-INSERT INTO `dt_perms` VALUES (36, 34, '新增', 'action', 'admin.configgroup.add', NULL, 'admin', 'configGroup', 'add', 0, 1, 0, 0);
-INSERT INTO `dt_perms` VALUES (37, 34, '编辑', 'action', 'admin.configgroup.edit', NULL, 'admin', 'configGroup', 'edit', 0, 1, 0, 0);
-INSERT INTO `dt_perms` VALUES (38, 34, '删除', 'action', 'admin.configgroup.del', NULL, 'admin', 'configGroup', 'del', 0, 1, 0, 0);
-INSERT INTO `dt_perms` VALUES (39, 1, '设置列表', 'page', NULL, '/admin/system/configList', 'admin', 'configList', '', 0, 1, 0, 0);
-INSERT INTO `dt_perms` VALUES (40, 39, '列表', 'action', 'admin.configlist.items', NULL, 'admin', 'configList', 'items', 0, 1, 0, 0);
-INSERT INTO `dt_perms` VALUES (41, 39, '新增', 'action', 'admin.configlist.add', NULL, 'admin', 'configList', 'add', 0, 1, 0, 0);
-INSERT INTO `dt_perms` VALUES (44, 34, 'getOptions', 'api', 'admin.configgroup.getoptions', NULL, 'admin', 'configGroup', 'getOptions', 0, 1, 0, 0);
-INSERT INTO `dt_perms` VALUES (45, 39, '编辑', 'action', 'admin.configlist.edit', NULL, 'admin', 'configList', 'edit', 0, 1, 1789617122, 1789617122);
-INSERT INTO `dt_perms` VALUES (46, 39, '删除', 'action', 'admin.configlist.del', NULL, 'admin', 'configList', 'del', 0, 1, 1789617122, 1789617122);
+INSERT INTO `dt_perms` VALUES (23, 9, '权限节点', 'page', NULL, '/admin/account/perms', 'admin', 'Perms', '', 0, 1, 0, 0);
+INSERT INTO `dt_perms` VALUES (24, 23, '列表', 'action', 'admin.perms.items', NULL, 'admin', 'Perms', 'items', 0, 1, 0, 0);
+INSERT INTO `dt_perms` VALUES (26, 23, '新增', 'action', 'admin.perms.add', NULL, 'admin', 'Perms', 'add', 0, 1, 0, 0);
+INSERT INTO `dt_perms` VALUES (27, 23, '编辑', 'action', 'admin.perms.edit', NULL, 'admin', 'Perms', 'edit', 0, 1, 0, 0);
+INSERT INTO `dt_perms` VALUES (28, 23, '删除', 'action', 'admin.perms.del', NULL, 'admin', 'Perms', 'del', 0, 1, 0, 0);
+INSERT INTO `dt_perms` VALUES (29, 9, '账号列表', 'page', NULL, '/admin/account/member', 'admin', 'Member', '', 0, 1, 0, 0);
+INSERT INTO `dt_perms` VALUES (30, 29, '列表', 'action', 'admin.member.items', NULL, 'admin', 'Member', 'items', 0, 1, 0, 0);
+INSERT INTO `dt_perms` VALUES (31, 29, '新增', 'action', 'admin.member.add', NULL, 'admin', 'Member', 'add', 0, 1, 0, 0);
+INSERT INTO `dt_perms` VALUES (32, 29, '编辑', 'action', 'admin.member.edit', NULL, 'admin', 'Member', 'edit', 0, 1, 0, 0);
+INSERT INTO `dt_perms` VALUES (33, 29, '删除', 'action', 'admin.member.del', NULL, 'admin', 'Member', 'del', 0, 1, 0, 0);
+INSERT INTO `dt_perms` VALUES (34, 1, '设置分组', 'page', NULL, '/admin/system/configGroup', 'admin', 'ConfigGroup', '', 0, 1, 0, 0);
+INSERT INTO `dt_perms` VALUES (35, 34, '列表', 'action', 'admin.configgroup.items', NULL, 'admin', 'ConfigGroup', 'items', 0, 1, 0, 0);
+INSERT INTO `dt_perms` VALUES (36, 34, '新增', 'action', 'admin.configgroup.add', NULL, 'admin', 'ConfigGroup', 'add', 0, 1, 0, 0);
+INSERT INTO `dt_perms` VALUES (37, 34, '编辑', 'action', 'admin.configgroup.edit', NULL, 'admin', 'ConfigGroup', 'edit', 0, 1, 0, 0);
+INSERT INTO `dt_perms` VALUES (38, 34, '删除', 'action', 'admin.configgroup.del', NULL, 'admin', 'ConfigGroup', 'del', 0, 1, 0, 0);
+INSERT INTO `dt_perms` VALUES (39, 1, '设置列表', 'page', NULL, '/admin/system/configList', 'admin', 'ConfigList', '', 0, 1, 0, 0);
+INSERT INTO `dt_perms` VALUES (40, 39, '列表', 'action', 'admin.configlist.items', NULL, 'admin', 'ConfigList', 'items', 0, 1, 0, 0);
+INSERT INTO `dt_perms` VALUES (41, 39, '新增', 'action', 'admin.configlist.add', NULL, 'admin', 'ConfigList', 'add', 0, 1, 0, 0);
+INSERT INTO `dt_perms` VALUES (44, 34, 'getOptions', 'api', 'admin.configgroup.getoptions', NULL, 'admin', 'ConfigGroup', 'getOptions', 0, 1, 0, 0);
+INSERT INTO `dt_perms` VALUES (45, 39, '编辑', 'action', 'admin.configlist.edit', NULL, 'admin', 'ConfigList', 'edit', 0, 1, 1789617122, 1789617122);
+INSERT INTO `dt_perms` VALUES (46, 39, '删除', 'action', 'admin.configlist.del', NULL, 'admin', 'ConfigList', 'del', 0, 1, 1789617122, 1789617122);
 INSERT INTO `dt_perms` VALUES (47, 0, '财务管理', 'group', NULL, '/admin/finance', 'admin', '', '', 0, 1, 0, 0);
-INSERT INTO `dt_perms` VALUES (48, 47, '余额记录', 'page', NULL, '/admin/finance/balance', 'admin', 'balance', '', 0, 1, 0, 0);
-INSERT INTO `dt_perms` VALUES (49, 48, '列表', 'action', 'admin.balance.items', NULL, 'admin', 'balance', 'items', 0, 1, 0, 0);
-INSERT INTO `dt_perms` VALUES (51, 48, '删除', 'action', 'admin.balance.del', NULL, 'admin', 'balance', 'del', 0, 1, 0, 0);
-INSERT INTO `dt_perms` VALUES (52, 29, 'getOptions', 'api', 'admin.member.getoptions', NULL, 'admin', 'member', 'getOptions', 0, 1, 0, 0);
+INSERT INTO `dt_perms` VALUES (48, 47, '余额记录', 'page', NULL, '/admin/finance/balance', 'admin', 'Balance', '', 0, 1, 0, 0);
+INSERT INTO `dt_perms` VALUES (49, 48, '列表', 'action', 'admin.balance.items', NULL, 'admin', 'Balance', 'items', 0, 1, 0, 0);
+INSERT INTO `dt_perms` VALUES (51, 48, '删除', 'action', 'admin.balance.del', NULL, 'admin', 'Balance', 'del', 0, 1, 0, 0);
+INSERT INTO `dt_perms` VALUES (52, 29, 'getOptions', 'api', 'admin.member.getoptions', NULL, 'admin', 'Member', 'getOptions', 0, 1, 0, 1792123469);
 INSERT INTO `dt_perms` VALUES (53, 0, '个人中心', 'group', NULL, '/user', 'user', '', '', 0, 1, 0, 0);
-INSERT INTO `dt_perms` VALUES (54, 53, '我的余额', 'page', NULL, '/user/balance', 'user', 'balance', '', 0, 1, 0, 0);
-INSERT INTO `dt_perms` VALUES (55, 54, '余额信息', 'action', 'user.balance.info', NULL, 'user', 'balance', 'info', 0, 1, 0, 0);
-INSERT INTO `dt_perms` VALUES (56, 54, '交易记录', 'action', 'user.balance.items', NULL, 'user', 'balance', 'items', 0, 1, 0, 0);
-INSERT INTO `dt_perms` VALUES (57, 29, '调整余额', 'action', 'admin.member.adjust', NULL, 'admin', 'member', 'adjust', 0, 1, 0, 0);
-INSERT INTO `dt_perms` VALUES (58, 2, '清理缓存', 'action', 'admin.config.clearcache', NULL, 'admin', 'config', 'clearCache', 0, 1, 1791938366, 1791938366);
+INSERT INTO `dt_perms` VALUES (54, 53, '我的余额', 'page', NULL, '/user/balance', 'user', 'Balance', '', 0, 1, 0, 0);
+INSERT INTO `dt_perms` VALUES (55, 54, '余额信息', 'action', 'user.balance.info', NULL, 'user', 'Balance', 'info', 0, 1, 0, 0);
+INSERT INTO `dt_perms` VALUES (56, 54, '交易记录', 'action', 'user.balance.items', NULL, 'user', 'Balance', 'items', 0, 1, 0, 0);
+INSERT INTO `dt_perms` VALUES (57, 29, '调整余额', 'action', 'admin.member.adjust', NULL, 'admin', 'Member', 'adjust', 0, 1, 0, 0);
+INSERT INTO `dt_perms` VALUES (58, 2, '清理缓存', 'action', 'admin.config.clearcache', NULL, 'admin', 'Config', 'clearCache', 0, 1, 1791938366, 1791938366);
 INSERT INTO `dt_perms` VALUES (71, 0, '开放接口', 'group', NULL, NULL, '', '', '', 0, 1, 0, 0);
-INSERT INTO `dt_perms` VALUES (72, 71, '接口连通性检查', 'api', 'openapi.index.ping', NULL, 'openapi', 'index', 'index', 10, 1, 0, 0);
-INSERT INTO `dt_perms` VALUES (73, 71, '获取任务', 'api', 'task.api.get_task', NULL, 'task', 'api', 'getTask', 20, 1, 0, 0);
-INSERT INTO `dt_perms` VALUES (74, 71, '提交任务报告', 'api', 'task.api.set_report', NULL, 'task', 'api', 'setReport', 30, 1, 0, 0);
+INSERT INTO `dt_perms` VALUES (72, 71, '接口连通性检查', 'api', 'openapi.index.ping', NULL, 'openapi', 'Index', 'ping', 10, 1, 0, 0);
+INSERT INTO `dt_perms` VALUES (73, 71, '获取任务', 'api', 'task.api.get_task', NULL, 'task', 'Api', 'getTask', 20, 1, 0, 0);
+INSERT INTO `dt_perms` VALUES (74, 71, '提交任务报告', 'api', 'task.api.set_report', NULL, 'task', 'Api', 'setReport', 30, 1, 0, 0);
 
 -- ----------------------------
 -- Table structure for dt_role_perms
