@@ -32,6 +32,7 @@
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.2",
+    "@vueuse/core": "14.4.0",
     "axios": "^1.18.1",
     "element-plus": "^2.14.2",
     "pinia": "^3.0.4",
@@ -46,5 +47,8 @@
     "*.{css,scss,json,md,html}": [
       "prettier --write"
     ]
+  },
+  "overrides": {
+    "@vueuse/core": "$@vueuse/core"
   }
 }

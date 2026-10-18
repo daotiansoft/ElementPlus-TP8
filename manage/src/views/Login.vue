@@ -9,12 +9,18 @@
       @keyup.enter="submitForm(formRef)"
     >
       <div class="title-container">
+        <div class="login-brand">
+          <img v-if="website.logo" :src="website.logo" alt="站点标志" /><span v-else>P</span>
+        </div>
         <h3 class="title">{{ website.site_name }}</h3>
+        <p class="login-subtitle">欢迎回来，登录以管理您的业务</p>
       </div>
       <!-- 账号 -->
       <el-form-item prop="username">
         <el-input
           v-model="form.username"
+          aria-label="账号"
+          autocomplete="username"
           placeholder="请输入账号"
           size="large"
           :prefix-icon="User"
@@ -27,6 +33,8 @@
         <el-input
           v-model="form.password"
           type="password"
+          aria-label="密码"
+          autocomplete="current-password"
           placeholder="请输入密码"
           size="large"
           :prefix-icon="Lock"
@@ -46,9 +54,9 @@
             clearable
             class="captcha-input"
           />
-          <div class="captcha-image" @click="onCaptcha">
+          <button type="button" aria-label="更换验证码" class="captcha-image" @click="onCaptcha">
             <img :src="captcha_image" alt="验证码" :title="'点击更换验证码'" />
-          </div>
+          </button>
         </div>
       </el-form-item>
 
@@ -59,11 +67,14 @@
           size="large"
           @click="submitForm(formRef)"
           class="login-btn"
-          v-loading="loading"
+          :loading="loading"
         >
-          登 录
+          登录控制台
         </el-button>
       </el-form-item>
+      <p class="login-footer">
+        <el-icon><Lock /></el-icon> 安全登录 · 高效管理
+      </p>
     </el-form>
   </div>
 </template>
@@ -143,105 +154,118 @@ onMounted(async () => {
   }
 });
 </script>
-<style scoped lang="scss">
-$light_gray: #eee;
-
+<style scoped>
 .login-container {
+  display: grid;
+  place-items: center;
+  min-height: 100dvh;
+  padding: 32px 20px;
+  background:
+    radial-gradient(ellipse at 15% 10%, #deeee8 0, transparent 48%),
+    radial-gradient(ellipse at 90% 90%, #e2eaee 0, transparent 45%), #f4f7f8;
+}
+.login-form {
+  width: 100%;
+  max-width: 420px;
+  padding: 40px;
+  background: #fff;
+  border: 1px solid #e4ece9;
+  border-radius: 20px;
+  box-shadow: 0 24px 80px #203e3510;
+}
+.title-container {
+  margin-bottom: 32px;
+}
+.login-brand {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  background: #138577;
+  border-radius: 12px;
+  color: #fff;
+  font-size: 27px;
+  font-weight: 700;
+  margin-bottom: 26px;
+}
+.login-brand img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: inherit;
+}
+
+.title {
+  font-size: 26px;
+  color: #243544;
+  font-weight: 650;
+  line-height: 1.4;
+}
+.login-subtitle {
+  color: #788594;
+  margin-top: 10px;
+  font-size: 13px;
+  line-height: 1.8;
+}
+.login-form :deep(.el-input__wrapper) {
+  min-height: 46px;
+  padding-inline: 14px;
+  border-radius: 9px;
+  background: #fafcfc;
+}
+.login-form :deep(.el-input__prefix) {
+  margin-right: 6px;
+  color: #8c9b9f;
+}
+.login-form :deep(.el-form-item) {
+  margin-bottom: 24px;
+}
+.captcha-wrapper {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  align-items: center;
+}
+.captcha-input {
+  flex: 1;
+  min-width: 0;
+}
+.captcha-image {
+  flex-shrink: 0;
+  width: 116px;
+  height: 46px;
+  cursor: pointer;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #dce4e8;
+  background: #f5f8f9;
+  padding: 0;
+}
+.captcha-image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.login-btn {
+  width: 100%;
+  border-radius: 9px;
+  font-size: 14px;
+  font-weight: 600;
+  height: 46px;
+}
+.login-footer {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 20px;
+  gap: 6px;
+  font-size: 11px;
+  color: #89979f;
+  margin-top: 4px;
 }
-
-.title-container {
-  position: relative;
-
-  .title {
-    font-size: 26px;
-    color: $light_gray;
-    margin: 0px auto 40px auto;
-    text-align: center;
-    font-weight: bold;
-  }
-}
-
-.login-form {
-  margin-top: 10px;
-}
-
-@media screen and (min-width: 500px) {
+@media (max-width: 480px) {
   .login-form {
-    min-width: 450px;
+    padding: 30px 24px;
   }
-}
-
-@media screen and (max-width: 500px) {
-  .login-form {
-    min-width: 90%;
-  }
-}
-
-.login-form :deep(.el-input__wrapper) {
-  border-radius: 8px;
-  transition: all 0.3s ease;
-}
-
-.login-form :deep(.el-input__wrapper:hover) {
-  box-shadow: 0 0 0 1px #409eff inset;
-}
-
-.login-form :deep(.el-input__wrapper.is-focus) {
-  box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.2) inset;
-}
-
-.login-form :deep(.el-form-item) {
-  margin-bottom: 22px;
-}
-
-.captcha-wrapper {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-}
-
-.captcha-input {
-  flex: 1;
-}
-
-.captcha-image {
-  flex-shrink: 0;
-  cursor: pointer;
-  border-radius: 6px;
-  overflow: hidden;
-  border: 1px solid #e6e6e6;
-  line-height: 0;
-  transition: border-color 0.3s ease;
-}
-
-.captcha-image:hover {
-  border-color: #409eff;
-}
-
-.captcha-image img {
-  display: block;
-  width: 200px;
-  height: 50px;
-  object-fit: cover;
-}
-
-.login-btn {
-  width: 100%;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: 500;
-  height: 48px;
-  transition: all 0.3s ease;
-}
-
-.login-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(64, 158, 255, 0.4);
 }
 </style>

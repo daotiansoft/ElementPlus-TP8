@@ -7,7 +7,7 @@
           clearable
           placeholder="搜索名称、权限标识、模块、控制器、方法或路由"
           :prefix-icon="Search"
-          style="width: 320px"
+          class="filter-input"
         />
         <el-button type="primary" :icon="Plus" @click="onVisibleAdd(rootNode)"
           >新增根节点</el-button
@@ -422,25 +422,78 @@ onMounted(getItems);
 <style scoped lang="scss">
 .toolbar {
   display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
   justify-content: space-between;
   margin-bottom: 16px;
+}
+
+.filter-input {
+  width: 320px;
+  max-width: 100%;
+}
+
+.tree-card :deep(.el-tree-node__content) {
+  height: auto;
+  min-height: 40px;
+  padding-block: 5px;
+  padding-right: 8px;
 }
 
 .menu {
   display: flex;
   width: 100%;
+  min-width: 0;
+  gap: 16px;
   align-items: center;
 
   &-left {
     display: flex;
     flex: 1;
+    min-width: 0;
+    flex-wrap: wrap;
     align-items: center;
     gap: 8px;
+
+    > span {
+      max-width: 100%;
+      height: auto;
+      white-space: normal;
+      overflow-wrap: anywhere;
+    }
+
+    :deep(.el-tag__content) {
+      min-width: 0;
+      white-space: normal;
+      overflow-wrap: anywhere;
+    }
   }
 
   &-right {
     display: flex;
+    flex-shrink: 0;
+    gap: 6px;
     align-items: center;
+
+    .el-button {
+      height: 26px;
+      min-height: 26px;
+      margin: 0;
+      padding: 0 8px;
+      font-size: 12px;
+    }
+  }
+}
+
+@media (max-width: 767px) {
+  .menu {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .menu-right {
+    flex-wrap: wrap;
   }
 }
 </style>

@@ -1,11 +1,14 @@
 <!-- src/layouts/Layout.vue -->
 <template>
   <el-container class="layout-container">
-    <el-aside :width="isCollapse ? '64px' : '220px'" class="aside-container">
+    <el-aside :width="isCollapse ? '72px' : '232px'" class="aside-container">
       <!-- Logo -->
       <div class="logo-wrapper">
         <img v-if="websiteInfo?.logo" :src="websiteInfo?.logo" alt="Logo" class="logo-img" />
-        <span v-show="!isCollapse" class="logo-text">{{ websiteInfo?.site_name }}</span>
+        <span v-else class="logo-mark">P</span>
+        <span v-show="!isCollapse" class="logo-text">{{
+          websiteInfo?.site_name || "支付管理"
+        }}</span>
       </div>
 
       <!-- 菜单 -->
@@ -14,28 +17,36 @@
         :default-openeds="defaultOpeneds"
         :collapse="isCollapse"
         :collapse-transition="false"
-        background-color="#001428"
-        text-color="#bfcbd9"
-        active-text-color="#409EFF"
+        background-color="#142c35"
+        text-color="#a9bbc3"
+        active-text-color="#70d7c0"
         router
         class="menu-container"
       >
-        <MenuItem v-for="route in menuRoutes" :key="route.path" :route="route" />
+        <MenuItem v-for="menuRoute in menuRoutes" :key="menuRoute.path" :route="menuRoute" />
       </el-menu>
     </el-aside>
 
     <!-- 右侧容器 -->
-    <el-container>
+    <el-container class="workspace-container">
       <!-- 顶部栏 -->
       <el-header height="60px" class="header-container">
         <!-- 左侧：控制按钮 + 面包屑 -->
         <div class="header-left">
           <!-- 菜单折叠控制按钮 -->
           <el-tooltip :content="isCollapse ? '展开菜单' : '折叠菜单'" placement="bottom">
-            <el-icon :size="20" @click="toggleCollapse" style="cursor: pointer">
-              <Expand v-if="isCollapse" />
-              <Fold v-else />
-            </el-icon>
+            <button
+              class="collapse-button"
+              type="button"
+              :aria-label="isCollapse ? '展开菜单' : '折叠菜单'"
+              :aria-expanded="!isCollapse"
+              @click="toggleCollapse"
+            >
+              <el-icon :size="20">
+                <Expand v-if="isCollapse" />
+                <Fold v-else />
+              </el-icon>
+            </button>
           </el-tooltip>
 
           <el-breadcrumb separator="/" class="breadcrumb">
@@ -50,8 +61,16 @@
         <div class="header-right">
           <el-dropdown @command="handleCommand">
             <div class="user-info">
-              <el-avatar :size="32" v-if="userInfo?.avatar" :src="userInfo?.avatar" />
-              <span class="username">{{ userInfo?.nickname }}</span>
+              <el-avatar
+                v-if="userInfo?.avatar || websiteInfo?.logo"
+                :size="32"
+                style="background: transparent"
+                :src="userInfo?.avatar || websiteInfo?.logo"
+              />
+              <el-avatar v-else :size="32" class="user-avatar">{{
+                (userInfo?.nickname || "用户").slice(0, 1)
+              }}</el-avatar>
+              <span class="username">{{ userInfo?.nickname || "用户" }}</span>
               <el-icon>
                 <ArrowDown />
               </el-icon>
@@ -79,6 +98,7 @@ import { ref, computed, watch, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { Expand, Fold, ArrowDown } from "@element-plus/icons-vue";
 import MenuItem from "./MenuItem.vue";
+import { useMediaQuery } from "@vueuse/core";
 import transformRoutes from "@/router/routes";
 import { redirectToLogin } from "@/utils/token";
 
@@ -95,7 +115,11 @@ const route = useRoute();
 const router = useRouter();
 
 // 菜单折叠状态
-const isCollapse = ref(false);
+const compactViewport = useMediaQuery("(max-width: 900px)");
+const isCollapse = ref(compactViewport.value);
+watch(compactViewport, (compact) => {
+  isCollapse.value = compact;
+});
 
 // 当前激活的菜单路径
 const activeMenu = computed(() => {
@@ -200,103 +224,177 @@ onMounted(async () => {
 
 <style scoped>
 .layout-container {
-  height: 100vh;
-}
-
-/* ===== 侧边栏样式 ===== */
-.aside-container {
-  background-color: #001428;
+  height: 100dvh;
   overflow: hidden;
-  transition: width 0.3s;
+}
+.workspace-container {
+  min-width: 0;
+}
+.aside-container {
+  background: #142c35;
+  overflow: hidden;
+  transition: width 0.25s;
   flex-shrink: 0;
 }
-
 .logo-wrapper {
-  height: 60px;
+  height: 76px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  border-bottom: 1px solid #1f2d3d;
-  flex-shrink: 0;
+  gap: 12px;
+  padding: 0 14px;
 }
-
-.logo-img {
-  width: 32px;
-  height: 32px;
+.logo-img,
+.logo-mark {
+  width: 34px;
+  height: 34px;
   flex-shrink: 0;
+  border-radius: 10px;
+  object-fit: contain;
 }
-
+.logo-mark {
+  display: grid;
+  place-items: center;
+  background: #70d7c0;
+  color: #142c35;
+  font-size: 22px;
+  font-weight: 750;
+}
 .logo-text {
-  color: #fff;
-  font-size: 18px;
-  font-weight: bold;
+  color: #f3f8f9;
+  font-size: 17px;
+  font-weight: 650;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: 0.5px;
 }
-
 .menu-container {
-  border-right: none;
-  height: calc(100vh - 60px);
+  border-right: 0;
+  height: calc(100dvh - 76px);
   overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding: 8px 10px 24px;
 }
-
 .menu-container::-webkit-scrollbar {
-  width: 4px;
+  display: none;
 }
-
-.menu-container::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 2px;
+.menu-container :deep(.el-menu-item),
+.menu-container :deep(.el-sub-menu__title) {
+  height: 46px;
+  line-height: 46px;
+  border-radius: 8px;
+  margin-bottom: 5px;
 }
-
-/* ===== 顶部栏样式 ===== */
+.menu-container :deep(.el-menu-item:hover),
+.menu-container :deep(.el-sub-menu__title:hover) {
+  background: #ffffff09;
+}
+.menu-container :deep(.el-menu-item.is-active) {
+  background: #70d7c018;
+  color: #70d7c0;
+  font-weight: 600;
+}
+.menu-container :deep(.el-sub-menu .el-menu) {
+  background: transparent;
+}
+.menu-container :deep(.el-icon) {
+  font-size: 18px;
+}
+.menu-container.el-menu--collapse {
+  width: 72px;
+  padding-inline: 10px;
+}
+.menu-container.el-menu--collapse :deep(.el-menu-item),
+.menu-container.el-menu--collapse :deep(.el-sub-menu__title) {
+  padding-left: 18px !important;
+}
 .header-container {
   background: #fff;
-  border-bottom: 1px solid #e6e6e6;
+  border-bottom: 1px solid #e7edef;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 20px;
+  padding: 0 28px;
+  gap: 16px;
 }
-
 .header-left {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 20px;
+  min-width: 0;
 }
-
+.collapse-button {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  color: #657585;
+  background: transparent;
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.collapse-button:hover {
+  background: #f0f5f4;
+  color: #138577;
+}
 .breadcrumb {
-  font-size: 14px;
+  font-size: 13px;
+  line-height: 1.7;
 }
-
 .header-right {
   display: flex;
   align-items: center;
+  flex-shrink: 0;
 }
-
 .user-info {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   cursor: pointer;
-  padding: 4px 8px;
-  border-radius: 4px;
-  transition: background 0.2s;
+  padding: 5px 8px;
+  border-radius: 8px;
 }
-
 .user-info:hover {
-  background: #f5f7fa;
+  background: #f5f8f9;
 }
-
+.user-avatar {
+  background: #e8f3f1;
+  color: #138577;
+  font-weight: 600;
+}
 .username {
-  font-size: 14px;
-  color: #333;
+  font-size: 13px;
+  color: #354857;
 }
-
-/* ===== 主体内容样式 ===== */
+.user-info > .el-icon {
+  color: #8a98a4;
+  font-size: 12px;
+}
 .main-container {
-  background: #f0f2f5;
-  padding: 20px;
+  background: #f4f7f8;
+  padding: 28px;
   overflow-y: auto;
+  min-width: 0;
+}
+@media (max-width: 767px) {
+  .header-container {
+    padding-inline: 14px;
+  }
+  .header-left {
+    gap: 8px;
+  }
+  .main-container {
+    padding: 16px 12px;
+  }
+  .username {
+    display: none;
+  }
+  .breadcrumb {
+    font-size: 12px;
+  }
 }
 </style>

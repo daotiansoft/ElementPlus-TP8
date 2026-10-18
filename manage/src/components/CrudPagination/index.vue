@@ -1,5 +1,5 @@
 <template>
-  <div class="page-block" style="text-align: center; margin: 10px 0">
+  <div class="page-block">
     <el-pagination
       :current-page="currentPage"
       :page-size="pageSize"
