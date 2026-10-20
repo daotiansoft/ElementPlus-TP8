@@ -3,7 +3,7 @@ namespace app\common\controller;
 
 use app\common\basics\Auth;
 use app\common\model\EditorModel;
-use app\common\model\UploadModel;
+use app\common\service\UploadService;
 use app\common\model\UserModel;
 use app\common\service\LoginService;
 use app\common\service\PermsAccessService;
@@ -100,41 +100,18 @@ class Account extends Auth
         $url=url('upload',[],'',true)->build();
         $data=[];
         $data['action'] = $url;
+        $data['extensions'] = array_keys(config('upload.types'));
+        $data['maxSize'] = config('upload.max_size');
         $data['headers'] = array(
             'Api-Token'=>$this->request->header('Api-Token')
         );
         return AjaxUtils::success("获取成功",$data);
     }
 
-    //上传图片
+    // 普通附件使用 file，富文本图片使用 image，均执行服务端文件校验。
     public function upload(){
-        try {
-            validate(
-                [
-                'image'=>['fileSize'=>1024*1024*4,'fileExt'=>'jpg,png,gif']
-                ]
-            )->check(request()->file());
-
-            $image = request()->file('image');
-            if($image){
-                $savename = \think\facade\Filesystem::disk('public')->putFile( 'topic', $image);
-                $savename = \think\facade\Filesystem::getDiskConfig('public','url').'/'.str_replace("\\","/",$savename);
-
-                $data = [];
-                $data['name'] = $image->getFilename();
-                $data['size'] = $image->getSize();
-                $data['mime'] = $image->getMime();
-                $data['type'] = 'image';
-                $data['time'] = time();
-                $data['path'] = $savename;
-                $uploadModel = new UploadModel();
-                $uploadModel->insert($data);
-
-                return AjaxUtils::success("上传成功",['url'=>request()->domain().$savename]);
-            }
-        } catch (\think\exception\ValidateException $e) {
-            return AjaxUtils::error($e->getMessage());
-        }
+        $file = $this->request->file('file') ?? $this->request->file('image');
+        return AjaxUtils::success('上传成功', UploadService::upload($file));
     }
 
     public function getRoutes(){

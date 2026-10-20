@@ -21,6 +21,12 @@ const routesMap = {
     meta: { title: "设置列表" },
     hidden: false,
   },
+  "/admin/system/upload": {
+    name: "文件管理",
+    component: () => import("@/views/admin/system/upload.vue"),
+    meta: { title: "文件管理" },
+    hidden: false,
+  },
   "/admin/system/editor": {
     name: "富文本",
     component: () => import("@/views/admin/system/editor.vue"),

@@ -81,7 +81,7 @@ const imageUploadHandler = (blobInfo) =>
     user
       .uploadFile({ image: blobInfo.blob() })
       .then((data) => resolve(data?.url || ""))
-      .catch((error) => reject(error?.msg || "上传失败"));
+      .catch((error) => reject(error?.message || "上传失败"));
   });
 
 const initEditor = () => {

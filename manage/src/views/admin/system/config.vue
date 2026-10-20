@@ -23,11 +23,9 @@
             <el-input v-if="item.type == 'image'" v-model="item.content">
               <template #append>
                 <InputUpload
-                  @input="
-                    (val) => {
-                      setImage(val, item.key);
-                    }
-                  "
+                  v-model="item.content"
+                  accept=".jpg,.jpeg,.png,.gif,.webp"
+                  :max-size="4"
                 />
               </template>
             </el-input>
@@ -87,12 +85,6 @@ const submitForm = async (formEl) => {
   } catch (error) {
     console.error("保存配置失败:", error);
     ElMessage.error("保存配置失败");
-  }
-};
-const setImage = (val, key) => {
-  const item = items.value.find((item) => item.key === key);
-  if (item) {
-    item.content = val.url || "";
   }
 };
 const clearCache = () => {
