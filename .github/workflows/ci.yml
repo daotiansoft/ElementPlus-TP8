@@ -49,24 +49,38 @@ jobs:
           retention-days: 7
 
   backend:
-    name: 后端 (PHP 语法 / composer 校验)
+    name: 后端 (PHP ${{ matrix.php }} / TP8 兼容性)
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php: ["8.2", "8.3", "8.4", "8.5"]
     steps:
       - uses: actions/checkout@v4
 
       - uses: shivammathur/setup-php@v2
         with:
-          php-version: "7.4"
-          extensions: mbstring, pdo_mysql, curl
+          php-version: ${{ matrix.php }}
+          extensions: mbstring, pdo_mysql, redis, curl, gd, fileinfo
           coverage: none
 
       - name: 校验 composer.json / composer.lock
         working-directory: api
         run: composer validate --no-check-publish
 
-      # 不安装 vendor 也能做语法检查，CI 更快
+      - name: 安装锁定依赖
+        working-directory: api
+        run: composer install --prefer-dist --no-interaction
+
+      - name: 检查 PHP 与扩展
+        working-directory: api
+        run: composer check-platform-reqs
+
       - name: PHP 语法检查
-        run: find api/app api/config -name '*.php' -print0 | xargs -0 -n1 -P4 php -l
+        run: find api/app api/config api/route api/public -name '*.php' -print0 | xargs -0 -n1 -P4 php -l
+
+      - name: 框架启动检查
+        working-directory: api
+        run: php think version
 
   openapi:
     name: openapi (依赖与语法)

@@ -23,7 +23,7 @@ class ConfigService extends Service
         $lists = $model
             ->withJoin(['group'],'LEFT')
             ->where($where)
-            ->order('sort desc')
+            ->order('config_model.sort', 'desc')
             ->paginate([
                 'page'      => $get['page']  ?? 1,
                 'list_rows' => $get['pagesize'] ?? 20

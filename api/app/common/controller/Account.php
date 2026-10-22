@@ -57,8 +57,8 @@ class Account extends Auth
     }
      */
     public function password(){
-        $password_old=$this->request->param('password_old');
-        $password_new=$this->request->param('password_new');
+        $password_old=$this->request->param('password_old/s', '');
+        $password_new=$this->request->param('password_new/s', '');
 
         if(empty($password_old)){
             return AjaxUtils::error("请输入原密码");

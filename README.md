@@ -1,6 +1,6 @@
 # element-ui-admin-tp6
 
-通用后台管理系统：ThinkPHP 6 提供接口，Vue 3 + Element Plus 提供管理界面，另附一个 Python 签名客户端用于开放接口对接。
+通用后台管理系统：ThinkPHP 8 提供接口，Vue 3 + Element Plus 提供管理界面，另附一个 Python 签名客户端用于开放接口对接。
 
 界面改造自 [vue-element-admin](https://github.com/PanJiaChen/vue-element-admin) 的设计思路。
 
@@ -8,7 +8,7 @@
 
 ```
 element-ui-admin-tp6/
-├── api/                    后端（ThinkPHP 6，多应用：admin / common / user / task / openapi）
+├── api/                    后端（ThinkPHP 8，多应用：admin / common / user / task / openapi）
 │   ├── app/                控制器、服务、验证器、模型
 │   ├── config/             框架与应用配置（cors.php、jwt.php 等）
 │   ├── db/migrations/      增量 SQL（建表结构以 dbdata.sql 为准）
@@ -27,7 +27,7 @@ element-ui-admin-tp6/
 
 | 组件    | 版本                                |
 | ------- | ----------------------------------- |
-| PHP     | 7.4+（`composer.json` 要求 >= 7.1） |
+| PHP     | 8.2+（CLI 与 Web 站点均需切换）     |
 | MySQL   | 5.7+（表与列均为 utf8mb4）          |
 | Redis   | 缓存驱动默认使用 redis              |
 | Node.js | ^20.19 或 >=22.12（Vite 8 要求）    |
@@ -68,6 +68,22 @@ mysql -uroot -p dbdata < db/migrations/2026-10-16-case-sensitive-permissions.sql
 ```
 
 初始账号来自 `dbdata.sql` 种子数据：`admin / 123456`，**首次登录后请立即修改密码**。
+
+### 从 ThinkPHP 6 升级
+
+框架锁定为 ThinkPHP **8.1.4**（升级时最新稳定版），使用 ThinkORM 3.x、think-multi-app 1.1.1 和 think-trace 2.x。
+ThinkORM 4.x 重构了模型层，本次保留 TP8 支持的 3.x，沿用现有模型、关联与查询接口。
+验证码改用官方 think-captcha 3.x 绘图，由应用服务使用缓存验证；前端的 `key`、`data`、`captcha_key` 字段保持不变，无需 Session cookie。
+旧验证码缓存会失效，升级后刷新验证码即可。JWT 升级到 7.x，HS256 密钥至少需要 **32 字节**；现有足够长的密钥和 token 可沿用，短密钥需要更换并重新登录。新生成的密钥改用 `random_bytes`。没有业务调用的 PhpSpreadsheet 及其间接依赖已移除。
+
+1. 备份数据库和应用文件；将 PHP CLI、PHP-FPM/Apache 或 phpStudy 站点都切换到 PHP 8.2+。
+2. 启用 `ctype`、`curl`、`fileinfo`、`gd`（含 FreeType）、`mbstring`、`pdo_mysql`；默认缓存及任务队列使用 Redis，还需安装匹配 PHP 版本的 Redis 扩展。
+3. 使用 PHP 8 的配置模板，移除 `track_errors` 等旧配置。Windows 的 `extension_dir` 应指向对应 PHP 8 的 `ext` 目录，不能继续加载 PHP 7 的扩展。
+4. 在 `api/` 执行 `composer install --no-dev --optimize-autoloader` 和 `composer check-platform-reqs`，按照已提交的锁文件安装。
+5. 清理各应用旧的路由/配置缓存并重启 PHP 服务或 OPcache。**不要整个删除 `runtime`：其中可能包含 `jwt_key`、附件或其他持久化数据**。若需清理缓存，先确认缓存内容和路径。
+6. 执行 `composer validate --no-check-publish` 和 `php think version`，再联调初始化、验证码、登录、权限、上传和余额接口。本次框架升级无需新增数据库迁移。
+
+CI 会在 PHP 8.2 / 8.3 / 8.4 / 8.5 下安装依赖，检查 PHP 扩展、语法和框架启动。已删除的测试目录不再被 Composer 或 CI 引用。命令行的 `php` 与 `composer` 也必须使用 PHP 8.2+，仅切换 Web 站点版本不足以更新终端的 PHP 路径。
 
 ### 2. 前端
 
