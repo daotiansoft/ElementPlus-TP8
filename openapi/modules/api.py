@@ -3,7 +3,7 @@ import os
 import time
 from pathlib import Path
 
-from modules.httpHelper import HttpClient
+import requests
 
 ENV_FILE = Path(__file__).resolve().parents[1] / '.env'
 
@@ -38,21 +38,21 @@ class Api:
     APPID = _required_env('OPENAPI_APPID')
     SECRET = _required_env('OPENAPI_SECRET')
 
-    def request(self,url = '',isPost = False,post_data = {}):
-        client = HttpClient(
-            base_url = self.BASE_URL,
-            default_timeout = 10
-        )
-        headers = {}
-        post_data = self.sign(post_data)
-        if isPost:
-            response = client.post(url,data=post_data,headers=headers)
-        else:
-            response = client.get(url)
-        if response.is_success:
-            return response.response.json()
-        else:
-            print(f"请求失败: {response.error_message}")
+    def request(self, url='', isPost=False, post_data=None):
+        endpoint = f"{self.BASE_URL}/{url.lstrip('/')}"
+        params = self.sign(dict(post_data or {}))
+        try:
+            if isPost:
+                response = requests.post(endpoint, data=params, timeout=10)
+            else:
+                response = requests.get(endpoint, params=params, timeout=10)
+            response.raise_for_status()
+            payload = response.json()
+            if not isinstance(payload, dict):
+                raise ValueError('接口响应必须为 JSON 对象')
+            return payload
+        except (requests.RequestException, ValueError) as error:
+            print(f"请求失败: {error}")
             return None
 
     def sign(self,params:dict):
