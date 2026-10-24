@@ -4,6 +4,25 @@
 
 本文依据当前仓库代码整理；依赖的实际安装版本以 `manage/package-lock.json` 和 `api/composer.lock` 为准。
 
+## 默认超级管理员
+
+导入 `api/dbdata.sql` 后，可使用以下初始凭据登录：
+
+- 账号：`admin`
+- 密码：`123456`
+
+首次登录后请修改密码。
+
+## 界面预览
+
+### 登录面板
+
+![登录面板](./login.png)
+
+### 主面板
+
+![主面板](./main.png)
+
 ## 整体架构
 
 ```mermaid
@@ -263,7 +282,7 @@ mysql -uroot -p dbdata < dbdata.sql
 
 `dbdata.sql` 包含删表重建语句，只用于初始化；已有数据库应先备份并人工比对结构。当前仓库未提供 `db/migrations` 增量脚本。
 
-将 Web 站点根目录设置为 `api/public`，配置不存在的路径转发到 `index.php` 并保留 PATH_INFO。可将本地 hosts 中的 `admin.test.com` 指向 `127.0.0.1`，与前端开发配置对应。初始管理员为 `admin / 123456`，首次登录后修改密码。
+将 Web 站点根目录设置为 `api/public`，配置不存在的路径转发到 `index.php` 并保留 PATH_INFO。可将本地 hosts 中的 `admin.test.com` 指向 `127.0.0.1`，与前端开发配置对应。初始化后的登录凭据见「默认超级管理员」。
 
 ### 前端运行
 
