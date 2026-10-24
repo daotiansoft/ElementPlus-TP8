@@ -1,4 +1,4 @@
-# element-ui-admin-tp6
+# ElementPlus-TP8
 
 通用后台管理系统：ThinkPHP 8 提供接口，Vue 3 + Element Plus 提供管理界面，另附一个 Python 签名客户端用于开放接口对接。
 
