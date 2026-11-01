@@ -4,8 +4,9 @@ namespace app\openapi\controller;
 use app\common\basics\Api;
 use app\common\utils\AjaxUtils;
 use think\response\Json;
+use app\BaseController;
 
-class Index extends Api
+class Index extends BaseController
 {
     public function ping(): Json
     {
@@ -13,6 +14,10 @@ class Index extends Api
     }
 
     public function index(){
-        return 'element-ui-admin-tp6';
+        return 'ElementPlus-TP8';
+    }
+    public function test(){
+        $params = $this->request->param();
+        
     }
 }

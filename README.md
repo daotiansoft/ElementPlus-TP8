@@ -96,7 +96,7 @@ ElementPlus-TP8/
 
 前端采用 JavaScript、Vue 3 Composition API、Vue Router 4、Pinia 3、Element Plus 2、Axios 和 VueUse，使用 Vite 8 构建，Sass 编译样式。没有 TypeScript 编译流程。
 
-- `main.js` 注册 Pinia 和 Router，挂载 `App.vue`，通过 `VITE_APP_TITLE` 设置标签页标题。
+- `main.js` 注册 Pinia 和 Router，挂载 `App.vue`，使用 `VITE_APP_TITLE` 作为默认标签页标题，网站配置加载后优先使用后台 `site_name`。
 - `vite.config.mjs` 使用 `unplugin-auto-import` 自动导入 Vue、Router、Pinia API，并通过 `unplugin-vue-components` 按需加载 Element Plus 组件与样式。
 - `@` 指向 `manage/src`，另有 `components`、`views`、`utils` 别名；编辑器映射见 `manage/jsconfig.json`。
 - 开发服务监听 `0.0.0.0:3000`，当前没有配置 Vite 接口代理，浏览器直接请求 `VITE_API_BASE_URL`。
@@ -294,7 +294,7 @@ npm ci
 npm run dev
 ```
 
-默认访问 `http://localhost:3000`。`manage/.env.development` 中 `VITE_API_BASE_URL` 默认为 `http://admin.test.com`；修改接口地址后重启开发服务。`VITE_APP_TITLE` 控制标签页标题。
+默认访问 `http://localhost:3000`。`manage/.env.development` 中 `VITE_API_BASE_URL` 默认为 `http://admin.test.com`；修改接口地址后重启开发服务。`VITE_APP_TITLE` 设置默认标签页标题，网站配置加载后优先使用后台 `site_name`。
 
 `npm ci` 或 `npm install` 的 prepare 脚本会将本地 Git 的 `core.hooksPath` 设置为 `manage/.husky`，提交时由 lint-staged 检查暂存文件；CI 环境跳过安装钩子。
 

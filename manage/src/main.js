@@ -8,7 +8,7 @@ import "@/styles/reset.css"; // ✅ 引入重置样式
 import "@/styles/search.css";
 import "@/styles/theme.css";
 
-// 标签页标题：优先使用环境变量中的站点名
+// 网站配置加载前使用环境变量兜底，加载后由后台 site_name 更新标题
 const appTitle = import.meta.env.VITE_APP_TITLE;
 if (appTitle) {
   document.title = appTitle;
