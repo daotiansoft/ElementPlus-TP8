@@ -12,7 +12,6 @@ class PermsModel extends CommonModel
         'parent_id'=>'int',
         'name'=>'string',
         'node_type'=>'string',
-        'permission_key'=>'string',
         'route_path'=>'string',
         'module'=>'string',
         'controller'=>'string',

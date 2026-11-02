@@ -19,7 +19,7 @@ class PermsService extends Service
     public static function getTreeData(int $parentId = 0): array
     {
         $rows = (new PermsModel())
-            ->field('id,parent_id,name,node_type,permission_key,route_path,module,controller,action,sort,status')
+            ->field('id,parent_id,name,node_type,route_path,module,controller,action,sort,status')
             ->order('sort', 'asc')
             ->order('id', 'asc')
             ->select()
@@ -97,11 +97,6 @@ class PermsService extends Service
 
         Db::transaction(function () use ($fields, $parent, $module, $controller, &$messages, $now) {
             foreach ($fields as $field) {
-                $key = self::buildPermissionKey(
-                    $module,
-                    $controller,
-                    $field['action']
-                );
                 $exists = PermsModel::where('module', '=', $module)
                     ->where('controller', '=', $controller)
                     ->where('action', '=', $field['action'])
@@ -119,7 +114,6 @@ class PermsService extends Service
                     'parent_id' => $parent['id'],
                     'name' => $field['name'],
                     'node_type' => 'action',
-                    'permission_key' => $key,
                     'route_path' => null,
                     'module' => $module,
                     'controller' => $controller,
@@ -171,11 +165,6 @@ class PermsService extends Service
         CacheUtils::clearTag('perms');
     }
 
-    public static function buildPermissionKey(string $module, string $controller, string $action): string
-    {
-        return trim($module) . '.' . trim($controller) . '.' . trim($action);
-    }
-
     private static function isIdentifierPartValid(string $part): bool
     {
         return preg_match('/^[A-Za-z0-9_-]+$/', $part) === 1;
@@ -213,7 +202,6 @@ class PermsService extends Service
         $module = trim((string) ($post['module'] ?? ''));
         $controller = trim((string) ($post['controller'] ?? ''));
         $action = trim((string) ($post['action'] ?? ''));
-        $permissionKey = trim((string) ($post['permission_key'] ?? ''));
         $routePath = trim((string) ($post['route_path'] ?? ''));
 
         if ($nodeType === 'page' && $routePath === '') {
@@ -234,7 +222,6 @@ class PermsService extends Service
                 throw new RequestException('CURD 模块和控制器格式无效');
             }
             $action = '';
-            $permissionKey = '';
             $routePath = $routePath === '' ? null : $routePath;
         } else {
             if ($module === '' || $controller === '' || $action === '') {
@@ -245,27 +232,12 @@ class PermsService extends Service
                     throw new RequestException('模块、控制器和方法仅允许字母、数字、下划线和连字符');
                 }
             }
-            if ($permissionKey === '') {
-                throw new RequestException('请输入稳定的权限标识');
-            }
-            if (preg_match('/^[A-Za-z0-9][A-Za-z0-9._:-]{0,190}$/', $permissionKey) !== 1) {
-                throw new RequestException('权限标识格式无效');
-            }
             if (!check_action_exists($module, $controller, $action)) {
                 throw new RequestException('控制器方法不存在');
             }
             $routePath = null;
-            if (strlen($permissionKey) > 191) {
-                throw new RequestException('权限标识过长');
-            }
         }
 
-        if ($permissionKey !== '') {
-            $duplicate = PermsModel::where('permission_key', '=', $permissionKey)->find();
-            if ($duplicate && (int) $duplicate['id'] !== $id) {
-                throw new RequestException('该稳定权限标识已被使用');
-            }
-        }
         if ($nodeType === 'action' || $nodeType === 'api') {
             $duplicate = PermsModel::whereIn('node_type', ['action', 'api'])
                 ->where('module', '=', $module)
@@ -295,7 +267,6 @@ class PermsService extends Service
             'parent_id' => $parentId,
             'name' => $name,
             'node_type' => $nodeType,
-            'permission_key' => $permissionKey === '' ? null : $permissionKey,
             'route_path' => $routePath,
             'module' => $module,
             'controller' => $controller,

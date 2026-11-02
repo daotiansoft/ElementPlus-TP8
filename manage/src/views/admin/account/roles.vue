@@ -71,12 +71,12 @@
 
     <el-dialog title="权限" v-model="permsVisible">
       <p class="permission-hint">
-        目录仅用于组织；页面、操作和 API 独立授权，勾选页面不会自动授予操作/API 权限。
+        勾选或取消父节点时，同步选择或取消其下所有未禁用的子权限；子权限也可单独调整。
       </p>
       <el-input
         v-model="permsFilter"
         clearable
-        placeholder="搜索名称、权限标识或路由"
+        placeholder="搜索名称、模块、控制器、方法或路由"
         style="margin-bottom: 12px"
       />
       <el-form :model="permsForm">
@@ -90,6 +90,7 @@
           highlight-current
           :filter-node-method="filterNode"
           :expand-on-click-node="false"
+          @check="onPermissionCheck"
         >
           <template #default="{ data }">
             <el-icon v-if="data.node_type === 'group'">
@@ -101,9 +102,6 @@
             </el-tag>
             <el-tag v-if="data.route_path" size="small" type="success" effect="plain">
               {{ data.route_path }}
-            </el-tag>
-            <el-tag v-if="data.permission_key" size="small" type="primary" effect="plain">
-              {{ data.permission_key }}
             </el-tag>
             <el-tag
               v-if="data.module && data.controller && data.action"
@@ -220,14 +218,7 @@ const treeRef = ref(null);
 const filterNode = (value, data) => {
   if (!value) return true;
   const keyword = value.toLowerCase();
-  return [
-    data.name,
-    data.permission_key,
-    data.route_path,
-    data.module,
-    data.controller,
-    data.action,
-  ]
+  return [data.name, data.route_path, data.module, data.controller, data.action]
     .filter(Boolean)
     .some((field) => String(field).toLowerCase().includes(keyword));
 };
@@ -248,13 +239,27 @@ const getTreeItems = async () => {
   const markDisabled = (nodes) =>
     nodes.map((node) => ({
       ...node,
-      disabled: node.node_type === "group" || Number(node.status) !== 1,
+      disabled: Number(node.status) !== 1,
       children: markDisabled(node.children || []),
     }));
   treeData.value = markDisabled(data);
 };
+const onPermissionCheck = (data) => {
+  const checked = treeRef.value.getNode(data.id).checked;
+  const descendants = [...(data.children || [])];
+  while (descendants.length) {
+    const node = descendants.pop();
+    if (node.disabled) continue;
+    treeRef.value.setChecked(node.id, checked, false);
+    descendants.push(...(node.children || []));
+  }
+};
+
 const onPerms = async () => {
-  const data = treeRef.value.getCheckedKeys();
+  const data = treeRef.value
+    .getCheckedNodes()
+    .filter((node) => node.node_type !== "group")
+    .map((node) => node.id);
   permsForm.value.perms_ids = data;
 
   loading.value = true;

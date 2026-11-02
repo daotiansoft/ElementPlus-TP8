@@ -20,7 +20,7 @@ class Account extends Auth
         $userinfo['username']=$this->userItem['username'];
         $userinfo['nickname']=$this->userItem['nickname'];
         $userinfo['avatar']=$this->userItem['avatar'];
-        $userinfo['roles'] = [$this->userItem['type']];
+        $userinfo['roles'] = $this->userItem['type'];
 
         if(empty($userinfo['nickname'])){
             $userinfo['nickname'] = $userinfo['username'];
@@ -116,6 +116,6 @@ class Account extends Auth
 
     public function getRoutes(){
         $data = PermsAccessService::getRoutes($this->userItem['type']);
-        return AjaxUtils::success($this->userItem['type'],$data);
+        return AjaxUtils::success('SUCCESS',$data);
     }
 }

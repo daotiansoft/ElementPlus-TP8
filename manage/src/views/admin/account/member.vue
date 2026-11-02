@@ -34,7 +34,7 @@
       >
         <el-table-column type="selection" width="55" />
         <el-table-column prop="id" label="ID" width="80" />
-        <el-table-column prop="role_name" label="角色" width="80" />
+        <el-table-column prop="role_name" label="角色" min-width="160" />
         <el-table-column prop="username" label="账号" />
         <el-table-column label="余额(元)" width="120" align="right">
           <template #default="scope">
@@ -154,6 +154,7 @@ const formFields = computed(() => [
     type: "select",
     placeholder: "选择角色",
     options: roleOptions.value,
+    props: { multiple: true },
   },
   { prop: "username", label: "账号名称", placeholder: "请输入账号名称" },
   { prop: "password", label: "账号密码", placeholder: "密码长度不可小于6个字符" },
@@ -193,7 +194,7 @@ const getRoles = async () => {
 
 const onAdd = () => {
   mode.value = "add";
-  form.value = { type: "", username: "", password: "", status: 1 };
+  form.value = { type: [], username: "", password: "", status: 1 };
   dialogVisible.value = true;
 };
 const onItemEdit = (item) => {

@@ -1,8 +1,6 @@
 <?php
 namespace app\common\model;
 
-use think\model\relation\HasOne;
-
 class UserModel extends CommonModel
 {
     protected $name = 'user';
@@ -27,9 +25,15 @@ class UserModel extends CommonModel
         return $this->where('username','=',$username)->find();
     }
 
-    public function role(): HasOne
+    // 数据库存逗号分隔的角色标识，对外统一返回数组，兼容原单角色数据。
+    public function getTypeAttr($value): array
     {
-        return $this->hasOne(RolesModel::class, 'type', 'type');
+        return $value === '' ? [] : explode(',', $value);
+    }
+
+    public function setTypeAttr($value): string
+    {
+        return implode(',', array_unique($value));
     }
 
 }

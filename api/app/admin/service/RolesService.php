@@ -91,7 +91,11 @@ class RolesService extends Service
         }
 
         // 引用校验：仍被账号引用的角色不允许删除，避免账号角色悬空
-        $inUse = UserModel::whereIn('type', $types)->column('username');
+        $inUse = UserModel::where(function ($query) use ($types) {
+            foreach ($types as $type) {
+                $query->whereOrRaw('FIND_IN_SET(?, type)', [$type]);
+            }
+        })->column('username');
         if (!empty($inUse)) {
             throw new RequestException('角色仍被账号使用，请先调整这些账号的角色：' . implode('、', $inUse));
         }

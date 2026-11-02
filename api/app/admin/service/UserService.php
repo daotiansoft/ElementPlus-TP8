@@ -9,6 +9,7 @@ use app\common\enums\StatusEnum;
 use app\common\exception\RequestException;
 use app\common\model\AppListModel;
 use app\common\model\UserModel;
+use app\common\model\RolesModel;
 use app\common\service\LoginService;
 use app\common\utils\TimeUtils;
 use think\facade\Db;
@@ -23,25 +24,23 @@ class UserService extends Service
     public static function lists(array $get,array $userItem): array
     {
         $where = self::setSearch([
-            '%like%'   => ['username@user_model.username'],
-            'datetime' => ['time@user_model.create_time'],
+            '%like%'   => ['username@username'],
+            'datetime' => ['time@create_time'],
         ],$get);
         $model = new UserModel();
         $lists = $model
             ->withoutField(['password'])
-            ->withJoin(['role'],'LEFT')
             ->where($where)
-            ->order('user_model.id', 'desc')
+            ->order('id', 'desc')
             ->paginate([
                 'page'      => $get['page']  ?? 1,
                 'list_rows' => $get['pagesize'] ?? 20
             ])->toArray();
+        $roleNames = RolesModel::column('name', 'type');
         foreach ($lists['data'] as &$item) {
-            $item['role_name'] = $item['role']['name'] ?? '';
+            $item['role_name'] = implode('、', array_intersect_key($roleNames, array_flip($item['type'])));
             $item['create_time'] = TimeUtils::formatTime($item['create_time']);
             $item['update_time'] = TimeUtils::formatTime($item['update_time']);
-
-            unset($item['role']);
         }
 
         return ['count'=>$lists['total'], 'items'=>$lists['data']] ?? [];

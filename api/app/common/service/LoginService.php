@@ -162,7 +162,7 @@ class LoginService
         $loginLogModel->log($userItem['id'],'',StatusEnum::STATUS_1,request()->ip());
 
         //系统停用 限制登录
-        if($userItem['type'] != UserModel::TYPE_SUPER){
+        if(!in_array(UserModel::TYPE_SUPER, $userItem['type'], true)){
             $config = new ConfigModel();
             $site_status = intval($config->getContentByKey('site_status'));
             if($site_status != StatusEnum::STATUS_1){

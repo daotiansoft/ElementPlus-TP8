@@ -16,16 +16,18 @@ class PermsAccessService extends Service
     /**
      * Return registered menu/page paths implied by a role's grants.
      */
-    public static function getRoutes(string $type, int $parentId = 0): array
+    public static function getRoutes(array $types, int $parentId = 0): array
     {
-        $cacheKey = 'perms_routes_v2_' . $type . '_' . $parentId;
+        sort($types);
+        $cacheKey = 'perms_routes_v3_' . md5(json_encode($types)) . '_' . $parentId;
         $cached = CacheUtils::get($cacheKey);
         if (is_array($cached)) {
             return $cached;
         }
 
         $grantedIds = (new RolePermsModel())
-            ->where('type', '=', $type)
+            ->whereIn('type', $types)
+            ->distinct(true)
             ->column('perms_id');
         if (empty($grantedIds)) {
             CacheUtils::set(self::CACHE_TAG, $cacheKey, []);
@@ -102,16 +104,18 @@ class PermsAccessService extends Service
     /**
      * Return active backend endpoint bindings for the role.
      */
-    public static function getPowerSet(string $type): array
+    public static function getPowerSet(array $types): array
     {
-        $cacheKey = 'perms_power_v3_' . $type;
+        sort($types);
+        $cacheKey = 'perms_power_v4_' . md5(json_encode($types));
         $cached = CacheUtils::get($cacheKey);
         if (is_array($cached)) {
             return $cached;
         }
 
         $grantedIds = (new RolePermsModel())
-            ->where('type', '=', $type)
+            ->whereIn('type', $types)
+            ->distinct(true)
             ->column('perms_id');
         if (empty($grantedIds)) {
             CacheUtils::set(self::CACHE_TAG, $cacheKey, []);
