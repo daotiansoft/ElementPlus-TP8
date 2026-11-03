@@ -1,11 +1,6 @@
 <template>
   <div class="dashboard">
-    <el-form
-      ref="formRef"
-      label-width="100px"
-      style="max-width: 1000px"
-      @keyup.enter="submitForm(formRef)"
-    >
+    <el-form ref="formRef" label-width="100px" style="max-width: 1000px" @keyup.enter="onEnter">
       <el-tabs
         v-model="activeName"
         type="card"
@@ -64,6 +59,11 @@ const activeName = ref("");
 
 const userStore = useUserStore();
 const overtStore = useOvertStore();
+
+const onEnter = (event) => {
+  if (event.target.tagName === "TEXTAREA" || event.isComposing) return;
+  submitForm(formRef.value);
+};
 
 onMounted(async () => {
   getItems();

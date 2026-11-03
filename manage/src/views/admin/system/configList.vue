@@ -71,7 +71,15 @@
       :fields="formFields"
       :loading="loading"
       @submit="onSubmit"
-    />
+    >
+      <template #content="{ model }">
+        <el-input
+          v-model="model.content"
+          :type="model.type === 'textarea' ? 'textarea' : 'text'"
+          placeholder="请输入配置内容，长度小于255"
+        />
+      </template>
+    </FormDialog>
   </div>
 </template>
 <script setup>
@@ -124,6 +132,7 @@ const formFields = computed(() => [
     placeholder: "请选择",
     options: [
       { label: "文本输入", value: "text" },
+      { label: "多行文本", value: "textarea" },
       { label: "图片上传", value: "image" },
       { label: "下拉选择", value: "select" },
     ],
